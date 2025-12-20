@@ -1,0 +1,130 @@
+$[
+Simple Calculator Application
+Demonstrates multiple UTTR features:
+- Functions with parameters and return values
+- User input handling
+- Conditional logic
+- While loops
+- String operations
+- Error handling with conditionals
+]$
+
+$ Define calculator functions
+make function add_numbers(a, b):
+    give a + b;
+end;
+
+make function subtract_numbers(a, b):
+    give a - b;
+end;
+
+make function multiply_numbers(a, b):
+    give a * b;
+end;
+
+make function divide_numbers(a, b):
+    when b == 0:
+        show "Error: Cannot divide by zero!";
+        give 0;
+    otherwise:
+        give a / b;
+    end;
+end;
+
+make function display_menu():
+    show "";
+    show "========== CALCULATOR ==========";
+    show "1. Addition";
+    show "2. Subtraction";
+    show "3. Multiplication";
+    show "4. Division";
+    show "5. Power Calculator";
+    show "6. Exit";
+    show "================================";
+end;
+
+make function power(base, exponent):
+    $ Calculate base raised to exponent using loops
+    put 1 in result;
+    put 0 in counter;
+    
+    repeat while counter < exponent:
+        put result * base in result;
+        put counter + 1 in counter;
+    end;
+    
+    give result;
+end;
+
+make function get_operation_result(choice, num1, num2):
+    when choice == 1:
+        give add_numbers(num1, num2);
+    otherwise when choice == 2:
+        give subtract_numbers(num1, num2);
+    otherwise when choice == 3:
+        give multiply_numbers(num1, num2);
+    otherwise when choice == 4:
+        give divide_numbers(num1, num2);
+    otherwise when choice == 5:
+        give power(num1, num2);
+    otherwise:
+        show "Invalid choice!";
+        give 0;
+    end;
+end;
+
+$ Main calculator program
+show "Welcome to UTTR Calculator!";
+show "";
+
+put 1 in running;
+
+as long as running == 1:
+    $ Display menu
+    display_menu();
+    
+    $ Get user choice
+    show "";
+    show "Enter your choice (1-6): ";
+    put input_int() in choice;
+    
+    $ Exit condition
+    when choice == 6:
+        show "";
+        show "Thank you for using UTTR Calculator!";
+        show "Goodbye!";
+        put 0 in running;
+    otherwise when choice >= 1 and choice <= 5:
+        $ Get numbers from user
+        show "Enter first number: ";
+        put input_int() in num1;
+        show "Enter second number: ";
+        put input_int() in num2;
+        
+        $ Calculate result
+        put get_operation_result(choice, num1, num2) in result;
+        
+        $ Display result with appropriate operator
+        put "" in operator;
+        when choice == 1:
+            put "+" in operator;
+        otherwise when choice == 2:
+            put "-" in operator;
+        otherwise when choice == 3:
+            put "*" in operator;
+        otherwise when choice == 4:
+            put "/" in operator;
+        otherwise when choice == 5:
+            put "^" in operator;
+        end;
+        
+        show "";
+        show "Result: " + num1 + " " + operator + " " + num2 + " = " + result;
+    otherwise:
+        show "";
+        show "Invalid choice! Please enter a number between 1 and 6.";
+    end;
+end;
+
+show "";
+show "Calculator session ended.";
