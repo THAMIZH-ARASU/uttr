@@ -408,10 +408,7 @@ Run the following command to test the lexer's output:
 - [X] **`Task 5`**: <strike>Implement comprehensive error handling with position tracking</strike>
 - [X] **`Task 6`**: <strike>Add do-while loop support with repeat while keyword</strike>
 - [ ] **`Task 7`**: Add support for dictionaries/maps data structure
-- [ ] **`Task 8`**: Implement static type checking system
-- [ ] **`Task 9`**: Add garbage collection for memory management
-- [ ] **`Task 10`**: Create standard library with file I/O and system operations
-- [ ] **`Task 11`**: Develop VS Code extension with syntax highlighting
+- [ ] **`More to be added`**
 
 ---
 
