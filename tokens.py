@@ -39,6 +39,7 @@ KEYWORDS = [
     'each',
     'through',
     'as long as',
+    'repeat while',
     'make function',
     'give',
     'and',

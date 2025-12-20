@@ -140,7 +140,7 @@ class Lexer:
             self.advance()
 
         # Check for multi-word keywords
-        if id_str in ['as', 'make', 'each']:
+        if id_str in ['as', 'make', 'each', 'repeat']:
             # Try to match multi-word keywords
             saved_pos = self.pos.copy()
             temp_str = id_str

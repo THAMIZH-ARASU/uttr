@@ -1,0 +1,34 @@
+$ Compare while loop vs do-while loop
+
+show "=== Regular While Loop (as long as) ===";
+put 5 in count;
+show "Starting with count = 5";
+show "Checking: as long as count < 3";
+
+as long as count < 3:
+    show "Inside while loop: " + count;
+    put count + 1 in count;
+end;
+
+show "While loop did NOT execute (count was already >= 3)";
+show "Final count: " + count;
+
+show "";
+show "=== Do-While Loop (repeat while) ===";
+put 5 in count2;
+show "Starting with count2 = 5";
+show "Checking: repeat while count2 < 3";
+
+repeat while count2 < 3:
+    show "Inside do-while loop: " + count2;
+    put count2 + 1 in count2;
+end;
+
+show "Do-while loop executed ONCE (body runs before check)";
+show "Final count2: " + count2;
+
+show "";
+show "=== Key Difference ===";
+show "While loop: Check condition FIRST, then execute body";
+show "Do-while loop: Execute body FIRST, then check condition";
+show "Do-while guarantees at least ONE execution!";

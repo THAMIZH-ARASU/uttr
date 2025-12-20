@@ -1,0 +1,25 @@
+$ Do-While loop (repeat while)
+$ The loop body executes at least once before checking the condition
+
+put 0 in counter;
+show "Starting do-while loop";
+
+repeat while counter < 3:
+    show "Counter: " + counter;
+    put counter + 1 in counter;
+end;
+
+show "After first loop, counter is: " + counter;
+
+$ Example showing it runs at least once even when condition is false
+put 10 in x;
+show "X starts at 10";
+
+repeat while x < 5:
+    show "This will execute once even though x is already >= 5";
+    show "X is: " + x;
+    put x + 1 in x;
+end;
+
+show "After second loop, x is: " + x;
+show "Program completed successfully!";

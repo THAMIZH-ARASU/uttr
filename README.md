@@ -50,7 +50,7 @@ UTTR (Understandable Translation Tool for Routines) is a custom-built, procedure
 - **Complete Interpreter**: Full lexer-parser-interpreter pipeline built from scratch with comprehensive error handling and position tracking
 - **Procedure-Oriented Design**: Focus on procedures and sequential execution with modular, reusable functions
 - **Rich Data Types**: Support for integers, floats, strings, booleans, and lists with intuitive list access using `@` operator
-- **Control Structures**: Conditional statements (`when...otherwise`), loops (`cycle`, `repeat while`), and for-each iteration
+- **Control Structures**: Conditional statements (`when...otherwise`), loops (`cycle`, `as long as`, `repeat while`), and for-each iteration
 - **Function Support**: Define and call custom functions with return values using `make function` and `give` keywords
 - **Built-in Functions**: Pre-defined utilities including `show`, `input`, `input_int`, `len`, `append`, `pop`, and `extend`
 - **Variable & Constant Management**: Mutable variables with `put...in` and immutable constants with `keep...as`
@@ -176,6 +176,10 @@ UTTR (Understandable Translation Tool for Routines) is a custom-built, procedure
 				<td>AST node for while loop constructs with condition checking</td>
 			</tr>
 			<tr>
+				<td><b><a href='https://github.com/THAMIZH-ARASU/uttr/blob/master/nodes/do_while_node.py'>do_while_node.py</a></b></td>
+				<td>AST node for do-while loop constructs (executes body before checking condition)</td>
+			</tr>
+			<tr>
 				<td><b><a href='https://github.com/THAMIZH-ARASU/uttr/blob/master/nodes/number_node.py'>number_node.py</a></b></td>
 				<td>AST node representing numeric literal values (integers and floats)</td>
 			</tr>
@@ -289,7 +293,11 @@ UTTR (Understandable Translation Tool for Routines) is a custom-built, procedure
 			</tr>
 			<tr>
 				<td><b><a href='https://github.com/THAMIZH-ARASU/uttr/blob/master/examples/while_loop.uttr'>while_loop.uttr</a></b></td>
-				<td>Shows condition-based looping with repeat while construct</td>
+				<td>Shows condition-based looping with as long as construct</td>
+			</tr>
+			<tr>
+				<td><b><a href='https://github.com/THAMIZH-ARASU/uttr/blob/master/examples/do_while_loop.uttr'>do_while_loop.uttr</a></b></td>
+				<td>Demonstrates do-while loops (repeat while) that execute at least once</td>
 			</tr>
 			<tr>
 				<td><b><a href='https://github.com/THAMIZH-ARASU/uttr/blob/master/examples/functions.uttr'>functions.uttr</a></b></td>
@@ -373,6 +381,13 @@ make function greet(name):
 end;
 
 greet("World");
+
+$ Do-while loop (executes at least once)
+put 0 in x;
+repeat while x < 3:
+    show x;
+    put x + 1 in x;
+end;
 ```
 
 ###  Testing
@@ -391,8 +406,12 @@ Run the following command to test the lexer's output:
 - [X] **`Task 3`**: <strike>Create interpreter with runtime execution</strike>
 - [X] **`Task 4`**: <strike>Add support for functions, loops, and conditionals</strike>
 - [X] **`Task 5`**: <strike>Implement comprehensive error handling with position tracking</strike>
-- [ ] **`Task 6`**: Add support for dictionaries/maps data structure
-- [ ] **`To be added`**
+- [X] **`Task 6`**: <strike>Add do-while loop support with repeat while keyword</strike>
+- [ ] **`Task 7`**: Add support for dictionaries/maps data structure
+- [ ] **`Task 8`**: Implement static type checking system
+- [ ] **`Task 9`**: Add garbage collection for memory management
+- [ ] **`Task 10`**: Create standard library with file I/O and system operations
+- [ ] **`Task 11`**: Develop VS Code extension with syntax highlighting
 
 ---
 

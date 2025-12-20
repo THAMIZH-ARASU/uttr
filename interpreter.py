@@ -210,6 +210,26 @@ class Interpreter:
 
         return res.success(Number.null)
 
+    def visit_DoWhileNode(self, node, context):
+        res = RTResult()
+        elements = []
+
+        while True:
+            # Execute body first (this is the key difference from while loop)
+            value = res.register(self.visit(node.body_node, context))
+            if res.should_return(): return res
+
+            elements.append(value)
+
+            # Then check condition
+            condition = res.register(self.visit(node.condition_node, context))
+            if res.should_return(): return res
+
+            if not condition.is_true():
+                break
+
+        return res.success(Number.null)
+
     def visit_FuncDefNode(self, node, context):
         res = RTResult()
 

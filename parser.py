@@ -2,6 +2,7 @@ from errors.invalid_syntax import InvalidSyntaxError
 from nodes.binary_operator_node import BinOpNode
 from nodes.call_node import CallNode
 from nodes.const_assign_node import ConstAssignNode
+from nodes.do_while_node import DoWhileNode
 from nodes.for_each_node import ForEachNode
 from nodes.for_node import ForNode
 from nodes.function_definition_node import FuncDefNode
@@ -360,6 +361,11 @@ class Parser:
             if res.error: return res
             return res.success(while_expr)
 
+        elif tok.matches(TT_KEYWORD, 'repeat while'):
+            do_while_expr = res.register(self.do_while_expr())
+            if res.error: return res
+            return res.success(do_while_expr)
+
         elif tok.matches(TT_KEYWORD, 'make function'):
             func_def = res.register(self.func_def())
             if res.error: return res
@@ -367,7 +373,7 @@ class Parser:
 
         return res.failure(InvalidSyntaxError(
             tok.pos_start, tok.pos_end,
-            "Expected int, float, string, identifier, 'true', 'false', '+', '-', '(', '[', 'when', 'cycle', 'as long as', or 'make function'"
+            "Expected int, float, string, identifier, 'true', 'false', '+', '-', '(', '[', 'when', 'cycle', 'as long as', 'repeat while', or 'make function'"
         ))
 
     def list_expr(self):
@@ -685,6 +691,55 @@ class Parser:
         if res.error: return res
 
         return res.success(WhileNode(condition, body))
+
+    def do_while_expr(self):
+        res = ParseResult()
+
+        if not self.current_tok.matches(TT_KEYWORD, 'repeat while'):
+            return res.failure(InvalidSyntaxError(
+                self.current_tok.pos_start, self.current_tok.pos_end,
+                "Expected 'repeat while'"
+            ))
+
+        res.register_advancement()
+        self.advance()
+
+        # Parse the condition
+        condition = res.register(self.logic_expr())
+        if res.error: return res
+
+        if self.current_tok.type != TT_COLON:
+            return res.failure(InvalidSyntaxError(
+                self.current_tok.pos_start, self.current_tok.pos_end,
+                "Expected ':'"
+            ))
+
+        res.register_advancement()
+        self.advance()
+
+        if self.current_tok.type == TT_NEWLINE:
+            res.register_advancement()
+            self.advance()
+
+            body = res.register(self.statements())
+            if res.error: return res
+
+            if not self.current_tok.matches(TT_KEYWORD, 'end'):
+                return res.failure(InvalidSyntaxError(
+                    self.current_tok.pos_start, self.current_tok.pos_end,
+                    "Expected 'end'"
+                ))
+
+            res.register_advancement()
+            self.advance()
+
+            return res.success(DoWhileNode(body, condition))
+
+        # Single line statement
+        body = res.register(self.statement())
+        if res.error: return res
+
+        return res.success(DoWhileNode(body, condition))
 
     def func_def(self):
         res = ParseResult()

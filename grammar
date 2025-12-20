@@ -1,0 +1,297 @@
+UTTR (Understandable Translation Tool for Routines) - Formal Grammar Specification
+===================================================================================
+
+LEXICAL ELEMENTS
+----------------
+
+DIGIT           : '0'..'9'
+LETTER          : 'a'..'z' | 'A'..'Z'
+IDENTIFIER      : LETTER (LETTER | DIGIT | '_')*
+INT             : DIGIT+
+FLOAT           : DIGIT+ '.' DIGIT+
+STRING          : '"' (CHAR | ESCAPE_SEQUENCE)* '"'
+ESCAPE_SEQUENCE : '\n' | '\t' | '\\' | '\"'
+
+KEYWORDS        : 'put' | 'in' | 'keep' | 'as' | 'show' | 'when' | 'otherwise' 
+                | 'cycle' | 'from' | 'to' | 'each' | 'through' 
+                | 'repeat while' | 'as long as' | 'make function' | 'give' 
+                | 'and' | 'or' | 'not' | 'true' | 'false'
+
+OPERATORS       : '+' | '-' | '*' | '/' | '==' | '!=' | '<' | '>' | '<=' | '>='
+SYMBOLS         : '(' | ')' | '[' | ']' | ',' | ':' | ';' | '@'
+
+COMMENTS        : '$' (ANY_CHAR)* NEWLINE                    $ single-line
+                | '$[' (ANY_CHAR)* ']$'                      $ multi-line
+
+NEWLINE         : '\n' | ';'
+WHITESPACE      : ' ' | '\t'
+
+
+GRAMMAR RULES
+-------------
+
+program         : NEWLINE* statements NEWLINE* EOF
+
+statements      : NEWLINE* statement (NEWLINE+ statement)* NEWLINE*
+
+statement       : KEYWORD:'give' logic-expr?
+                | expr
+
+expr            : KEYWORD:'put' logic-expr KEYWORD:'in' IDENTIFIER (AT logic-expr)?
+                | KEYWORD:'keep' logic-expr KEYWORD:'as' IDENTIFIER
+                | KEYWORD:'show' logic-expr
+                | logic-expr
+
+                Note: List element assignment (put value in list @ index) is 
+                      partially implemented but not fully functional in current version.
+
+logic-expr      : KEYWORD:'not' logic-expr
+                | comp-expr ((KEYWORD:'and' | KEYWORD:'or') comp-expr)*
+
+comp-expr       : arith-expr ((EQ | NE | LT | GT | LTE | GTE) arith-expr)*
+
+arith-expr      : term ((PLUS | MINUS) term)*
+
+term            : factor ((MUL | DIV) factor)*
+
+factor          : (PLUS | MINUS) factor
+                | call
+
+call            : atom (LPAREN (logic-expr (COMMA logic-expr)*)? RPAREN)?
+                | atom (AT logic-expr)?
+
+atom            : INT
+                | FLOAT
+                | STRING
+                | IDENTIFIER
+                | KEYWORD:'true'
+                | KEYWORD:'false'
+                | LPAREN logic-expr RPAREN
+                | list-expr
+                | if-expr
+                | loop-expr
+                | while-expr
+                | do-while-expr
+                | func-def
+
+list-expr       : LSQUARE (logic-expr (COMMA logic-expr)*)? RSQUARE
+
+if-expr         : KEYWORD:'when' logic-expr COLON
+                  (NEWLINE statements (if-elif | if-else)? KEYWORD:'end' | statement)
+
+if-elif         : KEYWORD:'otherwise' KEYWORD:'when' logic-expr COLON
+                  (NEWLINE statements | statement)
+
+if-else         : KEYWORD:'otherwise' COLON
+                  (NEWLINE statements KEYWORD:'end' | statement)
+
+loop-expr       : KEYWORD:'cycle' IDENTIFIER KEYWORD:'from' logic-expr 
+                  KEYWORD:'to' logic-expr COLON
+                  (NEWLINE statements KEYWORD:'end' | statement)
+                | KEYWORD:'cycle' KEYWORD:'each' IDENTIFIER KEYWORD:'through' 
+                  logic-expr COLON
+                  (NEWLINE statements KEYWORD:'end' | statement)
+
+while-expr      : KEYWORD:'as long as' logic-expr COLON
+                  (NEWLINE statements KEYWORD:'end' | statement)
+
+do-while-expr   : KEYWORD:'repeat while' logic-expr COLON
+                  (NEWLINE statements KEYWORD:'end' | statement)
+
+func-def        : KEYWORD:'make function' IDENTIFIER? 
+                  LPAREN (IDENTIFIER (COMMA IDENTIFIER)*)? RPAREN COLON
+                  (NEWLINE statements KEYWORD:'end' | statement)
+
+
+OPERATOR PRECEDENCE (Highest to Lowest)
+---------------------------------------
+
+1. () [] @                  $ Grouping, List, Index access
+2. function-call            $ Function calls
+3. + - (unary)             $ Unary plus and minus
+4. * /                     $ Multiplication and division
+5. + -                     $ Addition and subtraction
+6. == != < > <= >=         $ Comparison operators
+7. not                     $ Logical NOT
+8. and                     $ Logical AND
+9. or                      $ Logical OR
+
+
+SEMANTIC RULES
+--------------
+
+Variable Assignment:
+    put <expression> in <identifier>;
+    - Evaluates expression first
+    - Stores result in variable
+    - Creates variable if it doesn't exist
+    - Overwrites if variable exists
+
+Constant Assignment:
+    keep <expression> as <identifier>;
+    - Evaluates expression first
+    - Stores as constant (treated as variable in current implementation)
+
+List Indexing:
+    <list> @ <index>
+    - @ operator accesses list elements
+    - Index must be an integer
+    - Index can be an expression: list @ x + 1
+
+Function Definition:
+    make function <name>(<params>):
+        <body>
+    end;
+    - Functions are first-class values
+    - Can be anonymous (no name)
+    - Parameters are comma-separated
+    - Body is a sequence of statements
+
+Function Return:
+    give <expression>;
+    - Returns value from function
+    - If no expression, returns null
+
+Control Flow:
+    when <condition>:           $ if
+        <statements>
+    otherwise when <condition>: $ elif
+        <statements>
+    otherwise:                  $ else
+        <statements>
+    end;
+
+Loops:
+    cycle <var> from <start> to <end>:
+        <statements>
+    end;
+    - Iterates from start (inclusive) to end (exclusive)
+    - Loop variable is automatically created
+
+    cycle each <var> through <list>:
+        <statements>
+    end;
+    - Iterates over each element in list
+    as long as <condition>:
+        <statements>
+    end;
+    - Continues while condition is true
+
+    repeat while <condition>:
+        <statements>
+    end;
+    - Do-while loop: executes body at least once, then repeats while condition is true
+    - Body always runs before the first condition check
+
+Note: 'repeat while' is now implemented as a do-while loop construct.
+Note: 'repeat while' is documented but not implemented. Use 'as long as' instead.
+
+
+BUILT-IN FUNCTIONS
+------------------
+
+show(value)              : Prints value to stdout
+input()                  : Reads string from stdin
+input_int()              : Reads integer from stdin (with validation)
+len(list)                : Returns length of list
+append(list, value)      : Appends value to list
+pop(list, index)         : Removes and returns element at index
+extend(listA, listB)     : Extends listA with elements from listB
+run(filename)            : Executes another UTTR file
+
+
+TYPE SYSTEM
+-----------
+
+Number:
+    - Integers: 42, -17, 0
+    - Floats: 3.14, -0.5, 2.0
+    - Operations: +, -, *, /, ==, !=, <, >, <=, >=
+    - Truthy: non-zero values
+    - Falsy: 0
+
+String:
+    - "Hello, World!"
+    - Operations: + (concatenation), * (repetition with number)
+    - Truthy: non-empty strings
+    - Falsy: empty string ""
+
+Boolean:
+    - true (represented as 1)
+    - false (represented as 0)
+    - Operations: and, or, not
+
+List:
+    - [1, 2, 3, "mixed", true]
+    - Operations: + (append), * (extend), @ (index)
+    - Mutable
+    - Heterogeneous (can contain mixed types)
+
+Function:
+    - User-defined: make function name(params): ... end;
+    - Built-in: show, input, len, etc.
+    - First-class: can be passed as values
+
+
+EXAMPLES
+--------
+
+1. Hello World:
+    show "Hello, World!";
+
+2. Variables and Arithmetic:
+    put 10 in x;
+    put 20 in y;
+    put x + y in sum;
+    show sum;
+
+3. Conditionals:
+    put 15 in age;
+    when age >= 18:
+        show "Adult";
+    otherwise:
+        show "Minor";
+    end;
+
+4. Loops:
+    cycle i from 1 to 11:
+        show i;
+    end;
+
+5. Functions:
+    make function factorial(n):
+        when n <= 1:
+            give 1;
+        otherwise:
+6. Lists:
+    put [1, 2, 3, 4, 5] in numbers;
+    show numbers @ 0;
+    cycle each num through numbers:
+        show num;
+    end;
+
+7. Do-While Loop:
+    put 0 in x;
+    repeat while x < 3:
+        show x;
+        put x + 1 in x;
+    end;
+
+
+NOTEShow numbers @ 0;
+    cycle each num through numbers:
+        show num;
+    end;
+
+
+NOTES
+-----
+
+- Statements are separated by newlines or semicolons
+- Blocks (if, loops, functions) end with 'end;'
+- Variables are dynamically typed
+- No explicit type declarations needed
+- Comments start with $ for single-line or $[ ]$ for multi-line
+- File extension: .uttr
+- Case-sensitive language
+- Whitespace between tokens is ignored (except in keywords)
