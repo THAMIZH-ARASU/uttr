@@ -13,7 +13,7 @@ STRING          : '"' (CHAR | ESCAPE_SEQUENCE)* '"'
 ESCAPE_SEQUENCE : '\n' | '\t' | '\\' | '\"'
 
 KEYWORDS        : 'put' | 'in' | 'keep' | 'as' | 'show' | 'when' | 'otherwise' 
-                | 'cycle' | 'from' | 'to' | 'each' | 'through' 
+                | 'end' | 'cycle' | 'from' | 'to' | 'each' | 'through' 
                 | 'repeat while' | 'as long as' | 'make function' | 'give' 
                 | 'and' | 'or' | 'not' | 'true' | 'false'
 
@@ -183,9 +183,6 @@ Loops:
     - Do-while loop: executes body at least once, then repeats while condition is true
     - Body always runs before the first condition check
 
-Note: 'repeat while' is now implemented as a do-while loop construct.
-Note: 'repeat while' is documented but not implemented. Use 'as long as' instead.
-
 
 BUILT-IN FUNCTIONS
 ------------------
@@ -263,6 +260,12 @@ EXAMPLES
         when n <= 1:
             give 1;
         otherwise:
+            give n * factorial(n - 1);
+        end;
+    end;
+    
+    show factorial(5);
+
 6. Lists:
     put [1, 2, 3, 4, 5] in numbers;
     show numbers @ 0;
@@ -275,12 +278,6 @@ EXAMPLES
     repeat while x < 3:
         show x;
         put x + 1 in x;
-    end;
-
-
-NOTEShow numbers @ 0;
-    cycle each num through numbers:
-        show num;
     end;
 
 
