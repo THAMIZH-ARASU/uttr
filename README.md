@@ -1,6 +1,6 @@
 <div align="left" style="position: relative;">
-<img src="assets/logo.png" align="right" width="30%" style="margin: -20px 0 0 20px;">
 <h1>UTTR</h1>
+<img src="assets/logo.png" align="right" width="30%" style="margin: -20px 0 0 20px;">
 <p align="left">
 	<em>Understandable Translation Tool for Routines - A procedure-oriented programming language with plain English-like syntax</em>
 </p>
