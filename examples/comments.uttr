@@ -1,0 +1,14 @@
+$ This is an example UTTR program
+$ Demonstrating the syntax and features
+
+$[
+Multi-line comment block
+This program shows various UTTR features:
+- Variables and constants
+- Functions
+- Loops
+- Conditionals
+- Lists
+]$
+
+show "Program completed successfully!";

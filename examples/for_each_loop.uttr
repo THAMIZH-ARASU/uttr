@@ -1,0 +1,8 @@
+$ For each loop
+put ["apple", "banana", "cherry"] in fruits;
+show "Fruits:";
+cycle each fruit through fruits:
+    show "  - " + fruit;
+end;
+
+show "Program completed successfully!";

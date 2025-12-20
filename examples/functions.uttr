@@ -1,0 +1,18 @@
+$ Simple function
+make function greet(name):
+    show "Hello, " + name + "!";
+end;
+
+$ Call the function
+greet("World");
+greet("UTTR");
+
+$ Function with return value
+make function triple(n):
+    give n * 3;
+end;
+
+put triple(5) in result;
+show "Triple of 5 is: " + result;
+
+show "Program completed successfully!";

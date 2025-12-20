@@ -1,0 +1,14 @@
+$ Function that works with lists
+make function sum_list(list):
+    put 0 in total;
+    cycle each item through list:
+        put total + item in total;
+    end;
+    give total;
+end;
+
+put [10, 20, 30, 40] in numbers;
+put sum_list(numbers) in sum;
+show "Sum of list: " + sum;
+
+show "Program completed successfully!";

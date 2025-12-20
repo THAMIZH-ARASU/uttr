@@ -1,0 +1,8 @@
+$ While loop
+put 0 in counter;
+as long as counter < 3:
+    show "Counter: " + counter;
+    put counter + 1 in counter;
+end;
+
+show "Program completed successfully!";

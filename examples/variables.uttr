@@ -1,0 +1,19 @@
+$ Variable declarations
+put 10 in x;
+put "Hello" in greeting;
+put true in is_active;
+
+show x;
+show greeting;
+show is_active;
+
+$ Variable reassignments
+put 20 in x;
+put "World" in greeting;
+put false in is_active;
+
+show x;
+show greeting;
+show is_active;
+
+show "Program completed successfully!";

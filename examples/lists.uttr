@@ -1,0 +1,9 @@
+$ Lists
+put [1, 2, 3, 4, 5] in nums;
+show "List: " + nums;
+
+$ List access using @
+show "First element: " + nums @ 0;
+show "Third element: " + nums @ 2;
+
+show "Program completed successfully!";

@@ -1,0 +1,14 @@
+$ Conditionals
+put 25 in temperature;
+
+when temperature > 30:
+    show "It's hot!";
+otherwise when temperature > 20:
+    show "It's warm";
+otherwise when temperature > 10:
+    show "It's cool";
+otherwise:
+    show "It's cold!";
+end;
+
+show "Program completed successfully!";

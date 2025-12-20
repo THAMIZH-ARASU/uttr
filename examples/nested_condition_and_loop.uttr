@@ -1,0 +1,18 @@
+$ Nested conditions and loops
+put 1 in i;
+as long as i <= 3:
+    put 1 in j;
+    as long as j <= 3:
+        when i == j:
+            show i + " equals " + j;
+        otherwise:
+            show i + " not equals " + j;
+        end;
+        put j + 1 in j;
+    end;
+    put i + 1 in i;
+end;
+
+show "Program completed successfully!";
+
+show "Program completed successfully!";

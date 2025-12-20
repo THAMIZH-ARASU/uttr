@@ -1,0 +1,7 @@
+$ For loop (range)
+show "Counting from 1 to 5:";
+cycle n from 1 to 6:
+    show n;
+end;
+
+show "Program completed successfully!";

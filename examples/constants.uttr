@@ -1,0 +1,9 @@
+$ Define some constants
+keep 3.14159 as pi;
+keep "UTTR v1.0" as version;
+
+show "Welcome to UTTR!";
+show version;
+show pi;
+
+show "Program completed successfully!";
