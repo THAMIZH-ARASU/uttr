@@ -1,0 +1,184 @@
+$ Break (cut) and Continue (skip) Examples in UTTR
+
+$ Example 1: Using 'cut' to find the first occurrence
+$ Find the first number greater than 50 in a range
+
+show "Example 1: Find first number greater than 50";
+put 0 in found;
+cycle i from 1 to 100:
+    when i > 50:
+        put i in found;
+        show "Found: " + found;
+        cut;  $ Exit the loop early
+    end;
+end;
+show "";
+
+$ Example 2: Using 'skip' to filter values
+$ Print only specific numbers from 1 to 20
+
+show "Example 2: Print numbers from 1 to 20, skip 5, 10, 15";
+cycle i from 1 to 21:
+    when i == 5 or i == 10 or i == 15:
+        skip;  $ Skip these numbers
+    end;
+    show i;
+end;
+show "";
+
+$ Example 3: Using 'cut' in a while loop
+$ Count until a condition is met
+
+show "Example 3: Count until sum exceeds 50";
+put 0 in sum;
+put 0 in count;
+as long as true:
+    put count + 1 in count;
+    put sum + count in sum;
+    show "Count: " + count + ", Sum: " + sum;
+    
+    when sum > 50:
+        cut;  $ Exit when sum exceeds 50
+    end;
+end;
+show "";
+
+$ Example 4: Using 'skip' in a for-each loop
+$ Process a list but skip certain values
+
+show "Example 4: Process grades but skip failing grades";
+put [85, 92, 45, 78, 55, 90, 88] in grades;
+
+cycle each grade through grades:
+    when grade < 60:
+        show "Grade " + grade + " - Skipping (Fail)";
+        skip;  $ Don't process failing grades further
+    end;
+    show "Grade " + grade + " - Pass";
+end;
+show "";
+
+$ Example 5: Nested loops with 'cut'
+$ Find the first pair of numbers that multiply to more than 50
+
+show "Example 5: Find first pair where product > 50";
+put false in found_pair;
+cycle i from 1 to 10:
+    cycle j from 1 to 10:
+        put i * j in product;
+        when product > 50:
+            show "Found pair: " + i + " x " + j + " = " + product;
+            put true in found_pair;
+            cut;  $ Break inner loop
+        end;
+    end;
+    
+    when found_pair:
+        cut;  $ Break outer loop
+    end;
+end;
+show "";
+
+$ Example 6: Process numbers with skip
+$ Skip multiples of 3 (manual check)
+
+show "Example 6: Numbers 1-20, skipping 3, 6, 9, 12, 15, 18";
+cycle i from 1 to 21:
+    when i == 3 or i == 6 or i == 9 or i == 12 or i == 15 or i == 18:
+        skip;
+    end;
+    show i;
+end;
+show "";
+
+$ Example 7: Search in a list with 'cut'
+$ Linear search implementation
+
+show "Example 7: Search for value in list";
+put [10, 25, 33, 47, 52, 68, 73, 89, 91] in numbers;
+put 47 in target;
+put -1 in index;
+
+put 0 in i;
+cycle each num through numbers:
+    when num == target:
+        put i in index;
+        show "Found " + target + " at index " + index;
+        cut;  $ Stop searching once found
+    end;
+    put i + 1 in i;
+end;
+
+when index == -1:
+    show target + " not found in list";
+end;
+show "";
+
+$ Example 8: Counting with skip conditions
+
+show "Example 8: Count from 1 to 20, skip every 5th number";
+put 0 in count;
+cycle num from 1 to 21:
+    put count + 1 in count;
+    when count == 5 or count == 10 or count == 15 or count == 20:
+        skip;  $ Skip every 5th iteration
+    end;
+    show num;
+end;
+show "";
+
+$ Example 9: Skip specific elements in data processing
+
+show "Example 9: Process transactions, skip invalid ones";
+put [100, -50, 200, 75] in amounts;
+put [true, false, true, true] in valid;
+put 0 in total;
+put 0 in idx;
+
+cycle each amount through amounts:
+    put valid @ idx in is_valid;
+    when not is_valid:
+        show "Skipping invalid transaction";
+        put idx + 1 in idx;
+        skip;  $ Skip invalid transactions
+    end;
+    
+    put total + amount in total;
+    show "Processed: $" + amount;
+    put idx + 1 in idx;
+end;
+
+show "Total: $" + total;
+show "";
+
+$ Example 10: Early exit from nested structure
+
+show "Example 10: Find value in 2D structure";
+put [1, 2, 3, 4, 5] in row1;
+put [6, 7, 8, 9, 10] in row2;
+put [11, 12, 13, 14, 15] in row3;
+put [row1, row2, row3] in matrix;
+put 8 in target;
+put false in found;
+
+put 0 in row_num;
+cycle each row through matrix:
+    put 0 in col_num;
+    cycle each val through row:
+        when val == target:
+            show "Found " + target + " at row " + row_num + ", col " + col_num;
+            put true in found;
+            cut;
+        end;
+        put col_num + 1 in col_num;
+    end;
+    
+    when found:
+        cut;
+    end;
+    put row_num + 1 in row_num;
+end;
+
+show "";
+show "Examples completed!";
+

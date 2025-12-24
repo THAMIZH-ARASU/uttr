@@ -1,0 +1,25 @@
+$ Test all list mutation functions
+
+put [1, 2, 3, 4, 5] in my_list;
+show "Initial list: " + my_list;
+
+$ Test append
+append(my_list, 6);
+show "After append(6): " + my_list;
+
+$ Test pop
+put pop(my_list, 0) in removed;
+show "After pop(0): " + my_list;
+show "Removed element: " + removed;
+
+$ Test extend
+put [7, 8, 9] in other_list;
+extend(my_list, other_list);
+show "After extend([7,8,9]): " + my_list;
+
+$ Test multiple appends
+append(my_list, 10);
+append(my_list, 11);
+show "After two more appends: " + my_list;
+
+show "All list mutation tests passed!";

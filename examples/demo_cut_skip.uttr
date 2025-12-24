@@ -1,0 +1,43 @@
+$ Quick demonstration of cut (break) and skip (continue)
+
+show "=== UTTR Loop Control Demo ===";
+show "";
+
+$ Example 1: Using 'cut' to exit early
+show "1. Using 'cut' to find first number > 50:";
+cycle i from 1 to 100:
+    when i > 50:
+        show "   Found: " + i;
+        cut;
+    end;
+end;
+show "";
+
+$ Example 2: Using 'skip' to filter
+show "2. Using 'skip' to print only specific numbers (1-15, skip 5, 10):";
+put "" in output;
+cycle i from 1 to 16:
+    when i == 5 or i == 10:
+        skip;
+    end;
+    put output + i + " " in output;
+end;
+show "   " + output;
+show "";
+
+$ Example 3: Combining both
+show "3. Combining 'cut' and 'skip' (count 1-20, skip 3 & 7, stop at 15):";
+put "" in output;
+cycle i from 1 to 21:
+    when i > 15:
+        cut;
+    end;
+    when i == 3 or i == 7:
+        skip;
+    end;
+    put output + i + " " in output;
+end;
+show "   " + output;
+show "";
+
+show "=== Demo Complete! ===";

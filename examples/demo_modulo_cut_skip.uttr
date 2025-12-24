@@ -1,0 +1,76 @@
+$ Combining modulo with cut and skip
+
+show "=== Modulo with Loop Control ===";
+show "";
+
+$ Example 1: Skip odd numbers using modulo
+show "Example 1: Even numbers 0-10 (using skip):";
+cycle i from 0 to 11:
+    when i % 2 != 0:
+        skip;
+    end;
+    show "  " + i;
+end;
+show "";
+
+$ Example 2: Break when divisible by 7
+show "Example 2: Count until divisible by 7:";
+cycle i from 1 to 100:
+    show "  " + i;
+    when i % 7 == 0:
+        show "  Found multiple of 7!";
+        cut;
+    end;
+end;
+show "";
+
+$ Example 3: FizzBuzz with skip
+show "Example 3: FizzBuzz 1-15 with skip for output control:";
+cycle i from 1 to 16:
+    when i % 15 == 0:
+        show "  FizzBuzz";
+        skip;
+    end;
+    when i % 3 == 0:
+        show "  Fizz";
+        skip;
+    end;
+    when i % 5 == 0:
+        show "  Buzz";
+        skip;
+    end;
+    show "  " + i;
+end;
+show "";
+
+$ Example 4: Sum only even numbers, stop at 50
+show "Example 4: Sum even numbers until total > 50:";
+put 0 in sum;
+cycle i from 1 to 100:
+    when i % 2 != 0:
+        skip;
+    end;
+    put sum + i in sum;
+    show "  Added " + i + ", sum = " + sum;
+    when sum > 50:
+        cut;
+    end;
+end;
+show "";
+
+$ Example 5: Skip multiples of 3, break at 20
+show "Example 5: Numbers 1-30 (skip multiples of 3, stop at 20):";
+put "" in result;
+cycle i from 1 to 31:
+    when i > 20:
+        cut;
+    end;
+    when i % 3 == 0:
+        skip;
+    end;
+    put result + i + " " in result;
+end;
+show "  " + result;
+show "";
+
+show "=== Demo Complete ===";

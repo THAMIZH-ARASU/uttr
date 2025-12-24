@@ -46,11 +46,12 @@ UTTR (Understandable Translation Tool for Routines) is a custom-built, procedure
 
 ##  Features
 
-- **Natural English-Like Syntax**: Write code that reads like plain English with keywords like `put`, `in`, `when`, `otherwise`, `make function`, and `give`
+- **Natural English-Like Syntax**: Write code that reads like plain English with keywords like `put`, `in`, `when`, `otherwise`, `make function`, `give`, `cut`, and `skip`
 - **Complete Interpreter**: Full lexer-parser-interpreter pipeline built from scratch with comprehensive error handling and position tracking
 - **Procedure-Oriented Design**: Focus on procedures and sequential execution with modular, reusable functions
 - **Rich Data Types**: Support for integers, floats, strings, booleans, lists, and dictionaries with intuitive access using `@` operator
-- **Control Structures**: Conditional statements (`when...otherwise`), loops (`cycle`, `as long as`, `repeat while`), and for-each iteration
+- **Operators**: Arithmetic (`+`, `-`, `*`, `/`, `%`), comparison (`==`, `!=`, `<`, `>`, `<=`, `>=`), and logical (`and`, `or`, `not`)
+- **Control Structures**: Conditional statements (`when...otherwise`), loops (`cycle`, `as long as`, `repeat while`), and for-each iteration with loop control (`cut` for break, `skip` for continue)
 - **Function Support**: Define and call custom functions with return values using `make function` and `give` keywords
 - **Built-in Functions**: Pre-defined utilities including:
   - I/O: `show`, `input`, `input_int`
@@ -200,6 +201,14 @@ UTTR (Understandable Translation Tool for Routines) is a custom-built, procedure
 				<td>AST node handling function return statements with value expressions</td>
 			</tr>
 			<tr>
+				<td><b><a href='https://github.com/THAMIZH-ARASU/uttr/blob/master/nodes/cut_node.py'>cut_node.py</a></b></td>
+				<td>AST node for break statements (loop early exit)</td>
+			</tr>
+			<tr>
+				<td><b><a href='https://github.com/THAMIZH-ARASU/uttr/blob/master/nodes/skip_node.py'>skip_node.py</a></b></td>
+				<td>AST node for continue statements (skip to next loop iteration)</td>
+			</tr>
+			<tr>
 				<td><b><a href='https://github.com/THAMIZH-ARASU/uttr/blob/master/nodes/list_node.py'>list_node.py</a></b></td>
 				<td>AST node representing list literals with element expressions</td>
 			</tr>
@@ -335,6 +344,14 @@ UTTR (Understandable Translation Tool for Routines) is a custom-built, procedure
 				<td><b><a href='https://github.com/THAMIZH-ARASU/uttr/blob/master/examples/comments.uttr'>comments.uttr</a></b></td>
 				<td>Demonstrates single-line and multi-line comment syntax</td>
 			</tr>
+			<tr>
+				<td><b><a href='https://github.com/THAMIZH-ARASU/uttr/blob/master/examples/break_continue.uttr'>break_continue.uttr</a></b></td>
+				<td>Examples of loop control with cut (break) and skip (continue) statements</td>
+			</tr>
+			<tr>
+				<td><b><a href='https://github.com/THAMIZH-ARASU/uttr/blob/master/examples/modulo.uttr'>modulo.uttr</a></b></td>
+				<td>Demonstrates modulo operator (%) usage for divisibility checks and patterns</td>
+			</tr>
 			</table>
 		</blockquote>
 	</details>
@@ -352,7 +369,7 @@ UTTR (Understandable Translation Tool for Routines) is a custom-built, procedure
 			</tr>
 			<tr>
 				<td><b>Test Files</b></td>
-				<td>17 test files covering all language features: variables, arithmetic, comparisons, logical operations, strings, conditionals, loops (for/while/do-while/for-each), lists, dictionaries, functions, built-ins, comments, errors, and integration tests</td>
+				<td>20 test files covering all language features: variables, arithmetic, comparisons, logical operations, strings, conditionals, loops (for/while/do-while/for-each), lists, dictionaries, list/dict mutations, functions, built-ins, comments, errors, break/continue, modulo operator, and integration tests</td>
 			</tr>
 			</table>
 		</blockquote>
@@ -422,6 +439,30 @@ cycle i from 0 to 10 step 2:
     show i;
 end;
 
+$ Loop control with cut (break) and skip (continue)
+cycle i from 0 to 20:
+    when i > 10:
+        cut;  $ Exit loop early
+    end;
+    when i == 5:
+        skip;  $ Skip to next iteration
+    end;
+    show i;
+end;
+
+$ Modulo operator for patterns
+cycle i from 1 to 16:
+    when i % 15 == 0:
+        show "FizzBuzz";
+    end;
+    when i % 3 == 0:
+        show "Fizz";
+    end;
+    when i % 5 == 0:
+        show "Buzz";
+    end;
+end;
+
 $ Dictionary creation and access
 put {"name": "Alice", "age": 25, "city": "NYC"} in person;
 show "Name: " + person @ "name";
@@ -441,11 +482,18 @@ UTTR includes a comprehensive test suite covering all language features. Run tes
 > python tests/run_tests.py
 ```
 
+**Run all tests with their output:**
+```pwsh
+> Get-ChildItem tests\test_*.uttr | ForEach-Object { Write-Host "`n=== Testing $($_.Name) ==="; python shell.py $_.FullName }
+```
+
 **Run individual test files:**
 ```sh
 > python shell.py tests/test_variables.uttr
 > python shell.py tests/test_dictionaries.uttr
 > python shell.py tests/test_functions.uttr
+> python shell.py tests/test_break_continue.uttr
+> python shell.py tests/test_modulo.uttr
 ```
 
 **Test lexer output:**
@@ -453,14 +501,17 @@ UTTR includes a comprehensive test suite covering all language features. Run tes
 > python lexer_testing.py <file_name>
 ```
 
-The test suite includes 17 test categories with 170+ individual tests covering:
+The test suite includes 20 test categories with 200+ individual tests covering:
 - Variables and constants
 - Arithmetic and comparison operations
+- Modulo operator (`%`) for divisibility checks
 - Logical operations
 - String operations with escape sequences
 - Conditional statements
 - All loop types (for, while, do-while, for-each)
+- Loop control (break with `cut`, continue with `skip`)
 - Lists and dictionaries
+- List mutations (append, pop, extend) and dictionary mutations (remove)
 - Functions and built-ins
 - Comments and error handling
 - Complex integration scenarios
@@ -477,68 +528,73 @@ The test suite includes 17 test categories with 170+ individual tests covering:
 - [X] **`Task 5`**: <strike>Implement comprehensive error handling with position tracking</strike>
 - [X] **`Task 6`**: <strike>Add do-while loop support with repeat while keyword</strike>
 - [X] **`Task 7`**: <strike>Add support for dictionaries/maps data structure</strike>
+- [X] **`Task 8`**: <strike>Add break and continue statements for loop control (`cut` and `skip` keywords)</strike>
+- [X] **`Task 9`**: <strike>Add modulo operator (`%`) for arithmetic operations</strike>
+- [X] **`Task 10`**: <strike>Fix list/dictionary mutation functions (append, pop, extend, remove)</strike>
 
 ### Language Features
-- [ ] **`Task 8`**: Add break and continue statements for loop control (`cut` and `skip` keywords)
-- [ ] **`Task 9`**: Implement try-catch error handling (`attempt...handle` syntax)
-- [ ] **`Task 10`**: Add built-in methods for strings (split, join, upper, lower, replace, substring)
-- [ ] **`Task 11`**: Support for tuple data type (immutable lists with `<>` syntax)
-- [ ] **`Task 12`**: Add import/module system for code organization
-- [ ] **`Task 13`**: Implement lambda/anonymous functions with inline syntax
-- [ ] **`Task 14`**: Add switch-case statements (`check...case...default` syntax)
-- [ ] **`Task 15`**: Support for regular expressions with pattern matching
-- [ ] **`Task 16`**: Add set data type with set operations (union, intersection, difference)
+- [ ] **`Task 11`**: Implement try-catch error handling (`attempt...handle` syntax)
+- [ ] **`Task 12`**: Add built-in methods for strings (split, join, upper, lower, replace, substring)
+- [ ] **`Task 13`**: Support for tuple data type (immutable lists with `<>` syntax)
+- [ ] **`Task 14`**: Add import/module system for code organization
+- [ ] **`Task 15`**: Implement lambda/anonymous functions with inline syntax
+- [ ] **`Task 16`**: Add switch-case statements (`check...case...default` syntax)
+- [ ] **`Task 17`**: Support for regular expressions with pattern matching
+- [ ] **`Task 18`**: Add set data type with set operations (union, intersection, difference)
 
 ### Advanced Operations
-- [ ] **`Task 17`**: Implement list comprehensions with natural syntax
-- [ ] **`Task 18`**: Add dictionary comprehensions
-- [ ] **`Task 19`**: Support for multiple return values from functions
-- [ ] **`Task 20`**: Implement variadic functions (variable argument count) with natural syntax
-- [ ] **`Task 21`**: Support for ternary conditional expressions
+- [ ] **`Task 19`**: Implement list comprehensions with natural syntax
+- [ ] **`Task 20`**: Add dictionary comprehensions
+- [ ] **`Task 21`**: Support for multiple return values from functions
+- [ ] **`Task 22`**: Implement variadic functions (variable argument count) with natural syntax
+- [ ] **`Task 23`**: Support for ternary conditional expressions
 
 ### File & I/O Operations
 - [ ] **`Task 22`**: Add file I/O operations (read_file, write_file, append_file)
 - [ ] **`Task 23`**: Implement JSON parsing and generation functions
-- [ ] **`Task 24`**: Add CSV file reading and writing capabilities
-- [ ] **`Task 25`**: Support for command-line arguments in .uttr files
+### File & I/O Operations
+- [ ] **`Task 24`**: Add file I/O operations (read_file, write_file, append_file)
+- [ ] **`Task 25`**: Implement JSON parsing and generation functions
+- [ ] **`Task 26`**: Add CSV file reading and writing capabilities
+- [ ] **`Task 27`**: Support for command-line arguments in .uttr files
 
 ### Standard Library Expansion
-- [ ] **`Task 26`**: Add math functions (sqrt, pow, abs, round, floor, ceil, sin, cos, tan)
-- [ ] **`Task 27`**: Implement random number generation functions
-- [ ] **`Task 28`**: Add date and time manipulation functions
-- [ ] **`Task 29`**: Create string formatting utilities (template-based approach)
-- [ ] **`Task 30`**: Add list sorting and filtering built-in functions
-- [ ] **`Task 31`**: Implement type checking and conversion functions
+- [ ] **`Task 28`**: Add math functions (sqrt, pow, abs, round, floor, ceil, sin, cos, tan)
+- [ ] **`Task 29`**: Implement random number generation functions
+- [ ] **`Task 30`**: Add date and time manipulation functions
+- [ ] **`Task 31`**: Create string formatting utilities (template-based approach)
+- [ ] **`Task 32`**: Add list sorting and filtering built-in functions
+- [ ] **`Task 33`**: Implement type checking and conversion functions
 
 ### Optimization & Performance
-- [ ] **`Task 32`**: Optimize interpreter with bytecode compilation
-- [ ] **`Task 33`**: Implement caching for frequently used expressions
-- [ ] **`Task 34`**: Add tail call optimization for recursive functions
-- [ ] **`Task 35`**: Create AST optimization passes before interpretation
+- [ ] **`Task 34`**: Optimize interpreter with bytecode compilation
+- [ ] **`Task 35`**: Implement caching for frequently used expressions
+- [ ] **`Task 36`**: Add tail call optimization for recursive functions
+- [ ] **`Task 37`**: Create AST optimization passes before interpretation
 
 ### Interoperability
-- [ ] **`Task 36`**: Add Python interop to call Python libraries from UTTR
-- [ ] **`Task 37`**: Create UTTR-to-Python transpiler for performance
-- [ ] **`Task 38`**: Support for calling external executables/shell commands
-- [ ] **`Task 39`**: Add HTTP client functions for web requests
+- [ ] **`Task 38`**: Add Python interop to call Python libraries from UTTR
+- [ ] **`Task 39`**: Create UTTR-to-Python transpiler for performance
+- [ ] **`Task 40`**: Support for calling external executables/shell commands
+- [ ] **`Task 41`**: Add HTTP client functions for web requests
 
 ### Documentation & Examples
-- [ ] **`Task 40`**: Create interactive tutorial website for UTTR
-- [ ] **`Task 41`**: Add more complex example projects
-- [ ] **`Task 42`**: Create video tutorials for language features
+- [ ] **`Task 42`**: Create interactive tutorial website for UTTR
+- [ ] **`Task 43`**: Add more complex example projects
+- [ ] **`Task 44`**: Create video tutorials for language features
 
 ### Quality Assurance & Testing
-- [ ] **`Task 43`**: Expand test coverage to 100% of codebase
-- [ ] **`Task 44`**: Add benchmark suite to track performance over time
-- [ ] **`Task 45`**: Implement fuzzing tests for parser robustness
+- [ ] **`Task 45`**: Expand test coverage to 100% of codebase
+- [ ] **`Task 46`**: Add benchmark suite to track performance over time
+- [ ] **`Task 47`**: Implement fuzzing tests for parser robustness
 
 ### Developer Tools
-- [ ] **`Task 46`**: Build debugging tools with breakpoint support
-- [ ] **`Task 47`**: Add code formatter/prettifier for UTTR files
-- [ ] **`Task 48`**: Create syntax highlighting extension for VS Code
-- [ ] **`Task 49`**: Implement static type checking (optional type annotations)
-- [ ] **`Task 50`**: Create linter for code quality and style enforcement
-- [ ] **`Task 51`**: Add performance profiler to identify bottlenecks
+- [ ] **`Task 48`**: Build debugging tools with breakpoint support
+- [ ] **`Task 49`**: Add code formatter/prettifier for UTTR files
+- [ ] **`Task 50`**: Create syntax highlighting extension for VS Code
+- [ ] **`Task 51`**: Implement static type checking (optional type annotations)
+- [ ] **`Task 52`**: Create linter for code quality and style enforcement
+- [ ] **`Task 53`**: Add performance profiler to identify bottlenecks
 
 ---
 

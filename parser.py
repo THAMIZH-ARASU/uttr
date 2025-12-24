@@ -2,6 +2,7 @@ from errors.invalid_syntax import InvalidSyntaxError
 from nodes.binary_operator_node import BinOpNode
 from nodes.call_node import CallNode
 from nodes.const_assign_node import ConstAssignNode
+from nodes.cut_node import CutNode
 from nodes.dict_node import DictNode
 from nodes.do_while_node import DoWhileNode
 from nodes.for_each_node import ForEachNode
@@ -12,13 +13,14 @@ from nodes.list_access_node import ListAccessNode
 from nodes.list_node import ListNode
 from nodes.number_node import NumberNode
 from nodes.return_node import ReturnNode
+from nodes.skip_node import SkipNode
 from nodes.string_node import StringNode
 from nodes.unary_operator_node import UnaryOpNode
 from nodes.var_access_node import VarAccessNode
 from nodes.var_assign_node import VarAssignNode
 from nodes.while_node import WhileNode
 from parse_result import ParseResult
-from tokens import TT_AT, TT_COLON, TT_COMMA, TT_DIV, TT_EE, TT_EOF, TT_FLOAT, TT_GT, TT_GTE, TT_IDENTIFIER, TT_INT, TT_KEYWORD, TT_LCURLY, TT_LPAREN, TT_LSQUARE, TT_LT, TT_LTE, TT_MINUS, TT_MUL, TT_NE, TT_NEWLINE, TT_PLUS, TT_RCURLY, TT_RPAREN, TT_RSQUARE, TT_STRING, Token
+from tokens import TT_AT, TT_COLON, TT_COMMA, TT_DIV, TT_EE, TT_EOF, TT_FLOAT, TT_GT, TT_GTE, TT_IDENTIFIER, TT_INT, TT_KEYWORD, TT_LCURLY, TT_LPAREN, TT_LSQUARE, TT_LT, TT_LTE, TT_MINUS, TT_MOD, TT_MUL, TT_NE, TT_NEWLINE, TT_PLUS, TT_RCURLY, TT_RPAREN, TT_RSQUARE, TT_STRING, Token
 
 
 class Parser:
@@ -109,6 +111,18 @@ class Parser:
             if not expr:
                 self.reverse(res.to_reverse_count)
             return res.success(ReturnNode(expr, pos_start, self.current_tok.pos_start.copy()))
+
+        # Check for 'cut' (break)
+        if self.current_tok.matches(TT_KEYWORD, 'cut'):
+            res.register_advancement()
+            self.advance()
+            return res.success(CutNode(pos_start, self.current_tok.pos_start.copy()))
+
+        # Check for 'skip' (continue)
+        if self.current_tok.matches(TT_KEYWORD, 'skip'):
+            res.register_advancement()
+            self.advance()
+            return res.success(SkipNode(pos_start, self.current_tok.pos_start.copy()))
 
         expr = res.register(self.expr())
         if res.error:
@@ -237,7 +251,7 @@ class Parser:
         return self.bin_op(self.term, (TT_PLUS, TT_MINUS))
 
     def term(self):
-        return self.bin_op(self.factor, (TT_MUL, TT_DIV))
+        return self.bin_op(self.factor, (TT_MUL, TT_DIV, TT_MOD))
 
     def factor(self):
         res = ParseResult()

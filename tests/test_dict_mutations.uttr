@@ -1,0 +1,23 @@
+$ Test dictionary mutations
+
+put {"a": 1, "b": 2} in my_dict;
+show "Initial dict: " + my_dict;
+
+$ Dictionary functions should work on the dict reference
+put keys(my_dict) in dict_keys;
+show "Keys: " + dict_keys;
+
+put values(my_dict) in dict_values;
+show "Values: " + dict_values;
+
+put has_key(my_dict, "a") in has_a;
+show "Has key 'a': " + has_a;
+
+$ Test remove (should modify dict)
+remove(my_dict, "a");
+show "After remove('a'): " + my_dict;
+
+put has_key(my_dict, "a") in has_a_after;
+show "Has key 'a' after remove: " + has_a_after;
+
+show "Dictionary mutation tests passed!";

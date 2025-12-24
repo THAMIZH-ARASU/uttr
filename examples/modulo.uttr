@@ -1,0 +1,97 @@
+$ Modulo Operator (%) Examples
+
+show "=== Modulo Operator Examples ===";
+show "";
+
+$ Example 1: Check if a number is even or odd
+show "Example 1: Check if numbers are even or odd";
+put [5, 12, 7, 20, 3] in numbers;
+cycle each num through numbers:
+    when num % 2 == 0:
+        show "  " + num + " is even";
+    end;
+    when num % 2 != 0:
+        show "  " + num + " is odd";
+    end;
+end;
+show "";
+
+$ Example 2: Find multiples of a specific number
+show "Example 2: Find multiples of 7 from 1 to 50";
+cycle i from 1 to 51:
+    when i % 7 == 0:
+        show "  " + i;
+    end;
+end;
+show "";
+
+$ Example 3: Classic FizzBuzz
+show "Example 3: FizzBuzz (1-20)";
+cycle i from 1 to 21:
+    put false in printed;
+    when i % 15 == 0:
+        show "  FizzBuzz";
+        put true in printed;
+    end;
+    when not printed and i % 3 == 0:
+        show "  Fizz";
+        put true in printed;
+    end;
+    when not printed and i % 5 == 0:
+        show "  Buzz";
+        put true in printed;
+    end;
+    when not printed:
+        show "  " + i;
+    end;
+end;
+show "";
+
+$ Example 4: Group elements into chunks
+show "Example 4: Print array index groups (every 3rd)";
+put ["a", "b", "c", "d", "e", "f", "g", "h", "i"] in items;
+put 0 in idx;
+cycle each item through items:
+    when idx % 3 == 0:
+        show "Group " + (idx / 3) + ": " + item;
+    end;
+    when idx % 3 != 0:
+        show "  " + item;
+    end;
+    put idx + 1 in idx;
+end;
+show "";
+
+$ Example 5: Alternating pattern
+show "Example 5: Alternating pattern using modulo";
+cycle i from 0 to 10:
+    when i % 2 == 0:
+        show "  [" + i + "] Even position";
+    end;
+    when i % 2 == 1:
+        show "  [" + i + "] Odd position";
+    end;
+end;
+show "";
+
+$ Example 6: Check divisibility
+show "Example 6: Numbers from 1-30 divisible by both 3 and 4";
+cycle i from 1 to 31:
+    when i % 3 == 0 and i % 4 == 0:
+        show "  " + i;
+    end;
+end;
+show "";
+
+$ Example 7: Circular array access simulation
+show "Example 7: Circular pattern (wrapping with modulo)";
+put ["Red", "Green", "Blue", "Yellow"] in colors;
+put len(colors) in size;
+cycle i from 0 to 12:
+    put i % size in color_idx;
+    put colors @ color_idx in color;
+    show "  Position " + i + ": " + color;
+end;
+show "";
+
+show "=== Examples Complete ===";

@@ -1,0 +1,16 @@
+$ Debug append issue
+put [] in my_list;
+show "Step 1 - Initial: " + my_list;
+
+$ Try direct manipulation
+put my_list + 5 in my_list;
+show "Step 2 - After + 5: " + my_list;
+
+put my_list + 10 in my_list;
+show "Step 3 - After + 10: " + my_list;
+
+$ Now try append
+put [] in test2;
+show "Step 4 - New list: " + test2;
+append(test2, 99);
+show "Step 5 - After append: " + test2;

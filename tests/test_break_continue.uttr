@@ -1,0 +1,177 @@
+$ Test file for cut (break) and skip (continue) statements
+
+$ Test 1: Basic cut in for loop
+put 0 in sum;
+cycle i from 0 to 10:
+    when i == 5:
+        cut;
+    end;
+    put sum + i in sum;
+end;
+show "Test 1 - Cut in for loop (expected 10): " + sum;
+
+$ Test 2: Basic skip in for loop
+put 0 in sum;
+cycle i from 0 to 10:
+    when i == 5:
+        skip;
+    end;
+    put sum + i in sum;
+end;
+show "Test 2 - Skip in for loop (expected 40): " + sum;
+
+$ Test 3: Cut in while loop
+put 0 in counter;
+as long as counter < 100:
+    put counter + 1 in counter;
+    when counter == 7:
+        cut;
+    end;
+end;
+show "Test 3 - Cut in while loop (expected 7): " + counter;
+
+$ Test 4: Skip in while loop
+put 0 in counter;
+put 0 in sum;
+as long as counter < 10:
+    put counter + 1 in counter;
+    when counter == 3 or counter == 7:
+        skip;
+    end;
+    put sum + counter in sum;
+end;
+show "Test 4 - Skip in while loop (expected 45): " + sum;
+
+$ Test 5: Cut in do-while loop
+put 0 in counter;
+repeat while counter < 100:
+    put counter + 1 in counter;
+    when counter == 5:
+        cut;
+    end;
+end;
+show "Test 5 - Cut in do-while (expected 5): " + counter;
+
+$ Test 6: Skip in do-while loop
+put 0 in counter;
+put 0 in sum;
+repeat while counter < 8:
+    put counter + 1 in counter;
+    when counter == 4:
+        skip;
+    end;
+    put sum + counter in sum;
+end;
+show "Test 6 - Skip in do-while (expected 32): " + sum;
+
+$ Test 7: Cut in for-each loop
+put [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] in numbers;
+put 0 in sum;
+cycle each num through numbers:
+    when num == 6:
+        cut;
+    end;
+    put sum + num in sum;
+end;
+show "Test 7 - Cut in for-each (expected 15): " + sum;
+
+$ Test 8: Skip in for-each loop
+put [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] in numbers;
+put 0 in sum;
+cycle each num through numbers:
+    when num == 3 or num == 7:
+        skip;
+    end;
+    put sum + num in sum;
+end;
+show "Test 8 - Skip in for-each (expected 45): " + sum;
+
+$ Test 9: Multiple cuts (only first should execute)
+put 0 in counter;
+cycle i from 0 to 20:
+    put counter + 1 in counter;
+    when i == 5:
+        cut;
+    end;
+    when i == 10:
+        cut;
+    end;
+end;
+show "Test 9 - Multiple cuts (expected 6): " + counter;
+
+$ Test 10: Nested loops with cut in inner loop
+put 0 in sum;
+cycle i from 0 to 5:
+    cycle j from 0 to 10:
+        when j == 3:
+            cut;
+        end;
+        put sum + 1 in sum;
+    end;
+end;
+show "Test 10 - Nested with cut in inner (expected 15): " + sum;
+
+$ Test 11: Nested loops with cut in outer loop
+put 0 in sum;
+cycle i from 0 to 10:
+    when i == 3:
+        cut;
+    end;
+    cycle j from 0 to 5:
+        put sum + 1 in sum;
+    end;
+end;
+show "Test 11 - Nested with cut in outer (expected 15): " + sum;
+
+$ Test 12: Skip with conditional logic using append
+put [] in result;
+cycle i from 0 to 10:
+    when i == 2 or i == 5 or i == 7:
+        skip;
+    end;
+    append(result, i);
+end;
+show "Test 12 - Skip 2,5,7 from 0-9 (expected [0, 1, 3, 4, 6, 8, 9]): " + result;
+
+$ Test 13: Cut and skip together
+put 0 in sum;
+cycle i from 0 to 20:
+    when i > 10:
+        cut;
+    end;
+    when i == 3 or i == 5:
+        skip;
+    end;
+    put sum + i in sum;
+end;
+show "Test 13 - Cut and skip together (expected 47): " + sum;
+
+$ Test 14: Cut with search pattern
+make function find_value(list, target):
+    cycle each item through list:
+        when item == target:
+            give item;
+        end;
+    end;
+    give -1;
+end;
+
+put [10, 20, 30, 40, 50] in my_list;
+put find_value(my_list, 30) in found;
+show "Test 14 - Find value (expected 30): " + found;
+
+$ Test 15: Complex nested scenario
+put 0 in total;
+cycle i from 1 to 5:
+    cycle j from 1 to 5:
+        when i + j > 7:
+            cut;
+        end;
+        put total + 1 in total;
+    end;
+end;
+show "Test 15 - Complex nested (expected 15): " + total;
+
+show "";
+show "All tests completed!";
+

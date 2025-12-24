@@ -1,0 +1,93 @@
+$ Comprehensive test for list and dictionary mutations
+
+show "=== List Mutation Tests ===";
+show "";
+
+$ Test 1: Append to empty list
+put [] in list1;
+append(list1, 1);
+append(list1, 2);
+append(list1, 3);
+show "Test 1 - Append to empty list (expected [1, 2, 3]): " + list1;
+
+$ Test 2: Pop from list
+put [10, 20, 30, 40] in list2;
+put pop(list2, 1) in popped;
+show "Test 2 - Pop index 1 (expected [10, 30, 40]): " + list2;
+show "Test 2 - Popped value (expected 20): " + popped;
+
+$ Test 3: Extend lists
+put [1, 2] in list3a;
+put [3, 4, 5] in list3b;
+extend(list3a, list3b);
+show "Test 3 - Extend lists (expected [1, 2, 3, 4, 5]): " + list3a;
+
+$ Test 4: Multiple operations
+put [] in list4;
+append(list4, "a");
+append(list4, "b");
+append(list4, "c");
+put pop(list4, 1) in removed;
+append(list4, "d");
+show "Test 4 - Multiple ops (expected [a, c, d]): " + list4;
+
+$ Test 5: List with skip and append
+put [] in evens;
+cycle i from 0 to 11:
+    when i % 2 != 0:
+        skip;
+    end;
+    append(evens, i);
+end;
+show "Test 5 - Even numbers (expected [0, 2, 4, 6, 8, 10]): " + evens;
+
+show "";
+show "=== Dictionary Mutation Tests ===";
+show "";
+
+$ Test 6: Remove from dictionary
+put {"x": 10, "y": 20, "z": 30} in dict1;
+show "Test 6 - Initial dict: " + dict1;
+remove(dict1, "y");
+show "Test 6 - After remove 'y' (expected {x: 10, z: 30}): " + dict1;
+
+$ Test 7: Dictionary keys and values
+put {"name": "Alice", "age": 25, "city": "NYC"} in person;
+put keys(person) in person_keys;
+put values(person) in person_values;
+show "Test 7 - Keys: " + person_keys;
+show "Test 7 - Values: " + person_values;
+
+$ Test 8: has_key check
+put {"a": 1, "b": 2} in dict2;
+show "Test 8 - Has 'a' (expected 1): " + has_key(dict2, "a");
+show "Test 8 - Has 'c' (expected 0): " + has_key(dict2, "c");
+remove(dict2, "a");
+show "Test 8 - Has 'a' after remove (expected 0): " + has_key(dict2, "a");
+
+$ Test 9: Building list dynamically
+put [] in fibonacci;
+append(fibonacci, 0);
+append(fibonacci, 1);
+cycle i from 2 to 10:
+    put len(fibonacci) in fib_len;
+    put fibonacci @ (fib_len - 1) in last;
+    put fibonacci @ (fib_len - 2) in second_last;
+    put last + second_last in next_fib;
+    append(fibonacci, next_fib);
+end;
+show "Test 9 - Fibonacci sequence: " + fibonacci;
+
+$ Test 10: List length tracking
+put [] in dynamic_list;
+show "Test 10 - Initial length (expected 0): " + len(dynamic_list);
+append(dynamic_list, 1);
+show "Test 10 - After 1 append (expected 1): " + len(dynamic_list);
+append(dynamic_list, 2);
+append(dynamic_list, 3);
+show "Test 10 - After 3 appends (expected 3): " + len(dynamic_list);
+put pop(dynamic_list, 0) in temp;
+show "Test 10 - After 1 pop (expected 2): " + len(dynamic_list);
+
+show "";
+show "=== All Mutation Tests Complete ===";

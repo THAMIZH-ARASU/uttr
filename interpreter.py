@@ -1,7 +1,7 @@
 from errors.run_time_error import RTError
 from functions.function import Function
 from run_time_result import RTResult
-from tokens import TT_DIV, TT_EE, TT_GT, TT_GTE, TT_KEYWORD, TT_LT, TT_LTE, TT_MINUS, TT_MUL, TT_NE, TT_PLUS
+from tokens import TT_DIV, TT_EE, TT_GT, TT_GTE, TT_KEYWORD, TT_LT, TT_LTE, TT_MINUS, TT_MOD, TT_MUL, TT_NE, TT_PLUS
 from values.dict_value import Dict
 from values.list_value import List
 from values.number_value import Number
@@ -78,7 +78,12 @@ class Interpreter:
                 context
             ))
 
-        value = value.copy().set_pos(node.pos_start, node.pos_end).set_context(context)
+        # For mutable types (List, Dict), don't copy to allow in-place modifications
+        # For immutable types (Number, String), copy to prevent issues
+        if isinstance(value, (List, Dict)):
+            value = value.set_pos(node.pos_start, node.pos_end).set_context(context)
+        else:
+            value = value.copy().set_pos(node.pos_start, node.pos_end).set_context(context)
         return res.success(value)
 
     def visit_VarAssignNode(self, node, context):
@@ -114,6 +119,8 @@ class Interpreter:
             result, error = left.multed_by(right)
         elif node.op_tok.type == TT_DIV:
             result, error = left.dived_by(right)
+        elif node.op_tok.type == TT_MOD:
+            result, error = left.modded_by(right)
         elif node.op_tok.type == TT_EE:
             result, error = left.get_comparison_eq(right)
         elif node.op_tok.type == TT_NE:
@@ -198,7 +205,10 @@ class Interpreter:
             i += step
 
             value = res.register(self.visit(node.body_node, context))
-            if res.should_return(): return res
+            if res.error: return res
+            if res.loop_should_cut: break
+            if res.loop_should_skip: continue
+            if res.func_return_value: return res
 
             elements.append(value)
 
@@ -222,7 +232,10 @@ class Interpreter:
             context.symbol_table.set(node.var_name_tok.value, element)
 
             value = res.register(self.visit(node.body_node, context))
-            if res.should_return(): return res
+            if res.error: return res
+            if res.loop_should_cut: break
+            if res.loop_should_skip: continue
+            if res.func_return_value: return res
 
             elements.append(value)
 
@@ -240,7 +253,10 @@ class Interpreter:
                 break
 
             value = res.register(self.visit(node.body_node, context))
-            if res.should_return(): return res
+            if res.error: return res
+            if res.loop_should_cut: break
+            if res.loop_should_skip: continue
+            if res.func_return_value: return res
 
             elements.append(value)
 
@@ -253,9 +269,13 @@ class Interpreter:
         while True:
             # Execute body first (this is the key difference from while loop)
             value = res.register(self.visit(node.body_node, context))
-            if res.should_return(): return res
-
-            elements.append(value)
+            if res.error: return res
+            if res.loop_should_cut: break
+            if res.func_return_value: return res
+            
+            # Skip still adds the value before continuing
+            if not res.loop_should_skip:
+                elements.append(value)
 
             # Then check condition
             condition = res.register(self.visit(node.condition_node, context))
@@ -306,6 +326,12 @@ class Interpreter:
             value = Number.null
 
         return res.success_return(value)
+
+    def visit_CutNode(self, node, context):
+        return RTResult().success_cut()
+
+    def visit_SkipNode(self, node, context):
+        return RTResult().success_skip()
 
     def visit_ListAccessNode(self, node, context):
         res = RTResult()

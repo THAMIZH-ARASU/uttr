@@ -1,0 +1,58 @@
+$ Test file for modulo operator
+
+$ Test 1: Basic modulo operations
+put 10 % 3 in result;
+show "Test 1 - 10 % 3 (expected 1): " + result;
+
+put 17 % 5 in result;
+show "Test 2 - 17 % 5 (expected 2): " + result;
+
+put 20 % 4 in result;
+show "Test 3 - 20 % 4 (expected 0): " + result;
+
+put 7 % 2 in result;
+show "Test 4 - 7 % 2 (expected 1): " + result;
+
+$ Test 5: Even/odd detection
+put 0 in even_count;
+cycle i from 1 to 11:
+    when i % 2 == 0:
+        put even_count + 1 in even_count;
+    end;
+end;
+show "Test 5 - Even count from 1-10 (expected 5): " + even_count;
+
+$ Test 6: Divisibility test
+put 0 in div3_count;
+cycle i from 1 to 21:
+    when i % 3 == 0:
+        put div3_count + 1 in div3_count;
+    end;
+end;
+show "Test 6 - Multiples of 3 from 1-20 (expected 6): " + div3_count;
+
+$ Test 7: Complex condition with modulo
+put 0 in sum;
+cycle i from 1 to 21:
+    when i % 2 == 0 and i % 3 == 0:
+        put sum + i in sum;
+    end;
+end;
+show "Test 7 - Sum of numbers divisible by both 2 and 3 (expected 36): " + sum;
+
+$ Test 8: Modulo in expressions
+put (10 % 3) + (15 % 4) in result;
+show "Test 8 - (10 % 3) + (15 % 4) (expected 4): " + result;
+
+$ Test 9: Modulo with variables
+put 17 in a;
+put 5 in b;
+put a % b in result;
+show "Test 9 - 17 % 5 using variables (expected 2): " + result;
+
+$ Test 10: Nested modulo
+put 100 % (10 % 3) in result;
+show "Test 10 - 100 % (10 % 3) (expected 0): " + result;
+
+show "";
+show "All modulo tests completed!";
