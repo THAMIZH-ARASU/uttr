@@ -39,9 +39,13 @@ def run_interactive():
     print("UTTR v1.0 - Understandable Translation Tool for Routines")
     print("=" * 60)
     print("Type your code and press Enter.")
-    print("Type 'exit' or press Ctrl+C to quit.")
-    print("Type 'help' for quick reference.")
+    print("Type 'exit();' or press Ctrl+C to quit.")
+    print("Type 'help();' for quick reference.")
+    print("For multi-line blocks, end with 'end;' and press Enter.")
     print()
+    
+    # Keywords that start multi-line blocks
+    block_starters = ['make function', 'when', 'cycle', 'as long as', 'repeat']
     
     while True:
         try:
@@ -50,29 +54,79 @@ def run_interactive():
             if text.strip() == "":
                 continue
             
-            if text.strip().lower() == 'exit':
-                print("Goodbye!")
-                break
+            # Check if this starts a multi-line block
+            is_block = any(text.strip().startswith(starter) for starter in block_starters)
             
-            if text.strip().lower() == 'help':
-                print_help()
-                continue
+            if is_block and not text.strip().endswith('end;'):
+                # Multi-line input mode with nested block tracking
+                lines = [text]
+                block_depth = 1  # Start with depth 1 for the initial block
+                
+                while True:
+                    try:
+                        line = input('...  > ')
+                        lines.append(line)
+                        
+                        # Count block starters and ends in this line
+                        line_stripped = line.strip()
+                        
+                        # Check for new block starters (including 'otherwise' and 'when')
+                        for starter in block_starters:
+                            if line_stripped.startswith(starter):
+                                block_depth += 1
+                                break
+                        
+                        # 'otherwise' and 'when' inside blocks don't increase depth
+                        # but we need to handle them properly
+                        if line_stripped.startswith('otherwise:') or line_stripped.startswith('when '):
+                            # These are part of the current conditional, check if already counted
+                            # Actually, 'when' at start already counted above, 'otherwise' doesn't start new depth
+                            pass
+                        
+                        # Check for 'end;' - this closes one block level
+                        if line_stripped == 'end;' or line_stripped.endswith('end;'):
+                            block_depth -= 1
+                            if block_depth == 0:
+                                break
+                                
+                    except (KeyboardInterrupt, EOFError):
+                        print("\nBlock input cancelled")
+                        lines = []
+                        break
+                
+                if not lines:
+                    continue
+                    
+                text = '\n'.join(lines)
             
             result, error = entry.run('<stdin>', text)
 
             if error:
                 print(error.as_string())
             elif result:
-                if isinstance(result, entry.List):
+                if isinstance(result, List):
                     if len(result.elements) == 1:
-                        print(repr(result.elements[0]))
+                        element = result.elements[0]
+                        # Check if element is a List with only null values
+                        if isinstance(element, List):
+                            # Check if all elements in the inner list are null
+                            if all(isinstance(e, Number) and e.value == 0 for e in element.elements):
+                                pass  # Don't print lists containing only nulls
+                            else:
+                                print(repr(element))
+                        # Don't print if element is Number.null (0)
+                        elif not (isinstance(element, Number) and element.value == 0):
+                            print(repr(element))
                     elif len(result.elements) > 1:
                         # Multiple statements, only print if last one has value
                         last = result.elements[-1]
-                        if last and not (isinstance(last, entry.Number) and last.value == 0):
+                        if last and not (isinstance(last, Number) and last.value == 0):
                             print(repr(last))
+                    # If list is empty or all elements are null, don't print anything
                 else:
-                    print(repr(result))
+                    # Don't print if result is Number.null (0)
+                    if not (isinstance(result, Number) and result.value == 0):
+                        print(repr(result))
                     
         except KeyboardInterrupt:
             print("\n\nGoodbye!")
@@ -82,53 +136,6 @@ def run_interactive():
             break
         except Exception as e:
             print(f"Unexpected error: {e}")
-
-def print_help():
-    """Print quick reference"""
-    help_text = """
-UTTR Quick Reference:
---------------------
-Variables:      put 10 in x;
-Constants:      keep 3.14 as pi;
-Print:          show x;
-Comments:       $ single line
-                $[ multi-line ]$
-
-Conditionals:   when x > 10:
-                    show "big";
-                otherwise:
-                    show "small";
-                end;
-
-Loops:          cycle n from 1 to 10:
-                    show n;
-                end;
-                
-                cycle each item through list:
-                    show item;
-                end;
-                
-                as long as x < 100:
-                    put x + 1 in x;
-                end;
-
-Lists:          put [1, 2, 3] in nums;
-                show nums @ 0;
-
-Functions:      make function greet(name):
-                    show "Hello " + name;
-                end;
-                
-                make function add(a, b):
-                    give a + b;
-                end;
-
-Built-ins:      show, input, input_int, len, append, 
-                pop, extend, run
-
-For full documentation, see README.md
-"""
-    print(help_text)
 
 def main():
     """Main entry point"""

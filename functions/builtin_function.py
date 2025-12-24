@@ -174,6 +174,66 @@ class BuiltInFunction(BaseFunction):
         return RTResult().success(Number.null)
     execute_run.arg_names = ["fn"]
 
+    def execute_help(self, exec_ctx):
+        help_text = """
+UTTR Quick Reference:
+--------------------
+Variables:      put 10 in x;
+Constants:      keep 3.14 as pi;
+Print:          show x;
+Comments:       $ single line
+                $[ multi-line ]$
+
+Conditionals:   when x > 10:
+                    show "big";
+                otherwise:
+                    show "small";
+                end;
+
+Loops:          cycle n from 1 to 10:
+                    show n;
+                end;
+                
+                cycle each item through list:
+                    show item;
+                end;
+                
+                as long as x < 100:
+                    put x + 1 in x;
+                end;
+
+Lists:          put [1, 2, 3] in nums;
+                show nums @ 0;
+
+Functions:      make function greet(name):
+                    show "Hello " + name;
+                end;
+                
+                make function add(a, b):
+                    give a + b;
+                end;
+
+Built-ins:      show, input, input_int, len, append, 
+                pop, extend, run, help, exit, clear
+
+For full documentation, see README.md
+"""
+        print(help_text)
+        return RTResult().success(Number.null)
+    execute_help.arg_names = []
+
+    def execute_exit(self, exec_ctx):
+        import sys
+        print("Goodbye!")
+        sys.exit(0)
+    execute_exit.arg_names = []
+
+    def execute_clear(self, exec_ctx):
+        import os
+        os.system('cls' if os.name == 'nt' else 'clear')
+        return RTResult().success(Number.null)
+    execute_clear.arg_names = []
+
 # Create built-in function instances
 BuiltInFunction.show = BuiltInFunction("show")
 BuiltInFunction.input = BuiltInFunction("input")
@@ -183,3 +243,6 @@ BuiltInFunction.append = BuiltInFunction("append")
 BuiltInFunction.pop = BuiltInFunction("pop")
 BuiltInFunction.extend = BuiltInFunction("extend")
 BuiltInFunction.run = BuiltInFunction("run")
+BuiltInFunction.help = BuiltInFunction("help")
+BuiltInFunction.exit = BuiltInFunction("exit")
+BuiltInFunction.clear = BuiltInFunction("clear")

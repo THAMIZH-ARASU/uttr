@@ -1,0 +1,10 @@
+$ Test what function calls return
+
+make function test():
+    show "Inside function";
+end;
+
+$ Call the function
+test();
+
+show "Done";

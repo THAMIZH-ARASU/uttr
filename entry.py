@@ -25,6 +25,9 @@ global_symbol_table.set("append", BuiltInFunction.append)
 global_symbol_table.set("pop", BuiltInFunction.pop)
 global_symbol_table.set("extend", BuiltInFunction.extend)
 global_symbol_table.set("run", BuiltInFunction.run)
+global_symbol_table.set("help", BuiltInFunction.help)
+global_symbol_table.set("exit", BuiltInFunction.exit)
+global_symbol_table.set("clear", BuiltInFunction.clear)
 
 def run(fn, text):
     # Generate tokens
