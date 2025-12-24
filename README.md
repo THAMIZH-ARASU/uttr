@@ -469,6 +469,7 @@ The test suite includes 17 test categories with 170+ individual tests covering:
 ---
 ##  Project Roadmap
 
+### Completed
 - [X] **`Task 1`**: <strike>Implement lexer with tokenization for all language constructs</strike>
 - [X] **`Task 2`**: <strike>Build parser to generate AST from tokens</strike>
 - [X] **`Task 3`**: <strike>Create interpreter with runtime execution</strike>
@@ -476,7 +477,68 @@ The test suite includes 17 test categories with 170+ individual tests covering:
 - [X] **`Task 5`**: <strike>Implement comprehensive error handling with position tracking</strike>
 - [X] **`Task 6`**: <strike>Add do-while loop support with repeat while keyword</strike>
 - [X] **`Task 7`**: <strike>Add support for dictionaries/maps data structure</strike>
-- [ ] **`More to be added`**
+
+### Language Features
+- [ ] **`Task 8`**: Add break and continue statements for loop control (`exit loop` and `skip to next` keywords)
+- [ ] **`Task 9`**: Implement try-catch error handling (`attempt...handle` syntax)
+- [ ] **`Task 10`**: Add built-in methods for strings (split, join, upper, lower, replace, substring)
+- [ ] **`Task 11`**: Support for tuple data type (immutable lists with `<>` syntax)
+- [ ] **`Task 12`**: Add import/module system for code organization
+- [ ] **`Task 13`**: Implement lambda/anonymous functions with inline syntax
+- [ ] **`Task 14`**: Add switch-case statements (`check...case...default` syntax)
+- [ ] **`Task 15`**: Support for regular expressions with pattern matching
+- [ ] **`Task 16`**: Add set data type with set operations (union, intersection, difference)
+
+### Advanced Operations
+- [ ] **`Task 17`**: Implement list comprehensions with natural syntax
+- [ ] **`Task 18`**: Add dictionary comprehensions
+- [ ] **`Task 19`**: Support for multiple return values from functions
+- [ ] **`Task 20`**: Implement variadic functions (variable argument count) with natural syntax
+- [ ] **`Task 21`**: Support for ternary conditional expressions
+
+### File & I/O Operations
+- [ ] **`Task 22`**: Add file I/O operations (read_file, write_file, append_file)
+- [ ] **`Task 23`**: Implement JSON parsing and generation functions
+- [ ] **`Task 24`**: Add CSV file reading and writing capabilities
+- [ ] **`Task 25`**: Support for command-line arguments in .uttr files
+
+### Standard Library Expansion
+- [ ] **`Task 26`**: Add math functions (sqrt, pow, abs, round, floor, ceil, sin, cos, tan)
+- [ ] **`Task 27`**: Implement random number generation functions
+- [ ] **`Task 28`**: Add date and time manipulation functions
+- [ ] **`Task 29`**: Create string formatting utilities (template-based approach)
+- [ ] **`Task 30`**: Add list sorting and filtering built-in functions
+- [ ] **`Task 31`**: Implement type checking and conversion functions
+
+### Optimization & Performance
+- [ ] **`Task 32`**: Optimize interpreter with bytecode compilation
+- [ ] **`Task 33`**: Implement caching for frequently used expressions
+- [ ] **`Task 34`**: Add tail call optimization for recursive functions
+- [ ] **`Task 35`**: Create AST optimization passes before interpretation
+
+### Interoperability
+- [ ] **`Task 36`**: Add Python interop to call Python libraries from UTTR
+- [ ] **`Task 37`**: Create UTTR-to-Python transpiler for performance
+- [ ] **`Task 38`**: Support for calling external executables/shell commands
+- [ ] **`Task 39`**: Add HTTP client functions for web requests
+
+### Documentation & Examples
+- [ ] **`Task 40`**: Create interactive tutorial website for UTTR
+- [ ] **`Task 41`**: Add more complex example projects
+- [ ] **`Task 42`**: Create video tutorials for language features
+
+### Quality Assurance & Testing
+- [ ] **`Task 43`**: Expand test coverage to 100% of codebase
+- [ ] **`Task 44`**: Add benchmark suite to track performance over time
+- [ ] **`Task 45`**: Implement fuzzing tests for parser robustness
+
+### Developer Tools
+- [ ] **`Task 46`**: Build debugging tools with breakpoint support
+- [ ] **`Task 47`**: Add code formatter/prettifier for UTTR files
+- [ ] **`Task 48`**: Create syntax highlighting extension for VS Code
+- [ ] **`Task 49`**: Implement static type checking (optional type annotations)
+- [ ] **`Task 50`**: Create linter for code quality and style enforcement
+- [ ] **`Task 51`**: Add performance profiler to identify bottlenecks
 
 ---
 
