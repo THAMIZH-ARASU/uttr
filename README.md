@@ -479,7 +479,7 @@ The test suite includes 17 test categories with 170+ individual tests covering:
 - [X] **`Task 7`**: <strike>Add support for dictionaries/maps data structure</strike>
 
 ### Language Features
-- [ ] **`Task 8`**: Add break and continue statements for loop control (`exit loop` and `skip to next` keywords)
+- [ ] **`Task 8`**: Add break and continue statements for loop control (`cut` and `skip` keywords)
 - [ ] **`Task 9`**: Implement try-catch error handling (`attempt...handle` syntax)
 - [ ] **`Task 10`**: Add built-in methods for strings (split, join, upper, lower, replace, substring)
 - [ ] **`Task 11`**: Support for tuple data type (immutable lists with `<>` syntax)
