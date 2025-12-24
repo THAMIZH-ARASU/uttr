@@ -1,0 +1,139 @@
+$ ============================================
+$ UTTR Test Suite - Complex Integration Tests
+$ ============================================
+
+show "=== Complex Integration Tests ===";
+
+$ Test 1: FizzBuzz
+show "Test 1 - FizzBuzz (1 to 15):";
+cycle i from 1 to 15:
+    when i == 3 or i == 6 or i == 9 or i == 12 or i == 15:
+        when i == 5 or i == 10 or i == 15:
+            show "FizzBuzz";
+        otherwise:
+            show "Fizz";
+        end;
+    otherwise when i == 5 or i == 10:
+        show "Buzz";
+    otherwise:
+        show i;
+    end;
+end;
+
+$ Test 2: Fibonacci sequence
+show "Test 2 - Fibonacci (first 10):";
+put 0 in a;
+put 1 in b;
+show a;
+show b;
+cycle i from 3 to 10:
+    put a + b in next;
+    show next;
+    put b in a;
+    put next in b;
+end;
+
+$ Test 3: Prime number checker
+show "Test 3 - Prime numbers up to 20:";
+cycle n from 2 to 20:
+    put true in is_prime;
+    cycle i from 2 to (n - 1):
+        when i > 1:
+            put n / i in div_result;
+            $ Simple check (not perfect but demonstrates logic)
+            when div_result * i == n:
+                put false in is_prime;
+            end;
+        end;
+    end;
+    when is_prime:
+        show n + " is prime";
+    end;
+end;
+
+$ Test 4: Palindrome checker
+show "Test 4 - Palindrome-like check:";
+put [1, 2, 3, 2, 1] in list1;
+put true in is_palindrome;
+put 0 in left;
+put 4 in right;
+as long as left < right:
+    when not (list1 @ left == list1 @ right):
+        put false in is_palindrome;
+    end;
+    put left + 1 in left;
+    put right - 1 in right;
+end;
+when is_palindrome:
+    show "[1,2,3,2,1] is a palindrome";
+end;
+
+$ Test 5: Dictionary-based phonebook
+show "Test 5 - Phonebook system:";
+put {} in phonebook;
+$ Note: Direct key insertion not supported, simulating lookup
+put {"Alice": "555-0001", "Bob": "555-0002", "Charlie": "555-0003"} in phonebook;
+
+show "Looking up contacts:";
+cycle each name through keys(phonebook):
+    show name + ": " + phonebook @ name;
+end;
+
+$ Test 6: Nested data structures
+show "Test 6 - Nested structures:";
+put {"users": [{"name": "Alice", "age": 30}, {"name": "Bob", "age": 25}]} in system;
+put system @ "users" in users;
+show "User count: " + len(users);
+cycle each user through users:
+    show "User: " + user @ "name" + ", Age: " + user @ "age";
+end;
+
+$ Test 7: Statistical calculations
+show "Test 7 - Statistics:";
+put [10, 20, 30, 40, 50] in data;
+put 0 in sum;
+cycle each val through data:
+    put sum + val in sum;
+end;
+put sum / len(data) in average;
+show "Data: " + data;
+show "Sum: " + sum;
+show "Average: " + average;
+
+$ Test 8: String manipulation
+show "Test 8 - String processing:";
+put ["hello", "world", "from", "UTTR"] in words;
+put "" in sentence;
+cycle each word through words:
+    put sentence + word + " " in sentence;
+end;
+show "Sentence: " + sentence;
+
+$ Test 9: Function composition
+show "Test 9 - Function composition:";
+make function double(x):
+    give x * 2;
+end;
+make function add_ten(x):
+    give x + 10;
+end;
+put 5 in start;
+put double(add_ten(start)) in result;
+show "double(add_ten(5)) = " + result;
+
+$ Test 10: Complex loop with break simulation
+show "Test 10 - Search simulation:";
+put [5, 12, 8, 3, 15, 20] in numbers;
+put null in found;
+put 15 in target;
+cycle each num through numbers:
+    when num == target:
+        put num in found;
+    end;
+end;
+when found == target:
+    show "Found " + target + " in list";
+end;
+
+show "";
+show "=== All integration tests completed! ===";

@@ -1,0 +1,81 @@
+$ ============================================
+$ UTTR Test Suite - While Loops
+$ ============================================
+
+$ Test 1: Basic while loop
+show "Test 1 - Basic while loop:";
+put 1 in counter;
+as long as counter <= 5:
+    show counter;
+    put counter + 1 in counter;
+end;
+
+$ Test 2: While with complex condition
+show "Test 2 - While with complex condition:";
+put 0 in x;
+as long as x < 10 and x != 5:
+    put x + 1 in x;
+end;
+show "Final x: " + x;
+
+$ Test 3: Nested while loops
+show "Test 3 - Nested while loops:";
+put 1 in i;
+as long as i <= 3:
+    put 1 in j;
+    as long as j <= 3:
+        show "i=" + i + ", j=" + j;
+        put j + 1 in j;
+    end;
+    put i + 1 in i;
+end;
+
+$ Test 4: While loop with break-like behavior
+show "Test 4 - While with conditional exit:";
+put 0 in count;
+put true in continue_loop;
+as long as continue_loop:
+    put count + 1 in count;
+    show count;
+    when count >= 5:
+        put false in continue_loop;
+    end;
+end;
+
+$ Test 5: While accumulator
+show "Test 5 - While accumulator:";
+put 0 in sum;
+put 1 in num;
+as long as num <= 10:
+    put sum + num in sum;
+    put num + 1 in num;
+end;
+show "Sum: " + sum;
+
+$ Test 6: Countdown with while
+show "Test 6 - Countdown:";
+put 5 in countdown;
+as long as countdown > 0:
+    show countdown;
+    put countdown - 1 in countdown;
+end;
+
+$ Test 7: While with comparison
+show "Test 7 - While until target:";
+put 2 in power;
+as long as power < 100:
+    put power * 2 in power;
+end;
+show "First power of 2 >= 100: " + power;
+
+$ Test 8: While with string accumulation
+show "Test 8 - String accumulation:";
+put 1 in n;
+put "" in result;
+as long as n <= 5:
+    put result + n in result;
+    put n + 1 in n;
+end;
+show "Result: " + result;
+
+show "=== All while loop tests passed! ===";

@@ -1,0 +1,109 @@
+$ ======================================
+$ UTTR Dictionary Examples
+$ ======================================
+
+$ Basic dictionary creation
+put {"name": "Alice", "age": 25, "city": "New York"} in person;
+show "Person dictionary: " + person;
+
+$ Accessing dictionary values with @ operator
+show "Name: " + person @ "name";
+show "Age: " + person @ "age";
+show "City: " + person @ "city";
+
+$ Empty dictionary
+put {} in empty_dict;
+show "Empty dictionary: " + empty_dict;
+
+$ Dictionary with numeric keys
+put {1: "one", 2: "two", 3: "three"} in numbers;
+show "Number 2 is: " + numbers @ 2;
+
+$ Dictionary with mixed key types
+put {"name": "Bob", 1: "first", 2: "second"} in mixed;
+show "Mixed dict: " + mixed;
+show "String key: " + mixed @ "name";
+show "Numeric key: " + mixed @ 1;
+
+$ Using keys() function
+put {"a": 1, "b": 2, "c": 3} in dict1;
+put keys(dict1) in key_list;
+show "Keys of dict1: " + key_list;
+
+$ Using values() function
+put values(dict1) in value_list;
+show "Values of dict1: " + value_list;
+
+$ Using has_key() function
+when has_key(dict1, "a"):
+    show "dict1 has key 'a'";
+end;
+
+when has_key(dict1, "z"):
+    show "dict1 has key 'z'";
+otherwise:
+    show "dict1 does not have key 'z'";
+end;
+
+$ Building a dictionary step by step
+put {} in student;
+show "Initial student: " + student;
+
+$ Note: Direct assignment to dict keys is handled by accessing the dict
+$ For now, we create new dicts with updated values
+
+$ Creating a phonebook
+put {"Alice": "555-1234", "Bob": "555-5678", "Charlie": "555-9012"} in phonebook;
+show "Phonebook: " + phonebook;
+show "Alice's number: " + phonebook @ "Alice";
+show "Bob's number: " + phonebook @ "Bob";
+
+$ Iterate through keys
+put keys(phonebook) in names;
+cycle each name through names:
+    show name + "'s number is: " + phonebook @ name;
+end;
+
+$ Using has_key before accessing
+put "Dave" in search_name;
+when has_key(phonebook, search_name):
+    show search_name + "'s number is: " + phonebook @ search_name;
+otherwise:
+    show search_name + " not found in phonebook";
+end;
+
+$ Dictionary with nested data
+put {"person1": "Alice", "person2": "Bob"} in people;
+show "People: " + people;
+show "First person: " + people @ "person1";
+show "Second person: " + people @ "person2";
+
+$ Count dictionary entries using len on keys
+put len(keys(phonebook)) in num_entries;
+show "Number of entries in phonebook: " + num_entries;
+
+$ Check multiple keys
+put ["Alice", "Eve", "Bob"] in names_to_check;
+cycle each name through names_to_check:
+    when has_key(phonebook, name):
+        show name + " is in the phonebook";
+    otherwise:
+        show name + " is NOT in the phonebook";
+    end;
+end;
+
+$ Dictionary for configuration
+put {"debug": 1, "max_users": 100, "timeout": 30} in config;
+show "Configuration: " + config;
+show "Debug mode: " + config @ "debug";
+show "Max users: " + config @ "max_users";
+show "Timeout: " + config @ "timeout";
+
+$ Using remove() function to delete keys
+put {"x": 10, "y": 20, "z": 30} in coords;
+show "Coordinates before removal: " + coords;
+put remove(coords, "y") in removed_value;
+show "Removed value: " + removed_value;
+show "Coordinates after removal: " + coords;
+
+show "Dictionary examples completed!";

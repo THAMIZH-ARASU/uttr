@@ -1,0 +1,82 @@
+$ ============================================
+$ UTTR Test Suite - List Operations
+$ ============================================
+
+$ Test 1: Empty list
+put [] in empty;
+show "Test 1 - Empty list: " + empty;
+
+$ Test 2: List with numbers
+put [1, 2, 3, 4, 5] in numbers;
+show "Test 2 - Number list: " + numbers;
+
+$ Test 3: List with strings
+put ["red", "green", "blue"] in colors;
+show "Test 3 - String list: " + colors;
+
+$ Test 4: Mixed type list
+put [1, "two", 3, "four", 5] in mixed;
+show "Test 4 - Mixed list: " + mixed;
+
+$ Test 5: List access with @
+put [10, 20, 30, 40, 50] in nums;
+show "Test 5a - First element: " + nums @ 0;
+show "Test 5b - Third element: " + nums @ 2;
+show "Test 5c - Last element: " + nums @ 4;
+
+$ Test 6: Nested lists
+put [[1, 2], [3, 4], [5, 6]] in matrix;
+show "Test 6a - Matrix: " + matrix;
+show "Test 6b - First row: " + matrix @ 0;
+show "Test 6c - Element [1][1]: " + (matrix @ 1) @ 1;
+
+$ Test 7: List length with len()
+put [1, 2, 3, 4, 5] in list1;
+show "Test 7 - Length of [1,2,3,4,5]: " + len(list1);
+
+$ Test 8: Append to list
+put [1, 2, 3] in list2;
+show "Test 8a - Before append: " + list2;
+append(list2, 4);
+show "Test 8b - After append(4): " + list2;
+append(list2, 5);
+show "Test 8c - After append(5): " + list2;
+
+$ Test 9: Pop from list
+put [10, 20, 30, 40] in list3;
+show "Test 9a - Before pop: " + list3;
+put pop(list3, 1) in removed;
+show "Test 9b - Removed element: " + removed;
+show "Test 9c - After pop(1): " + list3;
+
+$ Test 10: Extend list
+put [1, 2, 3] in listA;
+put [4, 5, 6] in listB;
+show "Test 10a - ListA: " + listA;
+show "Test 10b - ListB: " + listB;
+extend(listA, listB);
+show "Test 10c - After extend: " + listA;
+
+$ Test 11: List concatenation with *
+put [1, 2] in left;
+put [3, 4] in right;
+put left * right in concatenated;
+show "Test 11 - [1,2] * [3,4]: " + concatenated;
+
+$ Test 12: Add element with +
+put [1, 2, 3] in base;
+put base + 4 in with_new;
+show "Test 12 - [1,2,3] + 4: " + with_new;
+
+$ Test 13: Remove element with -
+put [10, 20, 30, 40, 50] in list4;
+put list4 - 2 in with_removed;
+show "Test 13 - Remove index 2: " + with_removed;
+
+$ Test 14: List in loop
+put [1, 2, 3] in loop_list;
+cycle i from 0 to 2:
+    show "Element at " + i + ": " + loop_list @ i;
+end;
+
+show "=== All list operation tests passed! ===";

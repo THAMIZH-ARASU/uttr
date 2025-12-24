@@ -49,10 +49,14 @@ UTTR (Understandable Translation Tool for Routines) is a custom-built, procedure
 - **Natural English-Like Syntax**: Write code that reads like plain English with keywords like `put`, `in`, `when`, `otherwise`, `make function`, and `give`
 - **Complete Interpreter**: Full lexer-parser-interpreter pipeline built from scratch with comprehensive error handling and position tracking
 - **Procedure-Oriented Design**: Focus on procedures and sequential execution with modular, reusable functions
-- **Rich Data Types**: Support for integers, floats, strings, booleans, and lists with intuitive list access using `@` operator
+- **Rich Data Types**: Support for integers, floats, strings, booleans, lists, and dictionaries with intuitive access using `@` operator
 - **Control Structures**: Conditional statements (`when...otherwise`), loops (`cycle`, `as long as`, `repeat while`), and for-each iteration
 - **Function Support**: Define and call custom functions with return values using `make function` and `give` keywords
-- **Built-in Functions**: Pre-defined utilities including `show`, `input`, `input_int`, `len`, `append`, `pop`, and `extend`
+- **Built-in Functions**: Pre-defined utilities including:
+  - I/O: `show`, `input`, `input_int`
+  - Collections: `len`, `append`, `pop`, `extend`
+  - Dictionaries: `keys`, `values`, `has_key`, `remove`
+  - Execution: `run` (execute external .uttr files)
 - **Variable & Constant Management**: Mutable variables with `put...in` and immutable constants with `keep...as`
 - **Comment Support**: Single-line (`$`) and multi-line (`$[...]$`) comments for code documentation
 - **Interactive REPL**: Test code snippets interactively or run complete `.uttr` files
@@ -134,6 +138,10 @@ UTTR (Understandable Translation Tool for Routines) is a custom-built, procedure
 			<tr>
 				<td><b><a href='https://github.com/THAMIZH-ARASU/uttr/blob/master/nodes/const_assign_node.py'>const_assign_node.py</a></b></td>
 				<td>AST node representing constant declarations with immutability semantics</td>
+			</tr>
+			<tr>
+				<td><b><a href='https://github.com/THAMIZH-ARASU/uttr/blob/master/nodes/dict_node.py'>dict_node.py</a></b></td>
+				<td>AST node representing dictionary literals with key-value pairs</td>
 			</tr>
 			<tr>
 				<td><b><a href='https://github.com/THAMIZH-ARASU/uttr/blob/master/nodes/for_node.py'>for_node.py</a></b></td>
@@ -230,6 +238,10 @@ UTTR (Understandable Translation Tool for Routines) is a custom-built, procedure
 				<td>Runtime representation of numeric values with arithmetic and comparison operations</td>
 			</tr>
 			<tr>
+				<td><b><a href='https://github.com/THAMIZH-ARASU/uttr/blob/master/values/dict_value.py'>dict_value.py</a></b></td>
+				<td>Runtime representation of dictionary/map collections with key-based access and manipulation operations</td>
+			</tr>
+			<tr>
 				<td><b><a href='https://github.com/THAMIZH-ARASU/uttr/blob/master/values/value.py'>value.py</a></b></td>
 				<td>Base class for all runtime values with position tracking and context management</td>
 			</tr>
@@ -276,6 +288,10 @@ UTTR (Understandable Translation Tool for Routines) is a custom-built, procedure
 				<td>Demonstrates conditional branching with when/otherwise statements</td>
 			</tr>
 			<tr>
+				<td><b><a href='https://github.com/THAMIZH-ARASU/uttr/blob/master/examples/dictionaries.uttr'>dictionaries.uttr</a></b></td>
+				<td>Shows dictionary creation, key-based access, and built-in dictionary functions</td>
+			</tr>
+			<tr>
 				<td><b><a href='https://github.com/THAMIZH-ARASU/uttr/blob/master/examples/lists.uttr'>lists.uttr</a></b></td>
 				<td>Shows list creation, indexing, and manipulation operations</td>
 			</tr>
@@ -318,6 +334,25 @@ UTTR (Understandable Translation Tool for Routines) is a custom-built, procedure
 			<tr>
 				<td><b><a href='https://github.com/THAMIZH-ARASU/uttr/blob/master/examples/comments.uttr'>comments.uttr</a></b></td>
 				<td>Demonstrates single-line and multi-line comment syntax</td>
+			</tr>
+			</table>
+		</blockquote>
+	</details>
+	<details> <!-- tests Submodule -->
+		<summary><b>tests</b></summary>
+		<blockquote>
+			<table>
+			<tr>
+				<td><b><a href='https://github.com/THAMIZH-ARASU/uttr/blob/master/tests/run_tests.py'>run_tests.py</a></b></td>
+				<td>Automated test runner that executes all test files and reports pass/fail statistics</td>
+			</tr>
+			<tr>
+				<td><b><a href='https://github.com/THAMIZH-ARASU/uttr/blob/master/tests/README.md'>README.md</a></b></td>
+				<td>Comprehensive documentation for the test suite with usage instructions</td>
+			</tr>
+			<tr>
+				<td><b>Test Files</b></td>
+				<td>17 test files covering all language features: variables, arithmetic, comparisons, logical operations, strings, conditionals, loops (for/while/do-while/for-each), lists, dictionaries, functions, built-ins, comments, errors, and integration tests</td>
 			</tr>
 			</table>
 		</blockquote>
@@ -382,20 +417,53 @@ end;
 
 greet("World");
 
-$ Do-while loop (executes at least once)
-put 0 in x;
-repeat while x < 3:
-    show x;
-    put x + 1 in x;
+$ For loop with step
+cycle i from 0 to 10 step 2:
+    show i;
 end;
+
+$ Dictionary creation and access
+put {"name": "Alice", "age": 25, "city": "NYC"} in person;
+show "Name: " + person @ "name";
+show "Age: " + person @ "age";
+
+$ Dictionary operations
+put keys(person) in all_keys;
+show "Has 'email' key: " + has_key(person, "email");
 ```
 
 ###  Testing
-Run the following command to test the lexer's output:
 
+UTTR includes a comprehensive test suite covering all language features. Run tests using:
+
+**Run all tests:**
 ```sh
-❯ python lexer_testing.py <file_name>
+> python tests/run_tests.py
 ```
+
+**Run individual test files:**
+```sh
+> python shell.py tests/test_variables.uttr
+> python shell.py tests/test_dictionaries.uttr
+> python shell.py tests/test_functions.uttr
+```
+
+**Test lexer output:**
+```sh
+> python lexer_testing.py <file_name>
+```
+
+The test suite includes 17 test categories with 170+ individual tests covering:
+- Variables and constants
+- Arithmetic and comparison operations
+- Logical operations
+- String operations with escape sequences
+- Conditional statements
+- All loop types (for, while, do-while, for-each)
+- Lists and dictionaries
+- Functions and built-ins
+- Comments and error handling
+- Complex integration scenarios
 
 
 ---
@@ -407,7 +475,7 @@ Run the following command to test the lexer's output:
 - [X] **`Task 4`**: <strike>Add support for functions, loops, and conditionals</strike>
 - [X] **`Task 5`**: <strike>Implement comprehensive error handling with position tracking</strike>
 - [X] **`Task 6`**: <strike>Add do-while loop support with repeat while keyword</strike>
-- [ ] **`Task 7`**: Add support for dictionaries/maps data structure
+- [X] **`Task 7`**: <strike>Add support for dictionaries/maps data structure</strike>
 - [ ] **`More to be added`**
 
 ---

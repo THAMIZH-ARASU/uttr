@@ -1,0 +1,50 @@
+$ ============================================
+$ UTTR Test Suite - String Operations
+$ ============================================
+
+$ Test 1: String concatenation
+put "Hello" + " " + "World" in greeting;
+show "Test 1 - Concatenation: " + greeting;
+
+$ Test 2: String with numbers
+put "The answer is " + 42 in str_num;
+show "Test 2 - String + Number: " + str_num;
+
+$ Test 3: Empty string
+put "" in empty;
+put "Not empty" + empty in with_empty;
+show "Test 3 - Empty string: '" + with_empty + "'";
+
+$ Test 4: String with special characters
+put "Tab:\there" in with_tab;
+show "Test 4 - Special chars: " + with_tab;
+
+$ Test 5: String with newline
+put "Line 1\nLine 2" in with_newline;
+show "Test 5 - Newline in string:";
+show with_newline;
+
+$ Test 6: String comparison
+put "apple" == "apple" in str_eq;
+put "apple" == "orange" in str_neq;
+show "Test 6 - Comparison: 'apple' == 'apple' is " + str_eq + ", 'apple' == 'orange' is " + str_neq;
+
+$ Test 7: Multiple concatenations
+put "A" + "B" + "C" + "D" + "E" in multi_concat;
+show "Test 7 - Multiple concat: " + multi_concat;
+
+$ Test 8: String in expressions
+put "Result: " + (10 + 20) in expr_str;
+show "Test 8 - String + Expression: " + expr_str;
+
+$ Test 9: String variables
+put "Hello" in str1;
+put "World" in str2;
+put str1 + " " + str2 in combined;
+show "Test 9 - String variables: " + combined;
+
+$ Test 10: Quotes in strings (using escaping)
+put "She said \"Hello\"" in with_quotes;
+show "Test 10 - Quotes: " + with_quotes;
+
+show "=== All string operation tests passed! ===";

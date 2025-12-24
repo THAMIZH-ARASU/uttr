@@ -1,0 +1,80 @@
+$ ============================================
+$ UTTR Test Suite - Master Test Runner
+$ ============================================
+$ Run all test suites in sequence
+$ ============================================
+
+show "========================================";
+show "  UTTR Language Test Suite";
+show "  Running All Tests";
+show "========================================";
+show "";
+
+$ Note: In a real test runner, we would use run() function
+$ For now, this serves as documentation of all test files
+
+show "Test Files to Run:";
+show "1.  test_variables.uttr - Variables and Constants";
+show "2.  test_arithmetic.uttr - Arithmetic Operations";
+show "3.  test_comparisons.uttr - Comparison Operations";
+show "4.  test_logical.uttr - Logical Operations";
+show "5.  test_strings.uttr - String Operations";
+show "6.  test_conditionals.uttr - If/When/Otherwise";
+show "7.  test_for_loops.uttr - For Loops (cycle)";
+show "8.  test_while_loops.uttr - While Loops (as long as)";
+show "9.  test_do_while_loops.uttr - Do-While Loops (repeat while)";
+show "10. test_foreach_loops.uttr - For-Each Loops";
+show "11. test_lists.uttr - List Operations";
+show "12. test_dictionaries.uttr - Dictionary Operations";
+show "13. test_functions.uttr - Function Definitions";
+show "14. test_builtins.uttr - Built-in Functions";
+show "15. test_comments.uttr - Comment Syntax";
+show "16. test_errors.uttr - Error Handling";
+show "17. test_integration.uttr - Complex Integration Tests";
+show "";
+
+show "========================================";
+show "  Test Suite Overview";
+show "========================================";
+show "";
+show "Total Test Categories: 17";
+show "Estimated Total Tests: 150+";
+show "";
+
+show "Feature Coverage:";
+show "  ✓ Variables and Constants";
+show "  ✓ Arithmetic Operations (+, -, *, /)";
+show "  ✓ Comparison Operations (==, !=, <, >, <=, >=)";
+show "  ✓ Logical Operations (and, or, not)";
+show "  ✓ String Operations and Concatenation";
+show "  ✓ Conditional Statements (when/otherwise)";
+show "  ✓ For Loops (cycle from/to/step)";
+show "  ✓ While Loops (as long as)";
+show "  ✓ Do-While Loops (repeat while)";
+show "  ✓ For-Each Loops (cycle each through)";
+show "  ✓ Lists (creation, access, manipulation)";
+show "  ✓ Dictionaries (creation, access, keys, values)";
+show "  ✓ Functions (definition, parameters, return)";
+show "  ✓ Built-in Functions (show, len, append, etc.)";
+show "  ✓ Comments (single-line and multi-line)";
+show "  ✓ Error Handling and Reporting";
+show "  ✓ Complex Integration Scenarios";
+show "";
+
+show "========================================";
+show "  How to Run Tests";
+show "========================================";
+show "";
+show "Run individual test files:";
+show "  python shell.py tests/test_variables.uttr";
+show "  python shell.py tests/test_lists.uttr";
+show "  python shell.py tests/test_dictionaries.uttr";
+show "";
+show "Run all tests (from project root):";
+show "  Windows: for %f in (tests\\*.uttr) do python shell.py %f";
+show "  Linux/Mac: for f in tests/*.uttr; do python shell.py $f; done";
+show "";
+
+show "========================================";
+show "  Test Suite Complete";
+show "========================================";

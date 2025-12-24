@@ -1,0 +1,73 @@
+$ ============================================
+$ UTTR Test Suite - Comments
+$ ============================================
+
+$ Test 1: Single line comment
+$ This is a comment and should be ignored
+show "Test 1 - Single line comments work";
+
+$ Test 2: Multiple single line comments
+$ Comment line 1
+$ Comment line 2
+$ Comment line 3
+show "Test 2 - Multiple single line comments";
+
+$ Test 3: Multi-line comment
+$[
+This is a multi-line comment.
+It spans multiple lines.
+All of this should be ignored.
+]$
+show "Test 3 - Multi-line comments work";
+
+$ Test 4: Comment at end of line (after semicolon)
+show "Test 4 - Inline comment test";
+$ This comment is after the statement
+
+$ Test 5: Comment with code inside (should not execute)
+$ put 999 in should_not_exist;
+$ show "This should not appear";
+show "Test 5 - Code in comments ignored";
+
+$ Test 6: Nested comments structure
+$[
+Outer comment
+$ Inner single line comment
+More outer comment
+]$
+show "Test 6 - Nested comment structure";
+
+$ Test 7: Comment before variable
+$ Define a variable
+put 42 in answer;
+show "Test 7 - Comment before code: " + answer;
+
+$ Test 8: Comment in loop
+cycle i from 1 to 3:
+    $ Comment inside loop
+    show "Test 8 - Loop iteration: " + i;
+end;
+
+$ Test 9: Comment in function
+make function test_func():
+    $ Comment inside function
+    show "Test 9 - Function with comment";
+end;
+test_func();
+
+$ Test 10: Mixed comments
+$[
+Multi-line comment block
+spanning multiple lines
+]$
+$ Single line comment
+put 100 in value;
+$ Another single line
+show "Test 10 - Mixed comments: " + value;
+
+$[
+Final multi-line comment
+to test everything works
+]$
+
+show "=== All comment tests passed! ===";

@@ -1,0 +1,84 @@
+$ ============================================
+$ UTTR Test Suite - Built-in Functions
+$ ============================================
+
+$ Test 1: show() function
+show "Test 1 - show() function works";
+
+$ Test 2: len() with list
+put [1, 2, 3, 4, 5] in list1;
+show "Test 2 - len([1,2,3,4,5]): " + len(list1);
+
+$ Test 3: append() to list
+put [10, 20] in list2;
+show "Test 3a - Before append: " + list2;
+append(list2, 30);
+show "Test 3b - After append(30): " + list2;
+
+$ Test 4: pop() from list
+put [5, 10, 15, 20] in list3;
+put pop(list3, 2) in popped;
+show "Test 4a - Popped value: " + popped;
+show "Test 4b - List after pop: " + list3;
+
+$ Test 5: extend() lists
+put [1, 2] in listA;
+put [3, 4] in listB;
+extend(listA, listB);
+show "Test 5 - After extend: " + listA;
+
+$ Test 6: keys() function
+put {"a": 1, "b": 2, "c": 3} in dict1;
+put keys(dict1) in dict_keys;
+show "Test 6 - keys(): " + dict_keys;
+
+$ Test 7: values() function
+put {"x": 10, "y": 20} in dict2;
+put values(dict2) in dict_vals;
+show "Test 7 - values(): " + dict_vals;
+
+$ Test 8: has_key() function
+put {"name": "Alice", "age": 25} in person;
+show "Test 8a - has_key('name'): " + has_key(person, "name");
+show "Test 8b - has_key('email'): " + has_key(person, "email");
+
+$ Test 9: remove() from dictionary
+put {"a": 1, "b": 2, "c": 3} in dict3;
+show "Test 9a - Before remove: " + dict3;
+remove(dict3, "b");
+show "Test 9b - After remove('b'): " + dict3;
+
+$ Test 10: len() with dictionary keys
+put {"one": 1, "two": 2, "three": 3} in dict4;
+show "Test 10 - Number of keys: " + len(keys(dict4));
+
+$ Test 11: Chaining built-in functions
+put [[1, 2], [3, 4], [5, 6]] in matrix;
+show "Test 11 - Length of matrix: " + len(matrix);
+show "Test 11 - Length of first row: " + len(matrix @ 0);
+
+$ Test 12: Built-in with user function
+make function get_list_size(list):
+    give len(list);
+end;
+put [1, 2, 3, 4] in test_list;
+show "Test 12 - Custom function using len(): " + get_list_size(test_list);
+
+$ Test 13: Multiple operations on same list
+put [100, 200, 300] in numbers;
+show "Test 13a - Original: " + numbers;
+append(numbers, 400);
+show "Test 13b - After append: " + numbers;
+put pop(numbers, 0) in first;
+show "Test 13c - Removed first: " + first;
+show "Test 13d - Final list: " + numbers;
+
+$ Test 14: Dictionary operations sequence
+put {"item1": "value1"} in my_dict;
+show "Test 14a - Initial: " + my_dict;
+show "Test 14b - Keys: " + keys(my_dict);
+when has_key(my_dict, "item1"):
+    show "Test 14c - Found item1";
+end;
+
+show "=== All built-in function tests passed! ===";

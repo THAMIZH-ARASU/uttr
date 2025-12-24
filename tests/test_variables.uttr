@@ -1,0 +1,49 @@
+$ ============================================
+$ UTTR Test Suite - Variables and Constants
+$ ============================================
+
+$ Test 1: Basic variable assignment
+put 10 in x;
+show "Test 1 - Variable assignment: " + x;
+
+$ Test 2: Variable reassignment
+put 20 in x;
+show "Test 2 - Variable reassignment: " + x;
+
+$ Test 3: Multiple variables
+put 5 in a;
+put 10 in b;
+put 15 in c;
+show "Test 3 - Multiple variables: a=" + a + ", b=" + b + ", c=" + c;
+
+$ Test 4: Constant declaration
+keep 3.14159 as pi;
+show "Test 4 - Constant declaration: " + pi;
+
+$ Test 5: Constant immutability (should remain unchanged)
+keep 100 as MAX_VALUE;
+show "Test 5 - Constant value: " + MAX_VALUE;
+
+$ Test 6: Variable with expression
+put 5 + 3 * 2 in result;
+show "Test 6 - Expression assignment: " + result;
+
+$ Test 7: Variable copying
+put 42 in original;
+put original in copy;
+show "Test 7 - Variable copy: original=" + original + ", copy=" + copy;
+
+$ Test 8: String variables
+put "Hello, UTTR!" in greeting;
+show "Test 8 - String variable: " + greeting;
+
+$ Test 9: Boolean-like variables (using 0 and 1)
+put true in is_active;
+put false in is_disabled;
+show "Test 9 - Boolean values: active=" + is_active + ", disabled=" + is_disabled;
+
+$ Test 10: Null value
+put null in empty_var;
+show "Test 10 - Null value: " + empty_var;
+
+show "=== All variable and constant tests passed! ===";

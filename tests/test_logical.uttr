@@ -1,0 +1,53 @@
+$ ============================================
+$ UTTR Test Suite - Logical Operations
+$ ============================================
+
+$ Test 1: AND operation
+put true and true in and_tt;
+put true and false in and_tf;
+put false and false in and_ff;
+show "Test 1 - AND: true and true = " + and_tt + ", true and false = " + and_tf + ", false and false = " + and_ff;
+
+$ Test 2: OR operation
+put true or true in or_tt;
+put true or false in or_tf;
+put false or false in or_ff;
+show "Test 2 - OR: true or true = " + or_tt + ", true or false = " + or_tf + ", false or false = " + or_ff;
+
+$ Test 3: NOT operation
+put not true in not_true;
+put not false in not_false;
+show "Test 3 - NOT: not true = " + not_true + ", not false = " + not_false;
+
+$ Test 4: Complex logical expression
+put (true and true) or false in complex1;
+show "Test 4a - Complex: (true and true) or false = " + complex1;
+
+put true and (true or false) in complex2;
+show "Test 4b - Complex: true and (true or false) = " + complex2;
+
+$ Test 5: Logical with comparisons
+put (5 > 3) and (10 < 20) in logic_comp1;
+show "Test 5a - Logic + Comp: (5 > 3) and (10 < 20) = " + logic_comp1;
+
+put (5 > 10) or (3 < 7) in logic_comp2;
+show "Test 5b - Logic + Comp: (5 > 10) or (3 < 7) = " + logic_comp2;
+
+$ Test 6: Negation with comparison
+put not (5 > 10) in not_comp;
+show "Test 6 - NOT + Comp: not (5 > 10) = " + not_comp;
+
+$ Test 7: Multiple AND
+put true and true and true in multi_and;
+show "Test 7 - Multiple AND: true and true and true = " + multi_and;
+
+$ Test 8: Multiple OR
+put false or false or true in multi_or;
+show "Test 8 - Multiple OR: false or false or true = " + multi_or;
+
+$ Test 9: De Morgan's Law demonstration
+put not (true and false) in demorgan1;
+put (not true) or (not false) in demorgan2;
+show "Test 9 - De Morgan: not (true and false) = " + demorgan1 + ", (not true) or (not false) = " + demorgan2;
+
+show "=== All logical operation tests passed! ===";

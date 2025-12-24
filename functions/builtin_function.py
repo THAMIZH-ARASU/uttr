@@ -1,6 +1,7 @@
 from errors.run_time_error import RTError
 from functions.base_function import BaseFunction
 from run_time_result import RTResult
+from values.dict_value import Dict
 from values.list_value import List
 from values.number_value import Number
 from values.string_value import String
@@ -174,6 +175,102 @@ class BuiltInFunction(BaseFunction):
         return RTResult().success(Number.null)
     execute_run.arg_names = ["fn"]
 
+    def execute_keys(self, exec_ctx):
+        dict_ = exec_ctx.symbol_table.get("dict")
+
+        if not isinstance(dict_, Dict):
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                "Argument must be dictionary",
+                exec_ctx
+            ))
+
+        keys_list = []
+        for key in dict_.elements.keys():
+            if isinstance(key, str):
+                keys_list.append(String(key))
+            else:
+                keys_list.append(Number(key))
+        
+        return RTResult().success(List(keys_list))
+    execute_keys.arg_names = ["dict"]
+
+    def execute_values(self, exec_ctx):
+        dict_ = exec_ctx.symbol_table.get("dict")
+
+        if not isinstance(dict_, Dict):
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                "Argument must be dictionary",
+                exec_ctx
+            ))
+
+        values_list = list(dict_.elements.values())
+        return RTResult().success(List(values_list))
+    execute_values.arg_names = ["dict"]
+
+    def execute_has_key(self, exec_ctx):
+        dict_ = exec_ctx.symbol_table.get("dict")
+        key = exec_ctx.symbol_table.get("key")
+
+        if not isinstance(dict_, Dict):
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                "First argument must be dictionary",
+                exec_ctx
+            ))
+
+        # Convert key to hashable
+        if isinstance(key, String):
+            hashable_key = key.value
+        elif isinstance(key, Number):
+            hashable_key = key.value
+        else:
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                "Key must be string or number",
+                exec_ctx
+            ))
+
+        result = 1 if hashable_key in dict_.elements else 0
+        return RTResult().success(Number(result))
+    execute_has_key.arg_names = ["dict", "key"]
+
+    def execute_remove(self, exec_ctx):
+        dict_ = exec_ctx.symbol_table.get("dict")
+        key = exec_ctx.symbol_table.get("key")
+
+        if not isinstance(dict_, Dict):
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                "First argument must be dictionary",
+                exec_ctx
+            ))
+
+        # Convert key to hashable
+        if isinstance(key, String):
+            hashable_key = key.value
+        elif isinstance(key, Number):
+            hashable_key = key.value
+        else:
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                "Key must be string or number",
+                exec_ctx
+            ))
+
+        if hashable_key in dict_.elements:
+            # Modify dictionary in-place (like append and pop for lists)
+            removed_value = dict_.elements.pop(hashable_key)
+            return RTResult().success(removed_value)
+        else:
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                f'Key "{hashable_key}" not found in dictionary',
+                exec_ctx
+            ))
+    execute_remove.arg_names = ["dict", "key"]
+
     def execute_help(self, exec_ctx):
         help_text = """
 UTTR Quick Reference:
@@ -205,6 +302,10 @@ Loops:          cycle n from 1 to 10:
 Lists:          put [1, 2, 3] in nums;
                 show nums @ 0;
 
+Dictionaries:   put {"name": "Alice", "age": 25} in person;
+                show person @ "name";
+                put "Bob" in person @ "name";
+
 Functions:      make function greet(name):
                     show "Hello " + name;
                 end;
@@ -214,7 +315,8 @@ Functions:      make function greet(name):
                 end;
 
 Built-ins:      show, input, input_int, len, append, 
-                pop, extend, run, help, exit, clear
+                pop, extend, keys, values, has_key, 
+                remove, run, help, exit, clear
 
 For full documentation, see README.md
 """
@@ -242,6 +344,10 @@ BuiltInFunction.len = BuiltInFunction("len")
 BuiltInFunction.append = BuiltInFunction("append")
 BuiltInFunction.pop = BuiltInFunction("pop")
 BuiltInFunction.extend = BuiltInFunction("extend")
+BuiltInFunction.keys = BuiltInFunction("keys")
+BuiltInFunction.values = BuiltInFunction("values")
+BuiltInFunction.has_key = BuiltInFunction("has_key")
+BuiltInFunction.remove = BuiltInFunction("remove")
 BuiltInFunction.run = BuiltInFunction("run")
 BuiltInFunction.help = BuiltInFunction("help")
 BuiltInFunction.exit = BuiltInFunction("exit")

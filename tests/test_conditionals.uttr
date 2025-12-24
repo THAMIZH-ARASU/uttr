@@ -1,0 +1,87 @@
+$ ============================================
+$ UTTR Test Suite - Conditional Statements
+$ ============================================
+
+$ Test 1: Simple if (when)
+put 10 in value;
+when value > 5:
+    show "Test 1 - Simple when: Value is greater than 5";
+end;
+
+$ Test 2: If-else (when-otherwise)
+put 3 in num;
+when num > 5:
+    show "Test 2 - Num is greater than 5";
+otherwise:
+    show "Test 2 - Num is NOT greater than 5";
+end;
+
+$ Test 3: If-elif-else chain
+put 7 in score;
+when score >= 90:
+    show "Test 3 - Grade: A";
+otherwise when score >= 80:
+    show "Test 3 - Grade: B";
+otherwise when score >= 70:
+    show "Test 3 - Grade: C";
+otherwise:
+    show "Test 3 - Grade: F";
+end;
+
+$ Test 4: Nested conditionals
+put 15 in age;
+when age >= 13:
+    when age < 20:
+        show "Test 4 - Teenager";
+    otherwise:
+        show "Test 4 - Adult";
+    end;
+otherwise:
+    show "Test 4 - Child";
+end;
+
+$ Test 5: Multiple conditions
+put 25 in x;
+put 30 in y;
+when x > 20 and y > 20:
+    show "Test 5 - Both x and y are greater than 20";
+end;
+
+$ Test 6: Boolean conditions
+put true in is_ready;
+when is_ready:
+    show "Test 6 - System is ready";
+end;
+
+$ Test 7: Comparison in condition
+when 10 == 10:
+    show "Test 7 - Equality check passed";
+end;
+
+$ Test 8: Complex condition
+put 50 in temperature;
+when temperature > 30 or temperature < 10:
+    show "Test 8 - Extreme temperature";
+otherwise:
+    show "Test 8 - Normal temperature";
+end;
+
+$ Test 9: NOT in condition
+put false in is_error;
+when not is_error:
+    show "Test 9 - No errors detected";
+end;
+
+$ Test 10: Multiple elif branches
+put 2 in day;
+when day == 1:
+    show "Test 10 - Monday";
+otherwise when day == 2:
+    show "Test 10 - Tuesday";
+otherwise when day == 3:
+    show "Test 10 - Wednesday";
+otherwise:
+    show "Test 10 - Other day";
+end;
+
+show "=== All conditional tests passed! ===";

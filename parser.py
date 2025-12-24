@@ -2,6 +2,7 @@ from errors.invalid_syntax import InvalidSyntaxError
 from nodes.binary_operator_node import BinOpNode
 from nodes.call_node import CallNode
 from nodes.const_assign_node import ConstAssignNode
+from nodes.dict_node import DictNode
 from nodes.do_while_node import DoWhileNode
 from nodes.for_each_node import ForEachNode
 from nodes.for_node import ForNode
@@ -17,7 +18,7 @@ from nodes.var_access_node import VarAccessNode
 from nodes.var_assign_node import VarAssignNode
 from nodes.while_node import WhileNode
 from parse_result import ParseResult
-from tokens import TT_AT, TT_COLON, TT_COMMA, TT_DIV, TT_EE, TT_EOF, TT_FLOAT, TT_GT, TT_GTE, TT_IDENTIFIER, TT_INT, TT_KEYWORD, TT_LPAREN, TT_LSQUARE, TT_LT, TT_LTE, TT_MINUS, TT_MUL, TT_NE, TT_NEWLINE, TT_PLUS, TT_RPAREN, TT_RSQUARE, TT_STRING, Token
+from tokens import TT_AT, TT_COLON, TT_COMMA, TT_DIV, TT_EE, TT_EOF, TT_FLOAT, TT_GT, TT_GTE, TT_IDENTIFIER, TT_INT, TT_KEYWORD, TT_LCURLY, TT_LPAREN, TT_LSQUARE, TT_LT, TT_LTE, TT_MINUS, TT_MUL, TT_NE, TT_NEWLINE, TT_PLUS, TT_RCURLY, TT_RPAREN, TT_RSQUARE, TT_STRING, Token
 
 
 class Parser:
@@ -285,15 +286,16 @@ class Parser:
                 self.advance()
             return res.success(CallNode(atom, arg_nodes))
         
-        # Check for list access with @
-        if self.current_tok.type == TT_AT:
+        # Check for list/dict access with @ (can be chained)
+        while self.current_tok.type == TT_AT:
             res.register_advancement()
             self.advance()
             
-            index = res.register(self.logic_expr())
+            # Use atom() instead of logic_expr() to get higher precedence than +
+            index = res.register(self.atom())
             if res.error: return res
             
-            return res.success(ListAccessNode(atom, index))
+            atom = ListAccessNode(atom, index)
         
         return res.success(atom)
 
@@ -345,6 +347,11 @@ class Parser:
             list_expr = res.register(self.list_expr())
             if res.error: return res
             return res.success(list_expr)
+
+        elif tok.type == TT_LCURLY:
+            dict_expr = res.register(self.dict_expr())
+            if res.error: return res
+            return res.success(dict_expr)
 
         elif tok.matches(TT_KEYWORD, 'when'):
             if_expr = res.register(self.if_expr())
@@ -414,6 +421,75 @@ class Parser:
             self.advance()
 
         return res.success(ListNode(element_nodes, pos_start, self.current_tok.pos_end.copy()))
+
+    def dict_expr(self):
+        res = ParseResult()
+        key_value_pairs = []
+        pos_start = self.current_tok.pos_start.copy()
+
+        if self.current_tok.type != TT_LCURLY:
+            return res.failure(InvalidSyntaxError(
+                self.current_tok.pos_start, self.current_tok.pos_end,
+                "Expected '{'"
+            ))
+
+        res.register_advancement()
+        self.advance()
+
+        if self.current_tok.type == TT_RCURLY:
+            res.register_advancement()
+            self.advance()
+        else:
+            # Parse first key-value pair
+            key_node = res.register(self.logic_expr())
+            if res.error: return res
+
+            if self.current_tok.type != TT_COLON:
+                return res.failure(InvalidSyntaxError(
+                    self.current_tok.pos_start, self.current_tok.pos_end,
+                    "Expected ':'"
+                ))
+
+            res.register_advancement()
+            self.advance()
+
+            value_node = res.register(self.logic_expr())
+            if res.error: return res
+
+            key_value_pairs.append((key_node, value_node))
+
+            # Parse remaining key-value pairs
+            while self.current_tok.type == TT_COMMA:
+                res.register_advancement()
+                self.advance()
+
+                key_node = res.register(self.logic_expr())
+                if res.error: return res
+
+                if self.current_tok.type != TT_COLON:
+                    return res.failure(InvalidSyntaxError(
+                        self.current_tok.pos_start, self.current_tok.pos_end,
+                        "Expected ':'"
+                    ))
+
+                res.register_advancement()
+                self.advance()
+
+                value_node = res.register(self.logic_expr())
+                if res.error: return res
+
+                key_value_pairs.append((key_node, value_node))
+
+            if self.current_tok.type != TT_RCURLY:
+                return res.failure(InvalidSyntaxError(
+                    self.current_tok.pos_start, self.current_tok.pos_end,
+                    "Expected ',' or '}'"
+                ))
+
+            res.register_advancement()
+            self.advance()
+
+        return res.success(DictNode(key_value_pairs, pos_start, self.current_tok.pos_end.copy()))
 
     def if_expr(self):
         res = ParseResult()
@@ -613,6 +689,15 @@ class Parser:
         end_value = res.register(self.logic_expr())
         if res.error: return res
 
+        # Check for optional 'step' keyword
+        step_value = None
+        if self.current_tok.matches(TT_KEYWORD, 'step'):
+            res.register_advancement()
+            self.advance()
+            
+            step_value = res.register(self.logic_expr())
+            if res.error: return res
+
         if self.current_tok.type != TT_COLON:
             return res.failure(InvalidSyntaxError(
                 self.current_tok.pos_start, self.current_tok.pos_end,
@@ -638,12 +723,12 @@ class Parser:
             res.register_advancement()
             self.advance()
 
-            return res.success(ForNode(var_name, start_value, end_value, body))
+            return res.success(ForNode(var_name, start_value, end_value, body, step_value))
 
         body = res.register(self.statement())
         if res.error: return res
 
-        return res.success(ForNode(var_name, start_value, end_value, body))
+        return res.success(ForNode(var_name, start_value, end_value, body, step_value))
 
     def while_expr(self):
         res = ParseResult()

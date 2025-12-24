@@ -1,0 +1,75 @@
+$ ============================================
+$ UTTR Test Suite - For Loops (cycle)
+$ ============================================
+
+$ Test 1: Basic for loop
+show "Test 1 - Basic for loop:";
+cycle i from 1 to 5:
+    show i;
+end;
+
+$ Test 2: For loop with step
+show "Test 2 - Loop with step 2:";
+cycle i from 0 to 10 step 2:
+    show i;
+end;
+
+$ Test 3: For loop with expressions
+put 1 in start;
+put 5 in stop;
+show "Test 3 - Loop with variable bounds:";
+cycle i from start to stop:
+    show i;
+end;
+
+$ Test 4: Nested for loops
+show "Test 4 - Nested loops:";
+cycle i from 1 to 3:
+    cycle j from 1 to 3:
+        show "i=" + i + ", j=" + j;
+    end;
+end;
+
+$ Test 5: For loop with calculations
+show "Test 5 - Loop with calculations:";
+put 0 in sum;
+cycle i from 1 to 5:
+    put sum + i in sum;
+end;
+show "Sum of 1 to 5: " + sum;
+
+$ Test 6: Countdown loop
+show "Test 6 - Countdown:";
+cycle i from 5 to 1 step -1:
+    show i;
+end;
+
+$ Test 7: Loop with larger step
+show "Test 7 - Loop by 5s:";
+cycle i from 0 to 25 step 5:
+    show i;
+end;
+
+$ Test 8: Single iteration loop
+show "Test 8 - Single iteration:";
+cycle i from 10 to 10:
+    show "Single value: " + i;
+end;
+
+$ Test 9: Loop building a result
+show "Test 9 - Building result:";
+put 1 in factorial;
+cycle i from 1 to 5:
+    put factorial * i in factorial;
+end;
+show "5! = " + factorial;
+
+$ Test 10: Loop with conditional
+show "Test 10 - Loop with condition:";
+cycle i from 1 to 10:
+    when i == 5:
+        show "Found 5!";
+    end;
+end;
+
+show "=== All for loop tests passed! ===";

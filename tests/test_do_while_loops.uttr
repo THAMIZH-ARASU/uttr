@@ -1,0 +1,81 @@
+$ ============================================
+$ UTTR Test Suite - Do-While Loops
+$ ============================================
+
+$ Test 1: Basic do-while (repeat while)
+show "Test 1 - Basic repeat while:";
+put 1 in counter;
+repeat while counter <= 5:
+    show counter;
+    put counter + 1 in counter;
+end;
+
+$ Test 2: Do-while executes at least once (condition false)
+show "Test 2 - Executes at least once:";
+put 10 in value;
+repeat while value < 5:
+    show "This executes once even though condition is false";
+    put value + 1 in value;
+end;
+
+$ Test 3: Do-while vs while comparison
+show "Test 3 - Do-while vs while:";
+put 0 in x;
+repeat while x < 0:
+    show "Do-while: Executed with x=" + x;
+    put x + 1 in x;
+end;
+
+put 0 in y;
+as long as y < 0:
+    show "While: This won't execute";
+    put y + 1 in y;
+end;
+
+$ Test 4: Do-while with accumulator
+show "Test 4 - Accumulator:";
+put 0 in sum;
+put 1 in num;
+repeat while num <= 5:
+    put sum + num in sum;
+    put num + 1 in num;
+end;
+show "Sum: " + sum;
+
+$ Test 5: Do-while countdown
+show "Test 5 - Countdown:";
+put 5 in count;
+repeat while count > 0:
+    show count;
+    put count - 1 in count;
+end;
+
+$ Test 6: Nested do-while
+show "Test 6 - Nested repeat while:";
+put 1 in i;
+repeat while i <= 2:
+    put 1 in j;
+    repeat while j <= 2:
+        show "i=" + i + ", j=" + j;
+        put j + 1 in j;
+    end;
+    put i + 1 in i;
+end;
+
+$ Test 7: Do-while with boolean flag
+show "Test 7 - With boolean flag:";
+put true in first_time;
+repeat while first_time:
+    show "Executed once";
+    put false in first_time;
+end;
+
+$ Test 8: Do-while with complex condition
+show "Test 8 - Complex condition:";
+put 0 in x;
+repeat while x < 3 and x != 2:
+    show "x = " + x;
+    put x + 1 in x;
+end;
+
+show "=== All do-while loop tests passed! ===";

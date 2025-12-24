@@ -1,6 +1,6 @@
 from errors.illegal_character import IllegalCharError
 from position import Position
-from tokens import KEYWORDS, TT_AT, TT_COLON, TT_COMMA, TT_DIV, TT_EE, TT_EOF, TT_FLOAT, TT_GT, TT_GTE, TT_IDENTIFIER, TT_INT, TT_KEYWORD, TT_LPAREN, TT_LSQUARE, TT_LT, TT_LTE, TT_MINUS, TT_MUL, TT_NE, TT_NEWLINE, TT_PLUS, TT_RPAREN, TT_RSQUARE, TT_STRING, Token
+from tokens import KEYWORDS, TT_AT, TT_COLON, TT_COMMA, TT_DIV, TT_EE, TT_EOF, TT_FLOAT, TT_GT, TT_GTE, TT_IDENTIFIER, TT_INT, TT_KEYWORD, TT_LCURLY, TT_LPAREN, TT_LSQUARE, TT_LT, TT_LTE, TT_MINUS, TT_MUL, TT_NE, TT_NEWLINE, TT_PLUS, TT_RCURLY, TT_RPAREN, TT_RSQUARE, TT_STRING, Token
 from constants import DIGITS, LETTERS, LETTERS_DIGITS
 
 
@@ -61,6 +61,12 @@ class Lexer:
             elif self.current_char == ']':
                 tokens.append(Token(TT_RSQUARE, pos_start=self.pos))
                 self.advance()
+            elif self.current_char == '{':
+                tokens.append(Token(TT_LCURLY, pos_start=self.pos))
+                self.advance()
+            elif self.current_char == '}':
+                tokens.append(Token(TT_RCURLY, pos_start=self.pos))
+                self.advance()
             elif self.current_char == '!':
                 token, error = self.make_not_equals()
                 if error: return [], error
@@ -114,19 +120,21 @@ class Lexer:
 
         escape_characters = {
             'n': '\n',
-            't': '\t'
+            't': '\t',
+            '"': '"',
+            '\\': '\\'
         }
 
         while self.current_char is not None and (self.current_char != '"' or escape_character):
             if escape_character:
                 string += escape_characters.get(self.current_char, self.current_char)
+                escape_character = False
             else:
                 if self.current_char == '\\':
                     escape_character = True
                 else:
                     string += self.current_char
             self.advance()
-            escape_character = False
         
         self.advance()
         return Token(TT_STRING, string, pos_start, self.pos)

@@ -1,0 +1,57 @@
+$ ============================================
+$ UTTR Test Suite - Arithmetic Operations
+$ ============================================
+
+$ Test 1: Addition
+put 10 + 5 in sum;
+show "Test 1 - Addition: 10 + 5 = " + sum;
+
+$ Test 2: Subtraction
+put 20 - 7 in diff;
+show "Test 2 - Subtraction: 20 - 7 = " + diff;
+
+$ Test 3: Multiplication
+put 6 * 7 in product;
+show "Test 3 - Multiplication: 6 * 7 = " + product;
+
+$ Test 4: Division
+put 50 / 10 in quotient;
+show "Test 4 - Division: 50 / 10 = " + quotient;
+
+$ Test 5: Float division
+put 7 / 2 in float_div;
+show "Test 5 - Float division: 7 / 2 = " + float_div;
+
+$ Test 6: Order of operations (PEMDAS)
+put 2 + 3 * 4 in order1;
+show "Test 6a - Order: 2 + 3 * 4 = " + order1;
+
+put (2 + 3) * 4 in order2;
+show "Test 6b - Order: (2 + 3) * 4 = " + order2;
+
+$ Test 7: Complex expression
+put 10 + 20 * 3 - 5 / 5 in complex;
+show "Test 7 - Complex: 10 + 20 * 3 - 5 / 5 = " + complex;
+
+$ Test 8: Negative numbers
+put -5 + 10 in neg_sum;
+show "Test 8 - Negative: -5 + 10 = " + neg_sum;
+
+$ Test 9: Unary minus
+put 15 in pos_num;
+put -pos_num in neg_num;
+show "Test 9 - Unary minus: -15 = " + neg_num;
+
+$ Test 10: Float arithmetic
+put 3.14 + 2.86 in float_sum;
+show "Test 10 - Float arithmetic: 3.14 + 2.86 = " + float_sum;
+
+$ Test 11: Mixed int and float
+put 10 + 2.5 in mixed;
+show "Test 11 - Mixed types: 10 + 2.5 = " + mixed;
+
+$ Test 12: Chained operations
+put 100 - 20 - 10 - 5 in chained;
+show "Test 12 - Chained: 100 - 20 - 10 - 5 = " + chained;
+
+show "=== All arithmetic tests passed! ===";

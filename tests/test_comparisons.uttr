@@ -1,0 +1,48 @@
+$ ============================================
+$ UTTR Test Suite - Comparison Operations
+$ ============================================
+
+$ Test 1: Equality
+put 5 == 5 in eq_true;
+put 5 == 6 in eq_false;
+show "Test 1 - Equality: 5 == 5 is " + eq_true + ", 5 == 6 is " + eq_false;
+
+$ Test 2: Inequality
+put 5 != 6 in neq_true;
+put 5 != 5 in neq_false;
+show "Test 2 - Inequality: 5 != 6 is " + neq_true + ", 5 != 5 is " + neq_false;
+
+$ Test 3: Less than
+put 3 < 5 in lt_true;
+put 5 < 3 in lt_false;
+show "Test 3 - Less than: 3 < 5 is " + lt_true + ", 5 < 3 is " + lt_false;
+
+$ Test 4: Greater than
+put 10 > 5 in gt_true;
+put 5 > 10 in gt_false;
+show "Test 4 - Greater than: 10 > 5 is " + gt_true + ", 5 > 10 is " + gt_false;
+
+$ Test 5: Less than or equal
+put 5 <= 5 in lte_true1;
+put 4 <= 5 in lte_true2;
+put 6 <= 5 in lte_false;
+show "Test 5 - LTE: 5 <= 5 is " + lte_true1 + ", 4 <= 5 is " + lte_true2 + ", 6 <= 5 is " + lte_false;
+
+$ Test 6: Greater than or equal
+put 5 >= 5 in gte_true1;
+put 6 >= 5 in gte_true2;
+put 4 >= 5 in gte_false;
+show "Test 6 - GTE: 5 >= 5 is " + gte_true1 + ", 6 >= 5 is " + gte_true2 + ", 4 >= 5 is " + gte_false;
+
+$ Test 7: String comparison
+put "abc" == "abc" in str_eq_true;
+put "abc" == "xyz" in str_eq_false;
+show "Test 7 - String equality: 'abc' == 'abc' is " + str_eq_true;
+
+$ Test 8: Comparison chains
+put 1 < 2 in comp1;
+put 2 < 3 in comp2;
+put comp1 and comp2 in chained;
+show "Test 8 - Chained: (1 < 2) and (2 < 3) is " + chained;
+
+show "=== All comparison tests passed! ===";

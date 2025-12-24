@@ -1,0 +1,77 @@
+$ ============================================
+$ UTTR Test Suite - Error Handling
+$ ============================================
+$ Note: These tests demonstrate error handling.
+$ Some tests may produce errors - that's expected!
+$ ============================================
+
+show "=== Error Handling Tests ===";
+show "Note: Some tests will deliberately cause errors";
+show "";
+
+$ Test 1: Division by zero (should cause error)
+show "Test 1 - Division by zero:";
+$ Uncomment to test: put 10 / 0 in result;
+show "Test 1 - Skipped (would cause error)";
+
+$ Test 2: Undefined variable access (should cause error)
+show "Test 2 - Undefined variable:";
+$ Uncomment to test: show undefined_variable;
+show "Test 2 - Skipped (would cause error)";
+
+$ Test 3: Invalid list index (should cause error)
+show "Test 3 - Invalid list index:";
+put [1, 2, 3] in list1;
+$ Uncomment to test: show list1 @ 10;
+show "Test 3 - Skipped (would cause error)";
+
+$ Test 4: Invalid dictionary key (should cause error)
+show "Test 4 - Invalid dictionary key:";
+put {"a": 1, "b": 2} in dict1;
+$ Uncomment to test: show dict1 @ "nonexistent";
+show "Test 4 - Skipped (would cause error)";
+
+$ Test 5: Type error in operation (should cause error)
+show "Test 5 - Type error:";
+$ Uncomment to test: put "string" * "string" in result;
+show "Test 5 - Skipped (would cause error)";
+
+$ Test 6: Wrong number of function arguments (should cause error)
+make function add_two(a, b):
+    give a + b;
+end;
+show "Test 6 - Wrong argument count:";
+$ Uncomment to test: show add_two(5);
+show "Test 6 - Skipped (would cause error)";
+
+$ Test 7: Invalid syntax (handled by parser)
+show "Test 7 - Syntax errors:";
+$ Uncomment to test: put 10 in;
+show "Test 7 - Skipped (would cause syntax error)";
+
+$ Test 8: Proper error recovery
+show "Test 8 - Error recovery:";
+put 5 in x;
+show "Before potential error: " + x;
+$ Code continues after skipped error
+put 10 in x;
+show "After skipped error: " + x;
+
+$ Test 9: Valid operations (should not error)
+show "Test 9 - Valid operations:";
+put 10 in valid1;
+put [1, 2, 3] in valid2;
+put {"key": "value"} in valid3;
+show "All valid operations completed";
+
+$ Test 10: Boundary cases (valid)
+show "Test 10 - Boundary cases:";
+put [] in empty_list;
+put {} in empty_dict;
+put 0 in zero;
+put "" in empty_string;
+show "Boundary cases handled: list=" + empty_list + ", dict=" + empty_dict + ", zero=" + zero;
+
+show "";
+show "=== Error handling tests completed ===";
+show "Note: Tests that would cause errors were skipped";

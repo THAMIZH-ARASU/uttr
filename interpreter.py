@@ -2,6 +2,7 @@ from errors.run_time_error import RTError
 from functions.function import Function
 from run_time_result import RTResult
 from tokens import TT_DIV, TT_EE, TT_GT, TT_GTE, TT_KEYWORD, TT_LT, TT_LTE, TT_MINUS, TT_MUL, TT_NE, TT_PLUS
+from values.dict_value import Dict
 from values.list_value import List
 from values.number_value import Number
 from values.string_value import String
@@ -36,6 +37,33 @@ class Interpreter:
 
         return res.success(
             List(elements).set_context(context).set_pos(node.pos_start, node.pos_end)
+        )
+
+    def visit_DictNode(self, node, context):
+        res = RTResult()
+        elements = {}
+
+        for key_node, value_node in node.key_value_pairs:
+            key = res.register(self.visit(key_node, context))
+            if res.should_return(): return res
+            
+            value = res.register(self.visit(value_node, context))
+            if res.should_return(): return res
+            
+            # Convert key to hashable type
+            if hasattr(key, 'value'):
+                hashable_key = key.value
+            else:
+                return res.failure(RTError(
+                    key_node.pos_start, key_node.pos_end,
+                    'Dictionary key must be a string or number',
+                    context
+                ))
+            
+            elements[hashable_key] = value
+
+        return res.success(
+            Dict(elements).set_context(context).set_pos(node.pos_start, node.pos_end)
         )
 
     def visit_VarAccessNode(self, node, context):
@@ -155,11 +183,19 @@ class Interpreter:
         end_value = res.register(self.visit(node.end_value_node, context))
         if res.should_return(): return res
 
+        # Handle optional step value
+        if node.step_value_node:
+            step_value = res.register(self.visit(node.step_value_node, context))
+            if res.should_return(): return res
+            step = step_value.value
+        else:
+            step = 1
+
         i = start_value.value
 
         while i < end_value.value:
             context.symbol_table.set(node.var_name_tok.value, Number(i))
-            i += 1
+            i += step
 
             value = res.register(self.visit(node.body_node, context))
             if res.should_return(): return res
@@ -274,32 +310,41 @@ class Interpreter:
     def visit_ListAccessNode(self, node, context):
         res = RTResult()
 
-        list_value = res.register(self.visit(node.list_node, context))
+        collection = res.register(self.visit(node.list_node, context))
         if res.should_return(): return res
 
         index = res.register(self.visit(node.index_node, context))
         if res.should_return(): return res
 
-        if not isinstance(list_value, List):
+        # Handle list access
+        if isinstance(collection, List):
+            if not isinstance(index, Number):
+                return res.failure(RTError(
+                    node.index_node.pos_start, node.index_node.pos_end,
+                    "List index must be a number",
+                    context
+                ))
+
+            try:
+                element = collection.elements[int(index.value)]
+                return res.success(element)
+            except:
+                return res.failure(RTError(
+                    node.index_node.pos_start, node.index_node.pos_end,
+                    "Index out of bounds",
+                    context
+                ))
+        
+        # Handle dictionary access
+        elif isinstance(collection, Dict):
+            result, error = collection.dived_by(index)
+            if error:
+                return res.failure(error)
+            return res.success(result)
+        
+        else:
             return res.failure(RTError(
                 node.list_node.pos_start, node.list_node.pos_end,
-                "Can only index lists",
-                context
-            ))
-
-        if not isinstance(index, Number):
-            return res.failure(RTError(
-                node.index_node.pos_start, node.index_node.pos_end,
-                "Index must be a number",
-                context
-            ))
-
-        try:
-            element = list_value.elements[int(index.value)]
-            return res.success(element)
-        except:
-            return res.failure(RTError(
-                node.index_node.pos_start, node.index_node.pos_end,
-                "Index out of bounds",
+                "Can only index lists and dictionaries",
                 context
             ))

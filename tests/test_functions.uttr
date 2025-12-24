@@ -1,0 +1,126 @@
+$ ============================================
+$ UTTR Test Suite - Functions
+$ ============================================
+
+$ Test 1: Simple function with no parameters
+make function greet():
+    show "Hello from function!";
+end;
+show "Test 1 - Calling greet():";
+greet();
+
+$ Test 2: Function with one parameter
+make function say_hello(name):
+    show "Hello, " + name + "!";
+end;
+show "Test 2 - Function with parameter:";
+say_hello("Alice");
+say_hello("Bob");
+
+$ Test 3: Function with multiple parameters
+make function add(a, b):
+    put a + b in sum;
+    show a + " + " + b + " = " + sum;
+end;
+show "Test 3 - Multiple parameters:";
+add(5, 3);
+add(10, 20);
+
+$ Test 4: Function with return value
+make function multiply(x, y):
+    give x * y;
+end;
+show "Test 4 - Function with return:";
+put multiply(4, 5) in result;
+show "4 * 5 = " + result;
+
+$ Test 5: Function returning calculation
+make function square(n):
+    give n * n;
+end;
+show "Test 5 - Square function:";
+show "Square of 7: " + square(7);
+show "Square of 10: " + square(10);
+
+$ Test 6: Nested function calls
+make function add_three(a, b, c):
+    give a + b + c;
+end;
+make function double(x):
+    give x * 2;
+end;
+show "Test 6 - Nested calls:";
+put double(add_three(1, 2, 3)) in nested_result;
+show "double(add_three(1,2,3)) = " + nested_result;
+
+$ Test 7: Function with conditional
+make function max(a, b):
+    when a > b:
+        give a;
+    otherwise:
+        give b;
+    end;
+end;
+show "Test 7 - Max function:";
+show "max(10, 5) = " + max(10, 5);
+show "max(3, 8) = " + max(3, 8);
+
+$ Test 8: Function with loop
+make function factorial(n):
+    put 1 in result;
+    cycle i from 1 to n:
+        put result * i in result;
+    end;
+    give result;
+end;
+show "Test 8 - Factorial:";
+show "5! = " + factorial(5);
+show "6! = " + factorial(6);
+
+$ Test 9: Function with list parameter
+make function sum_list(numbers):
+    put 0 in total;
+    cycle each num through numbers:
+        put total + num in total;
+    end;
+    give total;
+end;
+show "Test 9 - List parameter:";
+put [1, 2, 3, 4, 5] in my_list;
+show "Sum of [1,2,3,4,5]: " + sum_list(my_list);
+
+$ Test 10: Recursive function
+make function countdown_recursive(n):
+    when n > 0:
+        show n;
+        countdown_recursive(n - 1);
+    end;
+end;
+show "Test 10 - Recursive function:";
+countdown_recursive(5);
+
+$ Test 11: Function returning early
+make function find_first_positive(numbers):
+    cycle each num through numbers:
+        when num > 0:
+            give num;
+        end;
+    end;
+    give null;
+end;
+show "Test 11 - Early return:";
+put [-1, -2, 3, 4, 5] in nums;
+show "First positive: " + find_first_positive(nums);
+
+$ Test 12: Function with string operations
+make function repeat_string(text, times):
+    put "" in result;
+    cycle i from 1 to times:
+        put result + text in result;
+    end;
+    give result;
+end;
+show "Test 12 - String function:";
+show repeat_string("Ha", 3);
+
+show "=== All function tests passed! ===";

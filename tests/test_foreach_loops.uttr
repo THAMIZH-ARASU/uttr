@@ -1,0 +1,86 @@
+$ ============================================
+$ UTTR Test Suite - For-Each Loops
+$ ============================================
+
+$ Test 1: Basic for-each with list
+show "Test 1 - Basic for-each:";
+put [1, 2, 3, 4, 5] in numbers;
+cycle each num through numbers:
+    show num;
+end;
+
+$ Test 2: For-each with strings
+show "Test 2 - For-each with strings:";
+put ["apple", "banana", "cherry"] in fruits;
+cycle each fruit through fruits:
+    show fruit;
+end;
+
+$ Test 3: For-each with accumulation
+show "Test 3 - Sum with for-each:";
+put [10, 20, 30, 40] in values;
+put 0 in total;
+cycle each val through values:
+    put total + val in total;
+end;
+show "Total: " + total;
+
+$ Test 4: For-each with mixed types
+show "Test 4 - Mixed types:";
+put [1, "two", 3, "four"] in mixed;
+cycle each item through mixed:
+    show item;
+end;
+
+$ Test 5: Nested for-each
+show "Test 5 - Nested for-each:";
+put [[1, 2], [3, 4]] in matrix;
+cycle each row through matrix:
+    cycle each elem through row:
+        show elem;
+    end;
+end;
+
+$ Test 6: For-each with conditionals
+show "Test 6 - For-each with condition:";
+put [1, 2, 3, 4, 5, 6] in nums;
+cycle each n through nums:
+    when n > 3:
+        show n + " is greater than 3";
+    end;
+end;
+
+$ Test 7: For-each building result
+show "Test 7 - Building result:";
+put [2, 4, 6, 8] in evens;
+put 1 in product;
+cycle each n through evens:
+    put product * n in product;
+end;
+show "Product: " + product;
+
+$ Test 8: For-each with empty list
+show "Test 8 - Empty list:";
+put [] in empty_list;
+cycle each item through empty_list:
+    show "This won't print";
+end;
+show "Empty list handled";
+
+$ Test 9: For-each with single element
+show "Test 9 - Single element:";
+put [42] in single;
+cycle each item through single:
+    show "Single item: " + item;
+end;
+
+$ Test 10: For-each counting
+show "Test 10 - Counting items:";
+put ["a", "b", "c", "d", "e"] in letters;
+put 0 in count;
+cycle each letter through letters:
+    put count + 1 in count;
+end;
+show "Total items: " + count;
+
+show "=== All for-each loop tests passed! ===";

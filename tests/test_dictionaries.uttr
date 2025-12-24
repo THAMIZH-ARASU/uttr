@@ -1,0 +1,86 @@
+$ ============================================
+$ UTTR Test Suite - Dictionary Operations
+$ ============================================
+
+$ Test 1: Empty dictionary
+put {} in empty_dict;
+show "Test 1 - Empty dict: " + empty_dict;
+
+$ Test 2: Dictionary with string keys
+put {"name": "Alice", "age": 25, "city": "NYC"} in person;
+show "Test 2 - Person dict: " + person;
+
+$ Test 3: Dictionary access with @
+put {"x": 10, "y": 20, "z": 30} in coords;
+show "Test 3a - x coordinate: " + coords @ "x";
+show "Test 3b - y coordinate: " + coords @ "y";
+show "Test 3c - z coordinate: " + coords @ "z";
+
+$ Test 4: Dictionary with numeric keys
+put {1: "one", 2: "two", 3: "three"} in numbers;
+show "Test 4a - Number dict: " + numbers;
+show "Test 4b - Value at 2: " + numbers @ 2;
+
+$ Test 5: Mixed key types
+put {"name": "Bob", 1: "first", 2: "second"} in mixed;
+show "Test 5a - Mixed keys: " + mixed;
+show "Test 5b - String key: " + mixed @ "name";
+show "Test 5c - Numeric key: " + mixed @ 1;
+
+$ Test 6: keys() function
+put {"a": 1, "b": 2, "c": 3} in dict1;
+put keys(dict1) in key_list;
+show "Test 6 - Keys: " + key_list;
+
+$ Test 7: values() function
+put {"x": 100, "y": 200, "z": 300} in dict2;
+put values(dict2) in val_list;
+show "Test 7 - Values: " + val_list;
+
+$ Test 8: has_key() function
+put {"apple": 1, "banana": 2} in fruits;
+show "Test 8a - Has 'apple': " + has_key(fruits, "apple");
+show "Test 8b - Has 'orange': " + has_key(fruits, "orange");
+
+$ Test 9: remove() function (in-place modification)
+put {"a": 1, "b": 2, "c": 3, "d": 4} in dict3;
+show "Test 9a - Before remove: " + dict3;
+put remove(dict3, "b") in removed_val;
+show "Test 9b - Removed value: " + removed_val;
+show "Test 9c - After remove: " + dict3;
+
+$ Test 10: Nested dictionaries
+put {"person": {"name": "Alice", "age": 30}} in nested;
+show "Test 10 - Nested dict: " + nested;
+put nested @ "person" in person_data;
+show "Test 10b - Person name: " + person_data @ "name";
+
+$ Test 11: Dictionary with list values
+put {"numbers": [1, 2, 3], "letters": ["a", "b", "c"]} in dict_with_lists;
+show "Test 11a - Dict with lists: " + dict_with_lists;
+show "Test 11b - Numbers: " + dict_with_lists @ "numbers";
+
+$ Test 12: Iterate over dictionary keys
+put {"red": 1, "green": 2, "blue": 3} in color_map;
+show "Test 12 - Iterating keys:";
+cycle each key through keys(color_map):
+    show key + " = " + color_map @ key;
+end;
+
+$ Test 13: Count dictionary entries
+put {"item1": 10, "item2": 20, "item3": 30} in items;
+show "Test 13 - Number of items: " + len(keys(items));
+
+$ Test 14: Dictionary modification in loop
+put {"a": 1, "b": 2, "c": 3} in dict4;
+show "Test 14a - Original: " + dict4;
+remove(dict4, "b");
+show "Test 14b - After removing 'b': " + dict4;
+
+$ Test 15: Check and access pattern
+put {"username": "admin", "password": "secret"} in credentials;
+when has_key(credentials, "username"):
+    show "Test 15 - Username: " + credentials @ "username";
+end;
+
+show "=== All dictionary operation tests passed! ===";
