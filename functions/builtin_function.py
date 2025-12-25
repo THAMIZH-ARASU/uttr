@@ -64,14 +64,16 @@ class BuiltInFunction(BaseFunction):
     def execute_len(self, exec_ctx):
         list_ = exec_ctx.symbol_table.get("list")
 
-        if not isinstance(list_, List):
+        if isinstance(list_, List):
+            return RTResult().success(Number(len(list_.elements)))
+        elif isinstance(list_, String):
+            return RTResult().success(Number(len(list_.value)))
+        else:
             return RTResult().failure(RTError(
                 self.pos_start, self.pos_end,
-                "Argument must be list",
+                "Argument must be list or string",
                 exec_ctx
             ))
-
-        return RTResult().success(Number(len(list_.elements)))
     execute_len.arg_names = ["list"]
 
     def execute_append(self, exec_ctx):
@@ -363,6 +365,166 @@ For full documentation, see README.md
         return RTResult().success(String(error.error_type))
     execute_error_type.arg_names = ["error"]
 
+    def execute_split(self, exec_ctx):
+        string = exec_ctx.symbol_table.get("string")
+        delimiter = exec_ctx.symbol_table.get("delimiter")
+
+        if not isinstance(string, String):
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                "First argument must be string",
+                exec_ctx
+            ))
+
+        # Default delimiter is space if not provided or null
+        if delimiter is None or isinstance(delimiter, type(Number.null)) or (hasattr(delimiter, 'value') and delimiter.value == Number.null.value):
+            delimiter_str = " "
+        elif isinstance(delimiter, String):
+            delimiter_str = delimiter.value
+        else:
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                "Delimiter must be string or null",
+                exec_ctx
+            ))
+
+        # Split the string and convert to String values
+        parts = string.value.split(delimiter_str)
+        result_list = [String(part) for part in parts]
+        
+        return RTResult().success(List(result_list))
+    execute_split.arg_names = ["string", "delimiter"]
+
+    def execute_join(self, exec_ctx):
+        list_ = exec_ctx.symbol_table.get("list")
+        separator = exec_ctx.symbol_table.get("separator")
+
+        if not isinstance(list_, List):
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                "First argument must be list",
+                exec_ctx
+            ))
+
+        if not isinstance(separator, String):
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                "Second argument must be string",
+                exec_ctx
+            ))
+
+        # Validate all list elements are strings and convert to Python strings
+        string_parts = []
+        for element in list_.elements:
+            if isinstance(element, String):
+                string_parts.append(element.value)
+            elif isinstance(element, Number):
+                string_parts.append(str(element.value))
+            else:
+                return RTResult().failure(RTError(
+                    self.pos_start, self.pos_end,
+                    "All list elements must be strings or numbers",
+                    exec_ctx
+                ))
+
+        # Join the strings
+        result = separator.value.join(string_parts)
+        return RTResult().success(String(result))
+    execute_join.arg_names = ["list", "separator"]
+
+    def execute_upper(self, exec_ctx):
+        string = exec_ctx.symbol_table.get("string")
+
+        if not isinstance(string, String):
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                "Argument must be string",
+                exec_ctx
+            ))
+
+        return RTResult().success(String(string.value.upper()))
+    execute_upper.arg_names = ["string"]
+
+    def execute_lower(self, exec_ctx):
+        string = exec_ctx.symbol_table.get("string")
+
+        if not isinstance(string, String):
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                "Argument must be string",
+                exec_ctx
+            ))
+
+        return RTResult().success(String(string.value.lower()))
+    execute_lower.arg_names = ["string"]
+
+    def execute_replace(self, exec_ctx):
+        string = exec_ctx.symbol_table.get("string")
+        old = exec_ctx.symbol_table.get("old")
+        new = exec_ctx.symbol_table.get("new")
+
+        if not isinstance(string, String):
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                "First argument must be string",
+                exec_ctx
+            ))
+
+        if not isinstance(old, String):
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                "Second argument must be string",
+                exec_ctx
+            ))
+
+        if not isinstance(new, String):
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                "Third argument must be string",
+                exec_ctx
+            ))
+
+        result = string.value.replace(old.value, new.value)
+        return RTResult().success(String(result))
+    execute_replace.arg_names = ["string", "old", "new"]
+
+    def execute_substring(self, exec_ctx):
+        string = exec_ctx.symbol_table.get("string")
+        start = exec_ctx.symbol_table.get("start")
+        end = exec_ctx.symbol_table.get("end")
+
+        if not isinstance(string, String):
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                "First argument must be string",
+                exec_ctx
+            ))
+
+        if not isinstance(start, Number) or start == Number.null:
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                "Second argument must be a number (null not allowed for start index)",
+                exec_ctx
+            ))
+
+        start_idx = int(start.value)
+
+        # If end is not provided or is null, slice to end of string
+        if end is None or end == Number.null or (isinstance(end, Number) and end.value == Number.null.value):
+            result = string.value[start_idx:]
+        elif isinstance(end, Number):
+            end_idx = int(end.value)
+            result = string.value[start_idx:end_idx]
+        else:
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                "Third argument must be number or null",
+                exec_ctx
+            ))
+
+        return RTResult().success(String(result))
+    execute_substring.arg_names = ["string", "start", "end"]
+
 # Create built-in function instances
 BuiltInFunction.show = BuiltInFunction("show")
 BuiltInFunction.input = BuiltInFunction("input")
@@ -381,3 +543,9 @@ BuiltInFunction.exit = BuiltInFunction("exit")
 BuiltInFunction.clear = BuiltInFunction("clear")
 BuiltInFunction.error_message = BuiltInFunction("error_message")
 BuiltInFunction.error_type = BuiltInFunction("error_type")
+BuiltInFunction.split = BuiltInFunction("split")
+BuiltInFunction.join = BuiltInFunction("join")
+BuiltInFunction.upper = BuiltInFunction("upper")
+BuiltInFunction.lower = BuiltInFunction("lower")
+BuiltInFunction.replace = BuiltInFunction("replace")
+BuiltInFunction.substring = BuiltInFunction("substring")
