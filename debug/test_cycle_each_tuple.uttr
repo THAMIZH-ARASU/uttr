@@ -1,0 +1,4 @@
+put <"red", "green", "blue", "yellow"> in colors;
+cycle each color through colors:
+    show color;
+end;

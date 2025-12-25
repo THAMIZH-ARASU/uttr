@@ -1,0 +1,138 @@
+$ Example demonstrating tuple usage in UTTR
+$ Tuples are immutable lists created with <> syntax
+
+$ Basic tuple creation
+show "=== Basic Tuple Creation ===";
+put <1, 2, 3, 4, 5> in numbers;
+show "Numbers: " + numbers;
+show "Length: " + len(numbers);
+
+$ Mixed type tuples
+show "";
+show "=== Mixed Type Tuples ===";
+put <"Alice", 25, true, 3.14> in person_data;
+show "Person data: " + person_data;
+show "Name: " + person_data / 0;
+show "Age: " + person_data / 1;
+
+$ Tuple for coordinates
+show "";
+show "=== Coordinate System ===";
+make function create_point(x, y):
+    give <x, y>;
+end;
+
+put create_point(10, 20) in point1;
+put create_point(30, 40) in point2;
+show "Point 1: " + point1;
+show "Point 2: " + point2;
+
+$ Calculate distance between points
+make function distance(p1, p2):
+    put (p1 / 0) - (p2 / 0) in dx;
+    put (p1 / 1) - (p2 / 1) in dy;
+    give dx * dx + dy * dy;  $ Squared distance for simplicity
+end;
+
+show "Squared distance: " + distance(point1, point2);
+
+$ Tuple immutability demonstration
+show "";
+show "=== Immutability Demonstration ===";
+put <1, 2, 3> in original;
+show "Original tuple: " + original;
+
+attempt:
+    show "Attempting to modify tuple...";
+    put original + 4 in modified;
+end
+handle as error:
+    show "Error (as expected): " + error_message(error);
+    show "Tuples cannot be modified!";
+end
+
+$ Converting between lists and tuples
+show "";
+show "=== List/Tuple Conversion ===";
+put [1, 2, 3, 4] in mutable_list;
+show "Original list: " + mutable_list;
+
+put tuple(mutable_list) in immutable_tuple;
+show "As tuple: " + immutable_tuple;
+
+put list(immutable_tuple) in back_to_list;
+show "Back to list: " + back_to_list;
+
+$ Tuple concatenation
+show "";
+show "=== Tuple Concatenation ===";
+put <1, 2, 3> in first;
+put <4, 5, 6> in second;
+put first * second in combined;
+show "First: " + first;
+show "Second: " + second;
+show "Combined: " + combined;
+
+$ Nested tuples for matrix-like structure
+show "";
+show "=== Nested Tuples (Matrix) ===";
+put <<1, 0, 0>, <0, 1, 0>, <0, 0, 1>> in identity_matrix;
+show "Identity matrix: " + identity_matrix;
+show "Row 0: " + identity_matrix / 0;
+show "Row 1: " + identity_matrix / 1;
+show "Row 2: " + identity_matrix / 2;
+show "Element [1][1]: " + (identity_matrix / 1) / 1;
+
+$ Tuple unpacking pattern (using variables)
+show "";
+show "=== Tuple Data Pattern ===";
+make function get_user_info():
+    give <"Bob", 30, "Engineer">;
+end;
+
+put get_user_info() in user;
+show "User info: " + user;
+show "Name: " + user / 0;
+show "Age: " + user / 1;
+show "Profession: " + user / 2;
+
+$ Iterating over tuples
+show "";
+show "=== Iterating Over Tuples ===";
+put <"red", "green", "blue", "yellow"> in colors;
+show "Colors:";
+cycle each color through colors:
+    show "  - " + color;
+end;
+
+$ RGB color tuple example
+show "";
+show "=== RGB Color Tuples ===";
+make function create_rgb(r, g, b):
+    give <r, g, b>;
+end;
+
+put create_rgb(255, 0, 0) in red;
+put create_rgb(0, 255, 0) in green;
+put create_rgb(0, 0, 255) in blue;
+
+show "Red RGB: " + red;
+show "Green RGB: " + green;
+show "Blue RGB: " + blue;
+
+$ Multiple return values using tuples
+show "";
+show "=== Multiple Return Values ===";
+make function divide_with_remainder(dividend, divisor):
+    put dividend / divisor in quotient;
+    put dividend % divisor in remainder;
+    give <quotient, remainder>;
+end;
+
+put divide_with_remainder(17, 5) in result;
+show "17 divided by 5:";
+show "Quotient: " + result / 0;
+show "Remainder: " + result / 1;
+
+show "";
+show "Example completed!";

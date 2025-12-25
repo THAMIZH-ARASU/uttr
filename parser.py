@@ -16,12 +16,13 @@ from nodes.return_node import ReturnNode
 from nodes.skip_node import SkipNode
 from nodes.string_node import StringNode
 from nodes.attempt_handle_node import AttemptHandleNode
+from nodes.tuple_node import TupleNode
 from nodes.unary_operator_node import UnaryOpNode
 from nodes.var_access_node import VarAccessNode
 from nodes.var_assign_node import VarAssignNode
 from nodes.while_node import WhileNode
 from parse_result import ParseResult
-from tokens import TT_AT, TT_COLON, TT_COMMA, TT_DIV, TT_EE, TT_EOF, TT_FLOAT, TT_GT, TT_GTE, TT_IDENTIFIER, TT_INT, TT_KEYWORD, TT_LCURLY, TT_LPAREN, TT_LSQUARE, TT_LT, TT_LTE, TT_MINUS, TT_MOD, TT_MUL, TT_NE, TT_NEWLINE, TT_PLUS, TT_RCURLY, TT_RPAREN, TT_RSQUARE, TT_STRING, Token
+from tokens import TT_AT, TT_COLON, TT_COMMA, TT_DIV, TT_EE, TT_EOF, TT_FLOAT, TT_GT, TT_GTE, TT_IDENTIFIER, TT_INT, TT_KEYWORD, TT_LANGLE, TT_LCURLY, TT_LPAREN, TT_LSQUARE, TT_LT, TT_LTE, TT_MINUS, TT_MOD, TT_MUL, TT_NE, TT_NEWLINE, TT_PLUS, TT_RANGLE, TT_RCURLY, TT_RPAREN, TT_RSQUARE, TT_STRING, Token
 
 
 class Parser:
@@ -363,6 +364,11 @@ class Parser:
             if res.error: return res
             return res.success(list_expr)
 
+        elif tok.type == TT_LANGLE:
+            tuple_expr = res.register(self.tuple_expr())
+            if res.error: return res
+            return res.success(tuple_expr)
+
         elif tok.type == TT_LCURLY:
             dict_expr = res.register(self.dict_expr())
             if res.error: return res
@@ -400,7 +406,7 @@ class Parser:
 
         return res.failure(InvalidSyntaxError(
             tok.pos_start, tok.pos_end,
-            "Expected int, float, string, identifier, 'true', 'false', '+', '-', '(', '[', 'when', 'cycle', 'as long as', 'repeat while', 'make function', or 'attempt'"
+            "Expected int, float, string, identifier, 'true', 'false', '+', '-', '(', '[', '<', 'when', 'cycle', 'as long as', 'repeat while', 'make function', or 'attempt'"
         ))
 
     def list_expr(self):
@@ -441,6 +447,45 @@ class Parser:
             self.advance()
 
         return res.success(ListNode(element_nodes, pos_start, self.current_tok.pos_end.copy()))
+
+    def tuple_expr(self):
+        res = ParseResult()
+        element_nodes = []
+        pos_start = self.current_tok.pos_start.copy()
+
+        if self.current_tok.type != TT_LANGLE:
+            return res.failure(InvalidSyntaxError(
+                self.current_tok.pos_start, self.current_tok.pos_end,
+                "Expected '<'"
+            ))
+
+        res.register_advancement()
+        self.advance()
+
+        if self.current_tok.type == TT_RANGLE:
+            res.register_advancement()
+            self.advance()
+        else:
+            element_nodes.append(res.register(self.logic_expr()))
+            if res.error: return res
+
+            while self.current_tok.type == TT_COMMA:
+                res.register_advancement()
+                self.advance()
+
+                element_nodes.append(res.register(self.logic_expr()))
+                if res.error: return res
+
+            if self.current_tok.type != TT_RANGLE:
+                return res.failure(InvalidSyntaxError(
+                    self.current_tok.pos_start, self.current_tok.pos_end,
+                    "Expected ',' or '>'"
+                ))
+
+            res.register_advancement()
+            self.advance()
+
+        return res.success(TupleNode(element_nodes, pos_start, self.current_tok.pos_end.copy()))
 
     def dict_expr(self):
         res = ParseResult()

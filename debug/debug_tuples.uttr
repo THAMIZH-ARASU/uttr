@@ -1,0 +1,43 @@
+$ Debug file for tuple features
+$ Simple test cases for debugging tuple implementation
+
+$ Test basic tuple creation
+put <1, 2, 3> in t;
+show t;
+
+$ Test empty tuple
+put <> in empty;
+show empty;
+
+$ Test tuple access
+put <10, 20, 30> in nums;
+show nums / 0;
+show nums / 1;
+show nums / 2;
+
+$ Test tuple concatenation
+put <1, 2> in a;
+put <3, 4> in b;
+put a * b in c;
+show c;
+
+$ Test tuple immutability
+attempt:
+    put <1, 2, 3> in x;
+    put x + 4 in y;
+end
+handle as error:
+    show "Caught error: " + error_message(error);
+end;
+
+$ Test len on tuple
+put <"a", "b", "c", "d"> in letters;
+show len(letters);
+
+$ Test conversion
+put [1, 2, 3] in list_val;
+put tuple(list_val) in tuple_val;
+show tuple_val;
+
+put list(tuple_val) in back_to_list;
+show back_to_list;

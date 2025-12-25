@@ -7,6 +7,7 @@ from values.error_value import ErrorValue
 from values.list_value import List
 from values.number_value import Number
 from values.string_value import String
+from values.tuple_value import Tuple
 
 
 class Interpreter:
@@ -38,6 +39,18 @@ class Interpreter:
 
         return res.success(
             List(elements).set_context(context).set_pos(node.pos_start, node.pos_end)
+        )
+
+    def visit_TupleNode(self, node, context):
+        res = RTResult()
+        elements = []
+
+        for element_node in node.element_nodes:
+            elements.append(res.register(self.visit(element_node, context)))
+            if res.should_return(): return res
+
+        return res.success(
+            Tuple(elements).set_context(context).set_pos(node.pos_start, node.pos_end)
         )
 
     def visit_DictNode(self, node, context):
@@ -222,10 +235,10 @@ class Interpreter:
         iterable = res.register(self.visit(node.iterable_node, context))
         if res.should_return(): return res
 
-        if not isinstance(iterable, List):
+        if not isinstance(iterable, (List, Tuple)):
             return res.failure(RTError(
                 node.iterable_node.pos_start, node.iterable_node.pos_end,
-                "Can only iterate through lists",
+                "Can only iterate through lists and tuples",
                 context
             ))
 

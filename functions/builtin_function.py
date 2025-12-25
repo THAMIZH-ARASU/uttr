@@ -6,6 +6,7 @@ from values.error_value import ErrorValue
 from values.list_value import List
 from values.number_value import Number
 from values.string_value import String
+from values.tuple_value import Tuple
 
 
 class BuiltInFunction(BaseFunction):
@@ -66,12 +67,14 @@ class BuiltInFunction(BaseFunction):
 
         if isinstance(list_, List):
             return RTResult().success(Number(len(list_.elements)))
+        elif isinstance(list_, Tuple):
+            return RTResult().success(Number(len(list_.elements)))
         elif isinstance(list_, String):
             return RTResult().success(Number(len(list_.value)))
         else:
             return RTResult().failure(RTError(
                 self.pos_start, self.pos_end,
-                "Argument must be list or string",
+                "Argument must be list, tuple, or string",
                 exec_ctx
             ))
     execute_len.arg_names = ["list"]
@@ -525,6 +528,42 @@ For full documentation, see README.md
         return RTResult().success(String(result))
     execute_substring.arg_names = ["string", "start", "end"]
 
+    def execute_tuple(self, exec_ctx):
+        value = exec_ctx.symbol_table.get("value")
+
+        if isinstance(value, List):
+            # Convert list to tuple
+            return RTResult().success(Tuple(value.elements))
+        elif isinstance(value, Tuple):
+            # Already a tuple, return as is
+            return RTResult().success(value)
+        elif isinstance(value, String):
+            # Convert string characters to tuple of strings
+            char_list = [String(char) for char in value.value]
+            return RTResult().success(Tuple(char_list))
+        else:
+            # Wrap single value in tuple
+            return RTResult().success(Tuple([value]))
+    execute_tuple.arg_names = ["value"]
+
+    def execute_list(self, exec_ctx):
+        value = exec_ctx.symbol_table.get("value")
+
+        if isinstance(value, Tuple):
+            # Convert tuple to list
+            return RTResult().success(List(list(value.elements)))
+        elif isinstance(value, List):
+            # Already a list, return as is
+            return RTResult().success(value)
+        elif isinstance(value, String):
+            # Convert string characters to list of strings
+            char_list = [String(char) for char in value.value]
+            return RTResult().success(List(char_list))
+        else:
+            # Wrap single value in list
+            return RTResult().success(List([value]))
+    execute_list.arg_names = ["value"]
+
 # Create built-in function instances
 BuiltInFunction.show = BuiltInFunction("show")
 BuiltInFunction.input = BuiltInFunction("input")
@@ -549,3 +588,5 @@ BuiltInFunction.upper = BuiltInFunction("upper")
 BuiltInFunction.lower = BuiltInFunction("lower")
 BuiltInFunction.replace = BuiltInFunction("replace")
 BuiltInFunction.substring = BuiltInFunction("substring")
+BuiltInFunction.tuple = BuiltInFunction("tuple")
+BuiltInFunction.list = BuiltInFunction("list")

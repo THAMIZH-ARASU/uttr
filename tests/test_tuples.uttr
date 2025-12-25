@@ -1,0 +1,177 @@
+$ Test file for tuple data type (immutable lists)
+$ Tests tuple creation, access, operations, and immutability
+
+$ Test 1: Empty tuple creation
+put <> in empty_tuple;
+show "Test 1 - Empty tuple:";
+show empty_tuple;
+show "Length: " + len(empty_tuple);
+
+$ Test 2: Tuple with single element
+put <42> in single_tuple;
+show "Test 2 - Single element tuple:";
+show single_tuple;
+show "Length: " + len(single_tuple);
+
+$ Test 3: Tuple with multiple elements
+put <1, 2, 3, 4, 5> in numbers;
+show "Test 3 - Multiple elements tuple:";
+show numbers;
+show "Length: " + len(numbers);
+
+$ Test 4: Tuple with mixed types
+put <1, "hello", 3.14, true, false> in mixed;
+show "Test 4 - Mixed types tuple:";
+show mixed;
+
+$ Test 5: Nested tuples
+put <<1, 2>, <3, 4>, <5, 6>> in nested;
+show "Test 5 - Nested tuples:";
+show nested;
+
+$ Test 6: Tuple indexing/access
+put <10, 20, 30, 40, 50> in nums;
+show "Test 6 - Tuple indexing:";
+show "Element at index 0: " + nums / 0;
+show "Element at index 2: " + nums / 2;
+show "Element at index 4: " + nums / 4;
+
+$ Test 7: Tuple with strings
+put <"apple", "banana", "cherry", "date"> in fruits;
+show "Test 7 - String tuple:";
+show fruits;
+show "First fruit: " + fruits / 0;
+
+$ Test 8: Tuple concatenation
+put <1, 2, 3> in tuple1;
+put <4, 5, 6> in tuple2;
+put tuple1 * tuple2 in combined;
+show "Test 8 - Tuple concatenation:";
+show "Tuple 1: " + tuple1;
+show "Tuple 2: " + tuple2;
+show "Combined: " + combined;
+show "Combined length: " + len(combined);
+
+$ Test 9: Tuple immutability - attempt to append (should fail)
+put <1, 2, 3> in immutable;
+show "Test 9 - Testing immutability (append):";
+show "Original tuple: " + immutable;
+attempt:
+    put immutable + 4 in modified;
+    show "This should not print";
+end
+handle as error:
+    show "ERROR (Expected): " + error_message(error);
+end
+
+$ Test 10: Tuple immutability - attempt to remove (should fail)
+put <1, 2, 3> in immutable2;
+show "Test 10 - Testing immutability (remove):";
+show "Original tuple: " + immutable2;
+attempt:
+    put immutable2 - 1 in modified2;
+    show "This should not print";
+end
+handle as error:
+    show "ERROR (Expected): " + error_message(error);
+end
+
+$ Test 11: Convert list to tuple
+put [1, 2, 3, 4, 5] in list_val;
+put tuple(list_val) in tuple_from_list;
+show "Test 11 - List to tuple conversion:";
+show "Original list: " + list_val;
+show "Converted tuple: " + tuple_from_list;
+
+$ Test 12: Convert tuple to list
+put <10, 20, 30> in tuple_val;
+put list(tuple_val) in list_from_tuple;
+show "Test 12 - Tuple to list conversion:";
+show "Original tuple: " + tuple_val;
+show "Converted list: " + list_from_tuple;
+
+$ Test 13: Convert string to tuple
+put "hello" in str_val;
+put tuple(str_val) in tuple_from_string;
+show "Test 13 - String to tuple conversion:";
+show "Original string: " + str_val;
+show "Converted tuple: " + tuple_from_string;
+show "Length: " + len(tuple_from_string);
+
+$ Test 14: Tuple in function
+make function get_coordinates():
+    give <42, 17>;
+end;
+
+put get_coordinates() in coords;
+show "Test 14 - Tuple return from function:";
+show "Coordinates: " + coords;
+show "X: " + coords / 0;
+show "Y: " + coords / 1;
+
+$ Test 15: Tuple with function parameters
+make function sum_tuple(t):
+    put 0 in total;
+    put 0 in i;
+    as long as i < len(t):
+        put total + (t / i) in total;
+        put i + 1 in i;
+    end;
+    give total;
+end;
+
+put <5, 10, 15, 20> in nums_tuple;
+put sum_tuple(nums_tuple) in result;
+show "Test 15 - Tuple in function:";
+show "Tuple: " + nums_tuple;
+show "Sum: " + result;
+
+$ Test 16: Iterate over tuple using for-each
+put <"red", "green", "blue", "yellow"> in colors;
+show "Test 16 - Iterate over tuple:";
+cycle each color through colors:
+    show "Color: " + color;
+end;
+
+$ Test 17: Tuple comparison (by reference)
+put <1, 2, 3> in t1;
+put <1, 2, 3> in t2;
+put t1 in t3;
+show "Test 17 - Tuple comparison:";
+show "t1: " + t1;
+show "t2: " + t2;
+show "t3: " + t3;
+
+$ Test 18: Nested tuple access
+put <<1, 2, 3>, <4, 5, 6>, <7, 8, 9>> in matrix;
+show "Test 18 - Nested tuple access:";
+show "Matrix: " + matrix;
+put matrix / 0 in first_row;
+show "First row: " + first_row;
+show "Element [0][0]: " + (matrix / 0) / 0;
+show "Element [1][2]: " + (matrix / 1) / 2;
+show "Element [2][1]: " + (matrix / 2) / 1;
+
+$ Test 19: Empty tuple concatenation
+put <> in empty1;
+put <1, 2, 3> in filled;
+put empty1 * filled in result1;
+put filled * empty1 in result2;
+show "Test 19 - Empty tuple concatenation:";
+show "Empty tuple: " + empty1;
+show "Filled tuple: " + filled;
+show "Empty + Filled: " + result1;
+show "Filled + Empty: " + result2;
+
+$ Test 20: Tuple with variables
+put 100 in x;
+put 200 in y;
+put 300 in z;
+put <x, y, z> in point;
+show "Test 20 - Tuple with variables:";
+show "Point: " + point;
+show "X coordinate: " + point / 0;
+show "Y coordinate: " + point / 1;
+show "Z coordinate: " + point / 2;
+
+show "All tuple tests completed!";

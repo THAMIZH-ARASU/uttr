@@ -49,7 +49,7 @@ UTTR (Understandable Translation Tool for Routines) is a custom-built, procedure
 - **Natural English-Like Syntax**: Write code that reads like plain English with keywords like `put`, `in`, `when`, `otherwise`, `make function`, `give`, `cut`, `skip`, `attempt`, and `handle`
 - **Complete Interpreter**: Full lexer-parser-interpreter pipeline built from scratch with comprehensive error handling and position tracking
 - **Procedure-Oriented Design**: Focus on procedures and sequential execution with modular, reusable functions
-- **Rich Data Types**: Support for integers, floats, strings, booleans, lists, and dictionaries with intuitive access using `@` operator
+- **Rich Data Types**: Support for integers, floats, strings, booleans, lists, tuples (immutable lists), and dictionaries with intuitive access using `@` operator for dictionaries and `/` for indexing
 - **Operators**: Arithmetic (`+`, `-`, `*`, `/`, `%`), comparison (`==`, `!=`, `<`, `>`, `<=`, `>=`), and logical (`and`, `or`, `not`)
 - **Control Structures**: Conditional statements (`when...otherwise`), loops (`cycle`, `as long as`, `repeat while`), and for-each iteration with loop control (`cut` for break, `skip` for continue)
 - **Error Handling**: Try-catch blocks using `attempt...handle` syntax with error introspection (`error_message`, `error_type`)
@@ -57,6 +57,7 @@ UTTR (Understandable Translation Tool for Routines) is a custom-built, procedure
 - **Built-in Functions**: Pre-defined utilities including:
   - I/O: `show`, `input`, `input_int`
   - Collections: `len`, `append`, `pop`, `extend`
+  - Tuples: `tuple` (convert to tuple), `list` (convert to list)
   - Dictionaries: `keys`, `values`, `has_key`, `remove`
   - Strings: `split`, `join`, `upper`, `lower`, `replace`, `substring`
   - Error handling: `error_message`, `error_type`
@@ -367,6 +368,10 @@ UTTR (Understandable Translation Tool for Routines) is a custom-built, procedure
 				<td><b><a href='https://github.com/THAMIZH-ARASU/uttr/blob/master/examples/attempt_handle.uttr'>attempt_handle.uttr</a></b></td>
 				<td>Demonstrates attempt...handle error handling with error introspection and recovery patterns</td>
 			</tr>
+			<tr>
+				<td><b><a href='https://github.com/THAMIZH-ARASU/uttr/blob/master/examples/tuples.uttr'>tuples.uttr</a></b></td>
+				<td>Demonstrates tuple (immutable list) creation, indexing, concatenation, and conversion with `<>` syntax</td>
+			</tr>
 			</table>
 		</blockquote>
 	</details>
@@ -384,7 +389,7 @@ UTTR (Understandable Translation Tool for Routines) is a custom-built, procedure
 			</tr>
 			<tr>
 				<td><b>Test Files</b></td>
-				<td>20 test files covering all language features: variables, arithmetic, comparisons, logical operations, strings, conditionals, loops (for/while/do-while/for-each), lists, dictionaries, list/dict mutations, functions, built-ins, comments, errors, break/continue, modulo operator, and integration tests</td>
+				<td>21 test files covering all language features: variables, arithmetic, comparisons, logical operations, strings, conditionals, loops (for/while/do-while/for-each), lists, tuples, dictionaries, list/dict mutations, functions, built-ins, comments, errors, break/continue, modulo operator, and integration tests</td>
 			</tr>
 			</table>
 		</blockquote>
@@ -504,6 +509,32 @@ show replaced;
 put substring(text, 0, 5) in first_word;
 show first_word;
 
+$ Tuples - immutable lists with <> syntax
+put <1, 2, 3, 4, 5> in immutable_tuple;
+show "Tuple: " + immutable_tuple;
+show "Length: " + len(immutable_tuple);
+show "First element: " + immutable_tuple / 0;
+
+$ Tuple concatenation
+put <1, 2, 3> in t1;
+put <4, 5, 6> in t2;
+put t1 * t2 in combined;
+show "Combined tuple: " + combined;
+
+$ Convert between list and tuple
+put [1, 2, 3] in mutable_list;
+put tuple(mutable_list) in as_tuple;
+put list(as_tuple) in back_to_list;
+show "As tuple: " + as_tuple;
+
+$ Tuple immutability - this will cause an error
+attempt:
+    put immutable_tuple + 6 in modified;
+end
+handle as error:
+    show "Error: " + error_message(error);
+end;
+
 $ Try-catch error handling
 make function safe_divide(a, b):
     attempt:
@@ -539,6 +570,7 @@ UTTR includes a comprehensive test suite covering all language features. Run tes
 **Run individual test files:**
 ```sh
 > python shell.py tests/test_variables.uttr
+> python shell.py tests/test_tuples.uttr
 > python shell.py tests/test_dictionaries.uttr
 > python shell.py tests/test_functions.uttr
 > python shell.py tests/test_break_continue.uttr
@@ -550,7 +582,7 @@ UTTR includes a comprehensive test suite covering all language features. Run tes
 > python lexer_testing.py <file_name>
 ```
 
-The test suite includes 20 test categories with 200+ individual tests covering:
+The test suite includes 21 test categories with 220+ individual tests covering:
 - Variables and constants
 - Arithmetic and comparison operations
 - Modulo operator (`%`) for divisibility checks
@@ -560,8 +592,9 @@ The test suite includes 20 test categories with 200+ individual tests covering:
 - All loop types (for, while, do-while, for-each)
 - Loop control (break with `cut`, continue with `skip`)
 - Try-catch error handling (`attempt...handle` with error introspection)
-- Lists and dictionaries
+- Lists, tuples (immutable lists), and dictionaries
 - List mutations (append, pop, extend) and dictionary mutations (remove)
+- Tuple immutability and conversions
 - Functions and built-ins
 - Comments and error handling
 - Complex integration scenarios
@@ -583,9 +616,9 @@ The test suite includes 20 test categories with 200+ individual tests covering:
 - [X] **`Task 10`**: <strike>Fix list/dictionary mutation functions (append, pop, extend, remove)</strike>
 - [X] **`Task 11`**: <strike>Implement try-catch error handling (`attempt...handle` syntax)</strike>
 - [X] **`Task 12`**: <strike>Add built-in methods for strings (split, join, upper, lower, replace, substring)</strike>
+- [X] **`Task 13`**: <strike>Support for tuple data type (immutable lists with `<>` syntax)</strike>
 
 ### Language Features
-- [ ] **`Task 13`**: Support for tuple data type (immutable lists with `<>` syntax)
 - [ ] **`Task 14`**: Add import/module system for code organization
 - [ ] **`Task 15`**: Implement lambda/anonymous functions with inline syntax
 - [ ] **`Task 16`**: Add switch-case statements (`check...case...default` syntax)
