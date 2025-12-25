@@ -1,0 +1,262 @@
+$ Comprehensive Substring Method Tests
+$ Testing substring(string, start, end) function
+$ Parameters:
+$   - string: the string to extract from (required)
+$   - start: starting index, inclusive (required, must be number)
+$   - end: ending index, exclusive (optional, can be null for "to end")
+$ Behavior: Similar to Python string slicing [start:end]
+
+show "========================================";
+show "   SUBSTRING METHOD COMPREHENSIVE TESTS";
+show "========================================";
+show "";
+
+$ Test String: "Programming"
+$ Indices:      0123456789...
+keep "Programming" as test_str;
+show "Test String: '" + test_str + "'";
+show "Length: " + len(test_str);
+show "Indices: 0=P, 1=r, 2=o, 3=g, 4=r, 5=a, 6=m, 7=m, 8=i, 9=n, 10=g";
+show "";
+
+$ ========================================
+$ BASIC EXTRACTION TESTS
+$ ========================================
+show "--- Basic Extraction Tests ---";
+
+$ Test 1: Extract from start to end (exclusive)
+put substring(test_str, 0, 4) in result1;
+show "substring('" + test_str + "', 0, 4) = '" + result1 + "'";
+when result1 == "Prog":
+    show "  ✓ PASS: Extracted 'Prog' (indices 0-3)";
+otherwise:
+    show "  ✗ FAIL: Expected 'Prog', got '" + result1 + "'";
+end;
+
+$ Test 2: Extract middle portion
+put substring(test_str, 3, 7) in result2;
+show "substring('" + test_str + "', 3, 7) = '" + result2 + "'";
+when result2 == "gram":
+    show "  ✓ PASS: Extracted 'gram' (indices 3-6)";
+otherwise:
+    show "  ✗ FAIL: Expected 'gram', got '" + result2 + "'";
+end;
+
+$ Test 3: Extract to end with null
+put substring(test_str, 7, null) in result3;
+show "substring('" + test_str + "', 7, null) = '" + result3 + "'";
+when result3 == "ming":
+    show "  ✓ PASS: Extracted 'ming' (index 7 to end)";
+otherwise:
+    show "  ✗ FAIL: Expected 'ming', got '" + result3 + "'";
+end;
+
+$ Test 4: Single character extraction
+put substring(test_str, 0, 1) in result4;
+show "substring('" + test_str + "', 0, 1) = '" + result4 + "'";
+when result4 == "P":
+    show "  ✓ PASS: Extracted single character 'P'";
+otherwise:
+    show "  ✗ FAIL: Expected 'P', got '" + result4 + "'";
+end;
+
+$ Test 5: Last character using length
+put len(test_str) in str_len;
+put substring(test_str, str_len - 1, null) in result5;
+show "substring('" + test_str + "', 10, null) = '" + result5 + "'";
+when result5 == "g":
+    show "  ✓ PASS: Extracted last character 'g'";
+otherwise:
+    show "  ✗ FAIL: Expected 'g', got '" + result5 + "'";
+end;
+
+show "";
+
+$ ========================================
+$ EDGE CASE TESTS
+$ ========================================
+show "--- Edge Case Tests ---";
+
+$ Test 6: Extract from beginning to end (full string)
+put substring(test_str, 0, len(test_str)) in result6;
+show "substring('" + test_str + "', 0, 11) = '" + result6 + "'";
+when result6 == test_str:
+    show "  ✓ PASS: Full string extraction";
+otherwise:
+    show "  ✗ FAIL: Expected '" + test_str + "', got '" + result6 + "'";
+end;
+
+$ Test 7: Extract with start at 0, null end
+put substring(test_str, 0, null) in result7;
+show "substring('" + test_str + "', 0, null) = '" + result7 + "'";
+when result7 == test_str:
+    show "  ✓ PASS: Full string with null end";
+otherwise:
+    show "  ✗ FAIL: Expected '" + test_str + "', got '" + result7 + "'";
+end;
+
+$ Test 8: Start equals end (empty string)
+put substring(test_str, 5, 5) in result8;
+show "substring('" + test_str + "', 5, 5) = '" + result8 + "'";
+when result8 == "":
+    show "  ✓ PASS: Empty string when start == end";
+otherwise:
+    show "  ✗ FAIL: Expected empty string, got '" + result8 + "'";
+end;
+
+$ Test 9: Empty string input
+keep "" as empty_str;
+put substring(empty_str, 0, null) in result9;
+show "substring('', 0, null) = '" + result9 + "'";
+when result9 == "":
+    show "  ✓ PASS: Empty string returns empty";
+otherwise:
+    show "  ✗ FAIL: Expected empty string, got '" + result9 + "'";
+end;
+
+$ Test 10: Extract from end position
+put substring(test_str, 11, null) in result10;
+show "substring('" + test_str + "', 11, null) = '" + result10 + "'";
+when result10 == "":
+    show "  ✓ PASS: Start at length returns empty";
+otherwise:
+    show "  ✗ FAIL: Expected empty string, got '" + result10 + "'";
+end;
+
+show "";
+
+$ ========================================
+$ PRACTICAL USE CASES
+$ ========================================
+show "--- Practical Use Cases ---";
+
+$ Test 11: Extract file extension
+keep "document.pdf" as filename;
+put len(filename) in fname_len;
+put substring(filename, fname_len - 3, null) in extension;
+show "File: '" + filename + "' -> Extension: '" + extension + "'";
+when extension == "pdf":
+    show "  ✓ PASS: Extracted file extension";
+otherwise:
+    show "  ✗ FAIL: Expected 'pdf', got '" + extension + "'";
+end;
+
+$ Test 12: Get first word (find first 5 chars)
+keep "Hello World" as sentence;
+put substring(sentence, 0, 5) in first_word;
+show "Sentence: '" + sentence + "' -> First 5 chars: '" + first_word + "'";
+when first_word == "Hello":
+    show "  ✓ PASS: Extracted first word";
+otherwise:
+    show "  ✗ FAIL: Expected 'Hello', got '" + first_word + "'";
+end;
+
+$ Test 13: Remove first character
+keep "xHello" as prefixed;
+put substring(prefixed, 1, null) in without_prefix;
+show "Remove prefix 'x' from '" + prefixed + "': '" + without_prefix + "'";
+when without_prefix == "Hello":
+    show "  ✓ PASS: Removed first character";
+otherwise:
+    show "  ✗ FAIL: Expected 'Hello', got '" + without_prefix + "'";
+end;
+
+$ Test 14: Extract middle section
+keep "2024-12-25" as date;
+put substring(date, 5, 7) in month;
+show "Date: '" + date + "' -> Month: '" + month + "'";
+when month == "12":
+    show "  ✓ PASS: Extracted month from date";
+otherwise:
+    show "  ✗ FAIL: Expected '12', got '" + month + "'";
+end;
+
+$ Test 15: Get last N characters
+keep "FileName.txt" as fname;
+put len(fname) in fname_length;
+put substring(fname, fname_length - 4, null) in last_four;
+show "Filename: '" + fname + "' -> Last 4 chars: '" + last_four + "'";
+when last_four == ".txt":
+    show "  ✓ PASS: Extracted last 4 characters";
+otherwise:
+    show "  ✗ FAIL: Expected '.txt', got '" + last_four + "'";
+end;
+
+show "";
+
+$ ========================================
+$ BOUNDARY TESTS
+$ ========================================
+show "--- Boundary Tests ---";
+
+$ Test 16: End beyond string length
+put substring(test_str, 0, 100) in result16;
+show "substring('" + test_str + "', 0, 100) = '" + result16 + "'";
+when result16 == test_str:
+    show "  ✓ PASS: End beyond length returns full string";
+otherwise:
+    show "  ✗ FAIL: Expected '" + test_str + "', got '" + result16 + "'";
+end;
+
+$ Test 17: Start beyond string length
+put substring(test_str, 100, null) in result17;
+show "substring('" + test_str + "', 100, null) = '" + result17 + "'";
+when result17 == "":
+    show "  ✓ PASS: Start beyond length returns empty";
+otherwise:
+    show "  ✗ FAIL: Expected empty string, got '" + result17 + "'";
+end;
+
+$ Test 18: One character string
+keep "A" as single_char;
+put substring(single_char, 0, 1) in result18;
+show "substring('A', 0, 1) = '" + result18 + "'";
+when result18 == "A":
+    show "  ✓ PASS: Single character extraction";
+otherwise:
+    show "  ✗ FAIL: Expected 'A', got '" + result18 + "'";
+end;
+
+show "";
+
+$ ========================================
+$ COMPARISON WITH OTHER LANGUAGES
+$ ========================================
+show "--- Behavior Comparison ---";
+show "Python:      'Programming'[3:7] = 'gram'";
+show "JavaScript:  'Programming'.substring(3,7) = 'gram'";
+show "Java:        'Programming'.substring(3,7) = 'gram'";
+show "UTTR:        substring('Programming', 3, 7) = '" + substring(test_str, 3, 7) + "'";
+show "✓ UTTR matches standard substring behavior (end is exclusive)";
+show "";
+
+$ ========================================
+$ CHAINING OPERATIONS
+$ ========================================
+show "--- Chaining with Other String Methods ---";
+
+$ Test 19: Extract and uppercase
+put substring(test_str, 0, 7) in extracted;
+put upper(extracted) in upper_extracted;
+show "Extract + Upper: '" + test_str + "' -> '" + upper_extracted + "'";
+when upper_extracted == "PROGRAM":
+    show "  ✓ PASS: Chained substring + upper";
+otherwise:
+    show "  ✗ FAIL: Expected 'PROGRAM', got '" + upper_extracted + "'";
+end;
+
+$ Test 20: Extract, replace, and lower
+put substring(test_str, 0, 7) in part;
+put replace(part, "Pro", "Dia") in replaced_part;
+put lower(replaced_part) in final_result;
+show "Extract + Replace + Lower: '" + part + "' -> '" + final_result + "'";
+when final_result == "diagram":
+    show "  ✓ PASS: Chained substring + replace + lower";
+otherwise:
+    show "  ✗ FAIL: Expected 'diagram', got '" + final_result + "'";
+end;
+
+show "";
+show "========================================";
+show "   END OF SUBSTRING TESTS";
+show "========================================";

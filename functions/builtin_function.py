@@ -500,17 +500,17 @@ For full documentation, see README.md
                 exec_ctx
             ))
 
-        if not isinstance(start, Number):
+        if not isinstance(start, Number) or start == Number.null:
             return RTResult().failure(RTError(
                 self.pos_start, self.pos_end,
-                "Second argument must be number",
+                "Second argument must be a number (null not allowed for start index)",
                 exec_ctx
             ))
 
         start_idx = int(start.value)
 
         # If end is not provided or is null, slice to end of string
-        if end is None or isinstance(end, type(Number.null)) or (hasattr(end, 'value') and end.value == Number.null.value):
+        if end is None or end == Number.null or (isinstance(end, Number) and end.value == Number.null.value):
             result = string.value[start_idx:]
         elif isinstance(end, Number):
             end_idx = int(end.value)
