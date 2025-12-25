@@ -1,0 +1,233 @@
+$ Comprehensive test file for nested lists
+$ Tests various nesting patterns, access, mutations, and operations
+
+$ Test 1: Simple 2D list (list of lists)
+show "Test 1 - 2D List (3x3):";
+put [[1, 2, 3], [4, 5, 6], [7, 8, 9]] in matrix;
+show matrix;
+show "Row 0: " + matrix / 0;
+show "Row 1: " + matrix / 1;
+show "Row 2: " + matrix / 2;
+
+$ Test 2: Accessing nested list elements
+show "";
+show "Test 2 - Nested Element Access:";
+show "Element [0][0]: " + (matrix / 0) / 0;
+show "Element [0][2]: " + (matrix / 0) / 2;
+show "Element [1][1]: " + (matrix / 1) / 1;
+show "Element [2][0]: " + (matrix / 2) / 0;
+show "Element [2][2]: " + (matrix / 2) / 2;
+
+$ Test 3: Triple nested list
+show "";
+show "Test 3 - Triple Nested List:";
+put [[[1, 2], [3, 4]], [[5, 6], [7, 8]]] in triple_nested;
+show triple_nested;
+show "First group: " + triple_nested / 0;
+show "Second group: " + triple_nested / 1;
+show "Element [0][0][0]: " + ((triple_nested / 0) / 0) / 0;
+show "Element [0][1][1]: " + ((triple_nested / 0) / 1) / 1;
+show "Element [1][0][0]: " + ((triple_nested / 1) / 0) / 0;
+show "Element [1][1][1]: " + ((triple_nested / 1) / 1) / 1;
+
+$ Test 4: Jagged list (different sized sublists)
+show "";
+show "Test 4 - Jagged List:";
+put [[1], [2, 3], [4, 5, 6], [7, 8, 9, 10]] in jagged;
+show jagged;
+show "Row 0 length: " + len(jagged / 0);
+show "Row 1 length: " + len(jagged / 1);
+show "Row 2 length: " + len(jagged / 2);
+show "Row 3 length: " + len(jagged / 3);
+
+$ Test 5: Nested list with mixed types
+show "";
+show "Test 5 - Mixed Types in Nested List:";
+put [[1, "a", 3.14], [true, false, 42], ["x", "y", "z"]] in mixed_nested;
+show mixed_nested;
+show "First row, second element: " + (mixed_nested / 0) / 1;
+show "Second row, first element: " + (mixed_nested / 1) / 0;
+show "Third row, third element: " + (mixed_nested / 2) / 2;
+
+$ Test 6: List containing empty lists
+show "";
+show "Test 6 - List with Empty Lists:";
+put [[], [1, 2], [], [3, 4, 5]] in with_empty;
+show with_empty;
+show "First element (empty): " + with_empty / 0;
+show "Second element: " + with_empty / 1;
+show "Third element (empty): " + with_empty / 2;
+show "Fourth element: " + with_empty / 3;
+
+$ Test 7: Deep nesting (4 levels)
+show "";
+show "Test 7 - Four Level Deep Nesting:";
+put [[[[1, 2], [3, 4]], [[5, 6], [7, 8]]], [[[9, 10], [11, 12]], [[13, 14], [15, 16]]]] in deep;
+show deep;
+show "Access [0][0][0][0]: " + (((deep / 0) / 0) / 0) / 0;
+show "Access [0][1][1][1]: " + (((deep / 0) / 1) / 1) / 1;
+show "Access [1][0][0][1]: " + (((deep / 1) / 0) / 0) / 1;
+show "Access [1][1][1][0]: " + (((deep / 1) / 1) / 1) / 0;
+
+$ Test 8: Iterating over nested lists
+show "";
+show "Test 8 - Iterate Over Nested List:";
+put [[10, 20], [30, 40], [50, 60]] in pairs;
+put 0 in row_num;
+cycle each row through pairs:
+    show "Row " + row_num + ": " + row;
+    put 0 in col_num;
+    cycle each value through row:
+        show "  [" + row_num + "][" + col_num + "] = " + value;
+        put col_num + 1 in col_num;
+    end;
+    put row_num + 1 in row_num;
+end;
+
+$ Test 9: Nested list concatenation
+show "";
+show "Test 9 - Nested List Concatenation:";
+put [[1, 2], [3, 4]] in l1;
+put [[5, 6], [7, 8]] in l2;
+put l1 * l2 in combined;
+show "L1: " + l1;
+show "L2: " + l2;
+show "Combined: " + combined;
+show "Combined length: " + len(combined);
+
+$ Test 10: Modifying nested lists
+show "";
+show "Test 10 - Nested List Mutation:";
+put [[1, 2, 3], [4, 5, 6]] in mutable;
+show "Original: " + mutable;
+append(mutable, [7, 8, 9]);
+show "After append row: " + mutable;
+append(mutable / 0, 99);
+show "After append to first row: " + mutable;
+append(mutable / 1, 100);
+show "After append to second row: " + mutable;
+
+$ Test 11: Nested list with strings
+show "";
+show "Test 11 - Nested String Lists:";
+put [["apple", "banana"], ["cherry", "date"], ["elderberry", "fig"]] in fruits;
+show fruits;
+cycle each pair through fruits:
+    show "Pair: " + pair;
+    show "  First: " + pair / 0;
+    show "  Second: " + pair / 1;
+end;
+
+$ Test 12: Building nested list dynamically
+show "";
+show "Test 12 - Dynamic Nested List Construction:";
+put [] in dynamic;
+cycle i from 0 to 2:
+    put [] in row;
+    cycle j from 0 to 2:
+        append(row, i * 3 + j + 1);
+    end;
+    append(dynamic, row);
+end;
+show "Dynamically built 3x3: " + dynamic;
+
+$ Test 13: Nested list from function
+show "";
+show "Test 13 - Function Returning Nested List:";
+make function create_matrix(rows, cols, value):
+    put [] in result;
+    cycle i from 0 to rows - 1:
+        put [] in row;
+        cycle j from 0 to cols - 1:
+            append(row, value);
+        end;
+        append(result, row);
+    end;
+    give result;
+end;
+
+put create_matrix(3, 3, 0) in zero_matrix;
+show "3x3 Zero Matrix: " + zero_matrix;
+
+put create_matrix(2, 4, 5) in filled_matrix;
+show "2x4 Matrix with 5s: " + filled_matrix;
+
+$ Test 14: Mixed nesting - list in list
+show "";
+show "Test 14 - Progressive Nesting:";
+put [1, 2, 3] in level1;
+put [level1, [4, 5, 6]] in level2;
+put [level2, [[7, 8], [9, 10]]] in level3;
+show "Level 1: " + level1;
+show "Level 2: " + level2;
+show "Level 3: " + level3;
+
+$ Test 15: List length of nested lists
+show "";
+show "Test 15 - Lengths in Nested Structure:";
+put [[[1, 2, 3], [4, 5]], [[6], [7, 8, 9, 10]]] in complex;
+show "Outer length: " + len(complex);
+show "Length of complex/0: " + len(complex / 0);
+show "Length of complex/1: " + len(complex / 1);
+show "Length of complex/0/0: " + len((complex / 0) / 0);
+show "Length of complex/0/1: " + len((complex / 0) / 1);
+show "Length of complex/1/0: " + len((complex / 1) / 0);
+show "Length of complex/1/1: " + len((complex / 1) / 1);
+
+$ Test 16: Removing from nested lists
+show "";
+show "Test 16 - Removing Elements from Nested Lists:";
+put [[1, 2, 3], [4, 5, 6], [7, 8, 9]] in removable;
+show "Original: " + removable;
+pop(removable / 0, 1);
+show "After pop [0][1]: " + removable;
+pop(removable / 1, 0);
+show "After pop [1][0]: " + removable;
+pop(removable, 2);
+show "After pop row 2: " + removable;
+
+$ Test 17: Extending nested lists
+show "";
+show "Test 17 - Extending Nested Lists:";
+put [[1, 2], [3, 4]] in extendable;
+show "Original: " + extendable;
+extend(extendable / 0, [5, 6]);
+show "After extend first row: " + extendable;
+extend(extendable, [[7, 8], [9, 10]]);
+show "After extend with more rows: " + extendable;
+
+$ Test 18: Copying nested list (reference check)
+show "";
+show "Test 18 - Nested List References:";
+put [[1, 2], [3, 4]] in original;
+put original in reference;
+show "Original: " + original;
+show "Reference: " + reference;
+append(reference / 0, 99);
+show "After modifying reference[0]: ";
+show "  Original: " + original;
+show "  Reference: " + reference;
+
+$ Test 19: Complex nested structure with mixed operations
+show "";
+show "Test 19 - Complex Mixed Operations:";
+put [[1, 2], [3, 4], [5, 6]] in base;
+append(base, [7, 8]);
+extend(base / 0, [9, 10]);
+pop(base / 2, 1);
+show "After multiple operations: " + base;
+
+$ Test 20: Nested list with numbers and operations
+show "";
+show "Test 20 - Nested List Math Operations:";
+put [[1, 2, 3], [4, 5, 6], [7, 8, 9]] in nums;
+put 0 in total;
+cycle each row through nums:
+    cycle each num through row:
+        put total + num in total;
+    end;
+end;
+show "Sum of all elements: " + total;
+
+show "";
+show "All nested list tests completed!";

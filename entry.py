@@ -40,6 +40,8 @@ global_symbol_table.set("upper", BuiltInFunction.upper)
 global_symbol_table.set("lower", BuiltInFunction.lower)
 global_symbol_table.set("replace", BuiltInFunction.replace)
 global_symbol_table.set("substring", BuiltInFunction.substring)
+global_symbol_table.set("tuple", BuiltInFunction.tuple)
+global_symbol_table.set("list", BuiltInFunction.list)
 
 def run(fn, text):
     # Generate tokens

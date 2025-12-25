@@ -1,6 +1,6 @@
 from errors.illegal_character import IllegalCharError
 from position import Position
-from tokens import KEYWORDS, TT_AT, TT_COLON, TT_COMMA, TT_DIV, TT_EE, TT_EOF, TT_FLOAT, TT_GT, TT_GTE, TT_IDENTIFIER, TT_INT, TT_KEYWORD, TT_LCURLY, TT_LPAREN, TT_LSQUARE, TT_LT, TT_LTE, TT_MINUS, TT_MOD, TT_MUL, TT_NE, TT_NEWLINE, TT_PLUS, TT_RCURLY, TT_RPAREN, TT_RSQUARE, TT_STRING, Token
+from tokens import KEYWORDS, TT_AT, TT_COLON, TT_COMMA, TT_DIV, TT_EE, TT_EOF, TT_FLOAT, TT_GT, TT_GTE, TT_IDENTIFIER, TT_INT, TT_KEYWORD, TT_LANGLE, TT_LCURLY, TT_LPAREN, TT_LSQUARE, TT_LT, TT_LTE, TT_MINUS, TT_MOD, TT_MUL, TT_NE, TT_NEWLINE, TT_PLUS, TT_RANGLE, TT_RCURLY, TT_RPAREN, TT_RSQUARE, TT_STRING, Token
 from constants import DIGITS, LETTERS, LETTERS_DIGITS
 
 
@@ -77,9 +77,11 @@ class Lexer:
             elif self.current_char == '=':
                 tokens.append(self.make_equals())
             elif self.current_char == '<':
-                tokens.append(self.make_less_than())
+                last_tok = tokens[-1] if len(tokens) > 0 else None
+                tokens.append(self.make_less_than_or_langle(last_tok))
             elif self.current_char == '>':
-                tokens.append(self.make_greater_than())
+                last_tok = tokens[-1] if len(tokens) > 0 else None
+                tokens.append(self.make_greater_than_or_rangle(last_tok))
             elif self.current_char == ',':
                 tokens.append(Token(TT_COMMA, pos_start=self.pos))
                 self.advance()
@@ -205,27 +207,64 @@ class Lexer:
         self.advance()
         return Token(tok_type, pos_start=pos_start, pos_end=self.pos)
 
-    def make_less_than(self):
-        tok_type = TT_LT
+    def make_less_than_or_langle(self, last_token=None):
         pos_start = self.pos.copy()
         self.advance()
 
         if self.current_char == '=':
             self.advance()
-            tok_type = TT_LTE
+            return Token(TT_LTE, pos_start=pos_start, pos_end=self.pos)
+        
+        # Check if this could be a tuple start
+        # Look for: <>, <digit, <letter, <", <[, <{, <<, or whitespace before any of these
+        next_char = self.current_char
+        
+        # Handle whitespace
+        temp_idx = self.pos.idx
+        while temp_idx < len(self.text) and self.text[temp_idx] in ' \t':
+            temp_idx += 1
+        
+        if temp_idx < len(self.text):
+            char_after_spaces = self.text[temp_idx]
+        else:
+            char_after_spaces = None
+        
+        # If immediately followed by > (empty tuple), it's LANGLE
+        if next_char == '>':
+            return Token(TT_LANGLE, pos_start=pos_start, pos_end=self.pos)
+        
+        # Check what came before to determine context
+        # If preceded by identifier, ), ], }, or number, it's likely a comparison
+        # If preceded by 'in', 'put', '=', '(', '[', '{', ',', or start, it's likely a tuple
+        if last_token:
+            # Comparison context: after identifier, number, ), ], }
+            if last_token.type in [TT_IDENTIFIER, TT_INT, TT_FLOAT, TT_RPAREN, TT_RSQUARE, TT_RCURLY, TT_RANGLE]:
+                return Token(TT_LT, pos_start=pos_start, pos_end=self.pos)
+        
+        # If followed by tuple-like content (after optional whitespace)
+        if char_after_spaces in DIGITS + LETTERS + '"[{<>-' or char_after_spaces in ' \t':
+            return Token(TT_LANGLE, pos_start=pos_start, pos_end=self.pos)
+        
+        # Otherwise, it's a less-than comparison
+        return Token(TT_LT, pos_start=pos_start, pos_end=self.pos)
 
-        return Token(tok_type, pos_start=pos_start, pos_end=self.pos)
-
-    def make_greater_than(self):
-        tok_type = TT_GT
+    def make_greater_than_or_rangle(self, last_token=None):
         pos_start = self.pos.copy()
         self.advance()
 
         if self.current_char == '=':
             self.advance()
-            tok_type = TT_GTE
-
-        return Token(tok_type, pos_start=pos_start, pos_end=self.pos)
+            return Token(TT_GTE, pos_start=pos_start, pos_end=self.pos)
+        
+        # Check context - if we're likely closing a tuple
+        # Look at what came before (check last few tokens would be better, but for now use heuristic)
+        # After >, we typically see: space, comma, semicolon, newline, ), ], }
+        next_char = self.current_char
+        if next_char in ' \t\n;,)]}>' or next_char is None:
+            return Token(TT_RANGLE, pos_start=pos_start, pos_end=self.pos)
+        
+        # Otherwise could be comparison
+        return Token(TT_GT, pos_start=pos_start, pos_end=self.pos)
 
     def skip_comment(self):
         self.advance()

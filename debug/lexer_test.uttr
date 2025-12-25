@@ -1,0 +1,7 @@
+$ Test lexer token generation for comparison vs tuple syntax
+put <1, 2, 3> in tuple1;
+put 5 < 10 in comparison1;
+as long as i < len(t):
+    show i;
+end;
+put <> in empty;

@@ -1,0 +1,227 @@
+$ Test file for mixed nesting - lists containing tuples and tuples containing lists
+$ Tests interoperability between mutable and immutable collections
+
+$ Test 1: List containing tuples
+show "Test 1 - List Containing Tuples:";
+put [<1, 2>, <3, 4>, <5, 6>] in list_of_tuples;
+show list_of_tuples;
+show "First tuple: " + list_of_tuples / 0;
+show "Second tuple: " + list_of_tuples / 1;
+show "Element [0][1]: " + (list_of_tuples / 0) / 1;
+show "Element [2][0]: " + (list_of_tuples / 2) / 0;
+
+$ Test 2: Tuple containing lists
+show "";
+show "Test 2 - Tuple Containing Lists:";
+put <[1, 2], [3, 4], [5, 6]> in tuple_of_lists;
+show tuple_of_lists;
+show "First list: " + tuple_of_lists / 0;
+show "Second list: " + tuple_of_lists / 1;
+show "Element [0][1]: " + (tuple_of_lists / 0) / 1;
+show "Element [2][0]: " + (tuple_of_lists / 2) / 0;
+
+$ Test 3: Mutating lists inside tuples
+show "";
+show "Test 3 - Mutating Lists Inside Tuples:";
+put <[10, 20], [30, 40]> in tuple_with_mutable;
+show "Original: " + tuple_with_mutable;
+append(tuple_with_mutable / 0, 99);
+show "After appending to first list: " + tuple_with_mutable;
+append(tuple_with_mutable / 1, 100);
+show "After appending to second list: " + tuple_with_mutable;
+
+$ Test 4: Attempting to mutate tuple inside list
+show "";
+show "Test 4 - Tuples Inside Lists Are Immutable:";
+put [<1, 2, 3>, <4, 5, 6>] in list_with_immutable;
+show "Original: " + list_with_immutable;
+attempt:
+    put (list_with_immutable / 0) + 99 in modified;
+end
+handle as error:
+    show "Error (expected): " + error_message(error);
+end;
+
+$ Test 5: Appending tuples to lists
+show "";
+show "Test 5 - Appending Tuples to Lists:";
+put [<1, 2>] in growing_list;
+show "Initial: " + growing_list;
+append(growing_list, <3, 4>);
+show "After append: " + growing_list;
+append(growing_list, <5, 6, 7>);
+show "After second append: " + growing_list;
+
+$ Test 6: Attempting to append lists to tuples (should fail)
+show "";
+show "Test 6 - Cannot Append to Tuples:";
+put <[1, 2]> in immutable_tuple;
+show "Original: " + immutable_tuple;
+attempt:
+    put immutable_tuple + [3, 4] in modified;
+end
+handle as error:
+    show "Error (expected): " + error_message(error);
+end;
+
+$ Test 7: Deep mixed nesting
+show "";
+show "Test 7 - Deep Mixed Nesting:";
+put [<[1, 2], [3, 4]>, <[5, 6], [7, 8]>] in deep_mixed;
+show deep_mixed;
+show "Access [0]: " + deep_mixed / 0;
+show "Access [0][0]: " + (deep_mixed / 0) / 0;
+show "Access [0][0][0]: " + ((deep_mixed / 0) / 0) / 0;
+show "Access [1][1][1]: " + ((deep_mixed / 1) / 1) / 1;
+
+$ Test 8: Modifying deeply nested structures
+show "";
+show "Test 8 - Modifying Deep Mixed Nesting:";
+put [<[10, 20], [30, 40]>, <[50, 60], [70, 80]>] in modifiable;
+show "Original: " + modifiable;
+append((modifiable / 0) / 0, 25);
+show "After append to [0][0]: " + modifiable;
+append((modifiable / 1) / 1, 85);
+show "After append to [1][1]: " + modifiable;
+
+$ Test 9: Iterating over mixed structures
+show "";
+show "Test 9 - Iterate Over Mixed Structure:";
+put [<"a", "b">, <"c", "d">, <"e", "f">] in mixed_iter;
+put 0 in idx;
+cycle each tuple_item through mixed_iter:
+    show "Tuple " + idx + ": " + tuple_item;
+    cycle each char through tuple_item:
+        show "  - " + char;
+    end;
+    put idx + 1 in idx;
+end;
+
+$ Test 10: Converting mixed structures
+show "";
+show "Test 10 - Converting Mixed Structures:";
+put [<1, 2>, <3, 4>] in list_of_tuples_conv;
+show "Original (list of tuples): " + list_of_tuples_conv;
+put tuple(list_of_tuples_conv) in tuple_of_tuples;
+show "Converted (tuple of tuples): " + tuple_of_tuples;
+
+put <[5, 6], [7, 8]> in tuple_of_lists_conv;
+show "Original (tuple of lists): " + tuple_of_lists_conv;
+put list(tuple_of_lists_conv) in list_of_lists;
+show "Converted (list of lists): " + list_of_lists;
+
+$ Test 11: Complex mixed nesting with empty collections
+show "";
+show "Test 11 - Empty Collections in Mixed Nesting:";
+put [<>, <1, 2>, <>] in list_with_empty_tuples;
+show "List with empty tuples: " + list_with_empty_tuples;
+put <[], [3, 4], []> in tuple_with_empty_lists;
+show "Tuple with empty lists: " + tuple_with_empty_lists;
+
+$ Test 12: Concatenating mixed structures
+show "";
+show "Test 12 - Concatenating Mixed Structures:";
+put [<1, 2>, <3, 4>] in l1;
+put [<5, 6>, <7, 8>] in l2;
+put l1 * l2 in combined_list;
+show "L1: " + l1;
+show "L2: " + l2;
+show "Combined: " + combined_list;
+
+$ Test 13: Function returning mixed structures
+show "";
+show "Test 13 - Function Returning Mixed Structure:";
+make function create_grid(size):
+    put [] in grid;
+    cycle i from 0 to size - 1:
+        put <> in row;
+        cycle j from 0 to size - 1:
+            put row * <i * size + j> in row;
+        end;
+        append(grid, row);
+    end;
+    give grid;
+end;
+
+put create_grid(3) in grid;
+show "3x3 Grid (list of tuples): " + grid;
+
+$ Test 14: Jagged mixed structures
+show "";
+show "Test 14 - Jagged Mixed Structures:";
+put [<1>, <2, 3>, <4, 5, 6>] in jagged_mixed;
+show "Jagged mixed: " + jagged_mixed;
+show "Lengths: " + len(jagged_mixed / 0) + ", " + len(jagged_mixed / 1) + ", " + len(jagged_mixed / 2);
+
+$ Test 15: Triple nesting with alternating types
+show "";
+show "Test 15 - Triple Nesting Alternating Types:";
+put [<[1, 2], [3, 4]>, <[5, 6], [7, 8]>] in triple_alt1;
+show "List > Tuple > List: " + triple_alt1;
+show "Element [0][1][0]: " + ((triple_alt1 / 0) / 1) / 0;
+
+put <[[10, 20], [30, 40]], [[50, 60], [70, 80]]> in triple_alt2;
+show "Tuple > List > List: " + triple_alt2;
+show "Element [1][0][1]: " + ((triple_alt2 / 1) / 0) / 1;
+
+$ Test 16: Lengths in mixed structures
+show "";
+show "Test 16 - Lengths in Mixed Structures:";
+put [<1, 2, 3>, <4, 5>, <6>] in mixed_lengths;
+show "Outer length: " + len(mixed_lengths);
+show "Inner lengths: " + len(mixed_lengths / 0) + ", " + len(mixed_lengths / 1) + ", " + len(mixed_lengths / 2);
+
+$ Test 17: Mutability behavior in mixed structures
+show "";
+show "Test 17 - Mutability Behavior:";
+put [<1, 2>, <3, 4>] in semi_mutable;
+show "Original: " + semi_mutable;
+append(semi_mutable, <5, 6>);
+show "Can append tuple to list: " + semi_mutable;
+attempt:
+    put (semi_mutable / 0) + 7 in try_modify;
+end
+handle as error:
+    show "Cannot modify tuple inside list: " + error_message(error);
+end;
+
+put <[10, 20], [30, 40]> in semi_immutable;
+show "Original: " + semi_immutable;
+append(semi_immutable / 0, 25);
+show "Can modify list inside tuple: " + semi_immutable;
+attempt:
+    put semi_immutable + [50, 60] in try_modify2;
+end
+handle as error:
+    show "Cannot modify tuple itself: " + error_message(error);
+end;
+
+$ Test 18: Mixed structure with all types
+show "";
+show "Test 18 - Mixed Structure With All Types:";
+put [<1, "a", 3.14>, <true, [5, 6], false>] in all_types;
+show "Mixed types: " + all_types;
+show "String element: " + (all_types / 0) / 1;
+show "List inside tuple: " + (all_types / 1) / 1;
+append((all_types / 1) / 1, 7);
+show "After modifying nested list: " + all_types;
+
+$ Test 19: Comparing mixed structures
+show "";
+show "Test 19 - Structure Comparison:";
+put [<1, 2>] in m1;
+put [<1, 2>] in m2;
+show "M1: " + m1;
+show "M2: " + m2;
+
+$ Test 20: Reference behavior in mixed structures
+show "";
+show "Test 20 - Reference Behavior:";
+put [10, 20] in shared_list;
+put [shared_list, shared_list] in list_with_refs;
+show "Original: " + list_with_refs;
+append(shared_list, 30);
+show "After modifying shared list: " + list_with_refs;
+
+show "";
+show "All mixed nesting tests completed!";
