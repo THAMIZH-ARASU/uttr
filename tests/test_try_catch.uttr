@@ -1,0 +1,156 @@
+$ UTTR Test Suite - Try-Catch Error Handling
+$ Testing attempt...handle syntax for error handling
+
+show "=== Try-Catch Error Handling Tests ===";
+
+$ Test 1: Basic error catching (division by zero)
+show "\n--- Test 1: Basic error catching ---";
+attempt:
+    put 10 / 0 in result;
+    show "This should not print";
+end
+handle:
+    show "✓ Caught division by zero error";
+end
+
+$ Test 2: Try-catch with error variable binding
+show "\n--- Test 2: Error variable binding ---";
+attempt:
+    put undefined_var + 5 in x;
+end
+handle as err:
+    show "✓ Caught error with variable binding";
+    show "Error message: " + error_message(err);
+    show "Error type: " + error_type(err);
+end
+
+$ Test 3: No error case (success path)
+show "\n--- Test 3: No error case ---";
+attempt:
+    put 10 + 20 in result;
+    show "✓ Calculation succeeded: " + result;
+end
+handle:
+    show "✗ Should not handle error";
+end
+
+$ Test 4: Accessing undefined variable
+show "\n--- Test 4: Undefined variable access ---";
+attempt:
+    show some_undefined_variable;
+end
+handle as e:
+    show "✓ Caught undefined variable error";
+    show "Type: " + error_type(e);
+end
+
+$ Test 5: Nested try-catch
+show "\n--- Test 5: Nested try-catch ---";
+attempt:
+    show "Outer attempt";
+    attempt:
+        put 5 / 0 in inner_result;
+    end
+    handle as inner_err:
+        show "✓ Inner catch: " + error_type(inner_err);
+    end
+    show "✓ Outer attempt continues after inner catch";
+end
+handle as outer_err:
+    show "✗ Should not reach outer catch";
+end
+
+$ Test 6: Try-catch in function
+show "\n--- Test 6: Try-catch in function ---";
+make function safe_divide(a, b):
+    attempt:
+        give a / b;
+    end
+    handle:
+        show "Cannot divide by zero, returning 0";
+        give 0;
+    end
+end;
+
+put safe_divide(10, 2) in result1;
+show "✓ 10 / 2 = " + result1;
+
+put safe_divide(10, 0) in result2;
+show "✓ 10 / 0 handled, result = " + result2;
+
+$ Test 7: Multiple error types
+show "\n--- Test 7: Multiple error types ---";
+attempt:
+    put [1, 2, 3] in nums;
+    put nums @ 10 in val;
+end
+handle as e:
+    show "✓ Caught list index error";
+    show "Message: " + error_message(e);
+end
+
+$ Test 8: Try-catch with loop
+show "\n--- Test 8: Try-catch with loop ---";
+put [1, 2, 0, 4] in numbers;
+cycle i from 0 to 3:
+    attempt:
+        put 100 / (numbers @ i) in division_result;
+        show "100 / " + (numbers @ i) + " = " + division_result;
+    end
+    handle:
+        show "✓ Handled error for index " + i;
+    end
+end
+
+$ Test 9: Try-catch with conditional
+show "\n--- Test 9: Try-catch with conditional ---";
+put 0 in divisor;
+attempt:
+    when divisor == 0:
+        put 10 / divisor in bad_calc;
+    otherwise:
+        show "Safe division";
+    end
+end
+handle as e:
+    show "✓ Caught error in conditional: " + error_type(e);
+end
+
+$ Test 10: Error in list operation
+show "\n--- Test 10: Error in list operation ---";
+attempt:
+    put [1, 2, 3] in my_list;
+    put my_list @ "invalid" in element;
+end
+handle as e:
+    show "✓ Caught invalid list access";
+end
+
+$ Test 11: Try-catch with dictionary
+show "\n--- Test 11: Try-catch with dictionary ---";
+attempt:
+    put {"name": "Alice", "age": 30} in person;
+    put person @ "email" in email;
+    show email;
+end
+handle:
+    show "✓ Handled missing dictionary key";
+end
+
+$ Test 12: Sequential try-catch blocks
+show "\n--- Test 12: Sequential try-catch blocks ---";
+attempt:
+    put 5 / 0 in x;
+end
+handle:
+    show "✓ First try-catch executed";
+end
+
+attempt:
+    put undefined_var2 in y;
+end
+handle:
+    show "✓ Second try-catch executed";
+end
+
+show "\n=== All Try-Catch Tests Completed ===";

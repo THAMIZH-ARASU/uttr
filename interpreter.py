@@ -3,6 +3,7 @@ from functions.function import Function
 from run_time_result import RTResult
 from tokens import TT_DIV, TT_EE, TT_GT, TT_GTE, TT_KEYWORD, TT_LT, TT_LTE, TT_MINUS, TT_MOD, TT_MUL, TT_NE, TT_PLUS
 from values.dict_value import Dict
+from values.error_value import ErrorValue
 from values.list_value import List
 from values.number_value import Number
 from values.string_value import String
@@ -374,3 +375,32 @@ class Interpreter:
                 "Can only index lists and dictionaries",
                 context
             ))
+
+    def visit_TryCatchNode(self, node, context):
+        res = RTResult()
+
+        # Try to execute the attempt body
+        attempt_result = self.visit(node.attempt_body, context)
+        
+        # If no error occurred, return the result
+        if not attempt_result.error:
+            return attempt_result
+        
+        # An error occurred, now execute the handle body
+        # Create an ErrorValue to represent the caught error
+        caught_error = attempt_result.error
+        error_value = ErrorValue(
+            caught_error.details,
+            caught_error.error_name,
+            caught_error
+        ).set_context(context).set_pos(node.pos_start, node.pos_end)
+        
+        # If an error variable name was provided, bind it to the symbol table
+        if node.error_var_name:
+            context.symbol_table.set(node.error_var_name.value, error_value)
+        
+        # Execute the handle body
+        handle_result = res.register(self.visit(node.handle_body, context))
+        if res.should_return(): return res
+        
+        return res.success(handle_result)

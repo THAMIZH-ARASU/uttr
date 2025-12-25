@@ -15,6 +15,7 @@ from nodes.number_node import NumberNode
 from nodes.return_node import ReturnNode
 from nodes.skip_node import SkipNode
 from nodes.string_node import StringNode
+from nodes.try_catch_node import TryCatchNode
 from nodes.unary_operator_node import UnaryOpNode
 from nodes.var_access_node import VarAccessNode
 from nodes.var_assign_node import VarAssignNode
@@ -128,7 +129,7 @@ class Parser:
         if res.error:
             return res.failure(InvalidSyntaxError(
                 self.current_tok.pos_start, self.current_tok.pos_end,
-                "Expected 'put', 'keep', 'show', 'when', 'cycle', 'as long as', 'make function', 'give', or expression"
+                "Expected 'put', 'keep', 'show', 'when', 'cycle', 'as long as', 'attempt', 'make function', 'give', or expression"
             ))
         return res.success(expr)
 
@@ -392,9 +393,14 @@ class Parser:
             if res.error: return res
             return res.success(func_def)
 
+        elif tok.matches(TT_KEYWORD, 'attempt'):
+            try_catch_expr = res.register(self.try_catch_expr())
+            if res.error: return res
+            return res.success(try_catch_expr)
+
         return res.failure(InvalidSyntaxError(
             tok.pos_start, tok.pos_end,
-            "Expected int, float, string, identifier, 'true', 'false', '+', '-', '(', '[', 'when', 'cycle', 'as long as', 'repeat while', or 'make function'"
+            "Expected int, float, string, identifier, 'true', 'false', '+', '-', '(', '[', 'when', 'cycle', 'as long as', 'repeat while', 'make function', or 'attempt'"
         ))
 
     def list_expr(self):
@@ -934,6 +940,147 @@ class Parser:
         if res.error: return res
 
         return res.success(FuncDefNode(var_name_tok, arg_name_toks, body))
+
+    def try_catch_expr(self):
+        res = ParseResult()
+
+        if not self.current_tok.matches(TT_KEYWORD, 'attempt'):
+            return res.failure(InvalidSyntaxError(
+                self.current_tok.pos_start, self.current_tok.pos_end,
+                "Expected 'attempt'"
+            ))
+
+        res.register_advancement()
+        self.advance()
+
+        if self.current_tok.type != TT_COLON:
+            return res.failure(InvalidSyntaxError(
+                self.current_tok.pos_start, self.current_tok.pos_end,
+                "Expected ':'"
+            ))
+
+        res.register_advancement()
+        self.advance()
+
+        if self.current_tok.type == TT_NEWLINE:
+            res.register_advancement()
+            self.advance()
+
+            attempt_body = res.register(self.statements())
+            if res.error: return res
+
+            if not self.current_tok.matches(TT_KEYWORD, 'end'):
+                return res.failure(InvalidSyntaxError(
+                    self.current_tok.pos_start, self.current_tok.pos_end,
+                    "Expected 'end'"
+                ))
+
+            res.register_advancement()
+            self.advance()
+
+            # Skip any newlines between 'end' and 'handle'
+            while self.current_tok.type == TT_NEWLINE:
+                res.register_advancement()
+                self.advance()
+
+            # Now expect 'handle'
+            if not self.current_tok.matches(TT_KEYWORD, 'handle'):
+                return res.failure(InvalidSyntaxError(
+                    self.current_tok.pos_start, self.current_tok.pos_end,
+                    "Expected 'handle'"
+                ))
+
+            res.register_advancement()
+            self.advance()
+
+            # Check for optional error variable binding: 'as <identifier>'
+            error_var_name = None
+            if self.current_tok.matches(TT_KEYWORD, 'as'):
+                res.register_advancement()
+                self.advance()
+
+                if self.current_tok.type != TT_IDENTIFIER:
+                    return res.failure(InvalidSyntaxError(
+                        self.current_tok.pos_start, self.current_tok.pos_end,
+                        "Expected identifier"
+                    ))
+
+                error_var_name = self.current_tok
+                res.register_advancement()
+                self.advance()
+
+            if self.current_tok.type != TT_COLON:
+                return res.failure(InvalidSyntaxError(
+                    self.current_tok.pos_start, self.current_tok.pos_end,
+                    "Expected ':'"
+                ))
+
+            res.register_advancement()
+            self.advance()
+
+            if self.current_tok.type == TT_NEWLINE:
+                res.register_advancement()
+                self.advance()
+
+                handle_body = res.register(self.statements())
+                if res.error: return res
+
+                if not self.current_tok.matches(TT_KEYWORD, 'end'):
+                    return res.failure(InvalidSyntaxError(
+                        self.current_tok.pos_start, self.current_tok.pos_end,
+                        "Expected 'end'"
+                    ))
+
+                res.register_advancement()
+                self.advance()
+
+                return res.success(TryCatchNode(attempt_body, handle_body, error_var_name))
+
+            handle_body = res.register(self.statement())
+            if res.error: return res
+
+            return res.success(TryCatchNode(attempt_body, handle_body, error_var_name))
+
+        attempt_body = res.register(self.statement())
+        if res.error: return res
+
+        if not self.current_tok.matches(TT_KEYWORD, 'handle'):
+            return res.failure(InvalidSyntaxError(
+                self.current_tok.pos_start, self.current_tok.pos_end,
+                "Expected 'handle'"
+            ))
+
+        res.register_advancement()
+        self.advance()
+
+        error_var_name = None
+        if self.current_tok.matches(TT_KEYWORD, 'as'):
+            res.register_advancement()
+            self.advance()
+
+            if self.current_tok.type != TT_IDENTIFIER:
+                return res.failure(InvalidSyntaxError(
+                    self.current_tok.pos_start, self.current_tok.pos_end,
+                    "Expected identifier"
+                ))
+
+            error_var_name = self.current_tok
+            res.register_advancement()
+            self.advance()
+
+        if self.current_tok.type != TT_COLON:
+            return res.failure(InvalidSyntaxError(
+                self.current_tok.pos_start, self.current_tok.pos_end,
+                "Expected ':'"
+            ))
+
+        res.register_advancement()
+        self.advance()
+
+        handle_body = res.register(self.statement())
+        if res.error: return res
+
+        return res.success(TryCatchNode(attempt_body, handle_body, error_var_name))
 
     def bin_op(self, func_a, ops, func_b=None):
         if func_b is None:

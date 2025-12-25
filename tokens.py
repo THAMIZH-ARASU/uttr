@@ -53,6 +53,8 @@ KEYWORDS = [
     'false',
     'cut',
     'skip',
+    'attempt',
+    'handle',
 ]
 
 class Token:
