@@ -211,8 +211,8 @@ UTTR (Understandable Translation Tool for Routines) is a custom-built, procedure
 				<td>AST node for continue statements (skip to next loop iteration)</td>
 			</tr>
 			<tr>
-				<td><b><a href='https://github.com/THAMIZH-ARASU/uttr/blob/master/nodes/try_catch_node.py'>try_catch_node.py</a></b></td>
-				<td>AST node for try-catch error handling blocks with attempt/handle keywords</td>
+				<td><b><a href='https://github.com/THAMIZH-ARASU/uttr/blob/master/nodes/attempt_handle_node.py'>attempt_handle_node.py</a></b></td>
+				<td>AST node for attempt...handle error handling blocks</td>
 			</tr>
 			<tr>
 				<td><b><a href='https://github.com/THAMIZH-ARASU/uttr/blob/master/nodes/list_node.py'>list_node.py</a></b></td>
@@ -363,8 +363,8 @@ UTTR (Understandable Translation Tool for Routines) is a custom-built, procedure
 				<td>Demonstrates modulo operator (%) usage for divisibility checks and patterns</td>
 			</tr>
 			<tr>
-				<td><b><a href='https://github.com/THAMIZH-ARASU/uttr/blob/master/examples/try_catch.uttr'>try_catch.uttr</a></b></td>
-				<td>Demonstrates try-catch error handling with attempt/handle syntax, error introspection, and recovery patterns</td>
+				<td><b><a href='https://github.com/THAMIZH-ARASU/uttr/blob/master/examples/attempt_handle.uttr'>attempt_handle.uttr</a></b></td>
+				<td>Demonstrates attempt...handle error handling with error introspection and recovery patterns</td>
 			</tr>
 			</table>
 		</blockquote>

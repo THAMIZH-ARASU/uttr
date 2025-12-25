@@ -15,7 +15,7 @@ from nodes.number_node import NumberNode
 from nodes.return_node import ReturnNode
 from nodes.skip_node import SkipNode
 from nodes.string_node import StringNode
-from nodes.try_catch_node import TryCatchNode
+from nodes.attempt_handle_node import AttemptHandleNode
 from nodes.unary_operator_node import UnaryOpNode
 from nodes.var_access_node import VarAccessNode
 from nodes.var_assign_node import VarAssignNode
@@ -394,9 +394,9 @@ class Parser:
             return res.success(func_def)
 
         elif tok.matches(TT_KEYWORD, 'attempt'):
-            try_catch_expr = res.register(self.try_catch_expr())
+            attempt_handle_expr = res.register(self.attempt_handle_expr())
             if res.error: return res
-            return res.success(try_catch_expr)
+            return res.success(attempt_handle_expr)
 
         return res.failure(InvalidSyntaxError(
             tok.pos_start, tok.pos_end,
@@ -941,7 +941,7 @@ class Parser:
 
         return res.success(FuncDefNode(var_name_tok, arg_name_toks, body))
 
-    def try_catch_expr(self):
+    def attempt_handle_expr(self):
         res = ParseResult()
 
         if not self.current_tok.matches(TT_KEYWORD, 'attempt'):
@@ -1034,12 +1034,12 @@ class Parser:
                 res.register_advancement()
                 self.advance()
 
-                return res.success(TryCatchNode(attempt_body, handle_body, error_var_name))
+                return res.success(AttemptHandleNode(attempt_body, handle_body, error_var_name))
 
             handle_body = res.register(self.statement())
             if res.error: return res
 
-            return res.success(TryCatchNode(attempt_body, handle_body, error_var_name))
+            return res.success(AttemptHandleNode(attempt_body, handle_body, error_var_name))
 
         attempt_body = res.register(self.statement())
         if res.error: return res
@@ -1080,7 +1080,7 @@ class Parser:
         handle_body = res.register(self.statement())
         if res.error: return res
 
-        return res.success(TryCatchNode(attempt_body, handle_body, error_var_name))
+        return res.success(AttemptHandleNode(attempt_body, handle_body, error_var_name))
 
     def bin_op(self, func_a, ops, func_b=None):
         if func_b is None:

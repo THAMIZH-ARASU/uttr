@@ -376,7 +376,7 @@ class Interpreter:
                 context
             ))
 
-    def visit_TryCatchNode(self, node, context):
+    def visit_AttemptHandleNode(self, node, context):
         res = RTResult()
 
         # Try to execute the attempt body

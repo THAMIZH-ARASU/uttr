@@ -1,4 +1,4 @@
-class TryCatchNode:
+class AttemptHandleNode:
     def __init__(self, attempt_body, handle_body, error_var_name=None):
         self.attempt_body = attempt_body
         self.handle_body = handle_body
