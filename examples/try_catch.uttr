@@ -1,0 +1,220 @@
+$ UTTR Example - Try-Catch Error Handling
+$ Demonstrates practical use cases of attempt...handle syntax
+
+show "=== Try-Catch Error Handling Examples ===\n";
+
+$ ============================================
+$ Example 1: Safe Division Calculator
+$ ============================================
+show "--- Example 1: Safe Division ---";
+
+make function safe_divide(numerator, denominator):
+    attempt:
+        put numerator / denominator in result;
+        give result;
+    end
+    handle as error:
+        show "Error: " + error_message(error);
+        show "Returning 0 as fallback";
+        give 0;
+    end
+end;
+
+put safe_divide(10, 2) in result1;
+show "10 / 2 = " + result1;
+
+put safe_divide(10, 0) in result2;
+show "10 / 0 = " + result2 + " (handled)\n";
+
+
+$ ============================================
+$ Example 2: Input Validation with Recovery
+$ ============================================
+show "--- Example 2: Array Access with Bounds Checking ---";
+
+make function get_element_safe(list, index):
+    attempt:
+        put list @ index in element;
+        give element;
+    end
+    handle as err:
+        show "Index out of bounds! " + error_message(err);
+        give null;
+    end
+end;
+
+put [10, 20, 30, 40, 50] in numbers;
+
+put get_element_safe(numbers, 2) in value1;
+show "Element at index 2: " + value1;
+
+put get_element_safe(numbers, 10) in value2;
+show "Element at index 10: " + value2 + " (handled)\n";
+
+
+$ ============================================
+$ Example 3: Nested Error Handling
+$ ============================================
+show "--- Example 3: Nested Error Handling ---";
+
+make function complex_calculation(a, b, c):
+    attempt:
+        show "Starting complex calculation...";
+        
+        $ Inner try-catch for first operation
+        attempt:
+            put a / b in step1;
+            show "Step 1 result: " + step1;
+        end
+        handle as inner_error:
+            show "Step 1 failed: " + error_message(inner_error);
+            put 0 in step1;
+        end
+        
+        $ Continue with second operation
+        put step1 + c in final_result;
+        give final_result;
+    end
+    handle as outer_error:
+        show "Calculation failed completely: " + error_message(outer_error);
+        give -1;
+    end
+end;
+
+put complex_calculation(100, 5, 10) in result_ok;
+show "Result (success case): " + result_ok;
+
+put complex_calculation(100, 0, 10) in result_error;
+show "Result (error case): " + result_error + "\n";
+
+
+$ ============================================
+$ Example 4: Dictionary Access with Defaults
+$ ============================================
+show "--- Example 4: Safe Dictionary Access ---";
+
+make function get_config(config_dict, key, default_value):
+    attempt:
+        put config_dict @ key in value;
+        give value;
+    end
+    handle:
+        show "Key '" + key + "' not found, using default";
+        give default_value;
+    end
+end;
+
+put {"host": "localhost", "port": 8080, "debug": true} in config;
+
+put get_config(config, "host", "0.0.0.0") in host;
+show "Host: " + host;
+
+put get_config(config, "timeout", 30) in timeout;
+show "Timeout: " + timeout + "\n";
+
+
+$ ============================================
+$ Example 5: Batch Processing with Error Recovery
+$ ============================================
+show "--- Example 5: Batch Processing ---";
+
+make function process_batch(data_list):
+    put 0 in success_count;
+    put 0 in error_count;
+    
+    cycle i from 0 to (len(data_list) - 1):
+        attempt:
+            put data_list @ i in item;
+            put 100 / item in processed;
+            show "Processed item " + i + ": 100 / " + item + " = " + processed;
+            put success_count + 1 in success_count;
+        end
+        handle as err:
+            show "Failed to process item " + i + ": " + error_message(err);
+            put error_count + 1 in error_count;
+        end
+    end
+    
+    show "\nBatch complete:";
+    show "  Successes: " + success_count;
+    show "  Errors: " + error_count;
+end;
+
+put [10, 5, 0, 2, 1] in batch_data;
+process_batch(batch_data);
+show "";
+
+
+$ ============================================
+$ Example 6: Validation Chain
+$ ============================================
+show "--- Example 6: Multi-Step Validation ---";
+
+make function validate_and_compute(input_dict):
+    attempt:
+        $ Validate required fields exist
+        put input_dict @ "x" in x;
+        put input_dict @ "y" in y;
+        
+        show "Values retrieved: x=" + x + ", y=" + y;
+        
+        $ Perform calculation
+        attempt:
+            put x / y in division_result;
+            put x % y in modulo_result;
+            
+            show "Division: " + x + " / " + y + " = " + division_result;
+            show "Modulo: " + x + " % " + y + " = " + modulo_result;
+            
+            give division_result + modulo_result;
+        end
+        handle as calc_error:
+            show "Calculation error: " + error_message(calc_error);
+            give 0;
+        end
+    end
+    handle as validation_error:
+        show "Validation error: " + error_message(validation_error);
+        show "Required fields: 'x' and 'y'";
+        give -1;
+    end
+end;
+
+put {"x": 17, "y": 5} in valid_input;
+put validate_and_compute(valid_input) in result_valid;
+show "Result: " + result_valid + "\n";
+
+put {"x": 17} in invalid_input;
+put validate_and_compute(invalid_input) in result_invalid;
+show "Result: " + result_invalid + "\n";
+
+
+$ ============================================
+$ Example 7: Error Type Inspection
+$ ============================================
+show "--- Example 7: Error Type Inspection ---";
+
+make function handle_different_errors():
+    put ["test", 5, 0] in test_cases;
+    
+    cycle i from 0 to (len(test_cases) - 1):
+        attempt:
+            put test_cases @ i in value;
+            put 100 / value in result;
+            show "Success: 100 / " + value + " = " + result;
+        end
+        handle as e:
+            put error_type(e) in err_type;
+            put error_message(e) in err_msg;
+            
+            show "Caught error:";
+            show "  Type: " + err_type;
+            show "  Message: " + err_msg;
+            show "  Continuing with next item...";
+        end
+    end
+end;
+
+handle_different_errors();
+
+show "\n=== All Examples Completed ===";

@@ -32,6 +32,8 @@ global_symbol_table.set("run", BuiltInFunction.run)
 global_symbol_table.set("help", BuiltInFunction.help)
 global_symbol_table.set("exit", BuiltInFunction.exit)
 global_symbol_table.set("clear", BuiltInFunction.clear)
+global_symbol_table.set("error_message", BuiltInFunction.error_message)
+global_symbol_table.set("error_type", BuiltInFunction.error_type)
 
 def run(fn, text):
     # Generate tokens

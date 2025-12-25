@@ -2,6 +2,7 @@ from errors.run_time_error import RTError
 from functions.base_function import BaseFunction
 from run_time_result import RTResult
 from values.dict_value import Dict
+from values.error_value import ErrorValue
 from values.list_value import List
 from values.number_value import Number
 from values.string_value import String
@@ -336,6 +337,32 @@ For full documentation, see README.md
         return RTResult().success(Number.null)
     execute_clear.arg_names = []
 
+    def execute_error_message(self, exec_ctx):
+        error = exec_ctx.symbol_table.get("error")
+
+        if not isinstance(error, ErrorValue):
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                "Argument must be an error",
+                exec_ctx
+            ))
+
+        return RTResult().success(String(error.error_message))
+    execute_error_message.arg_names = ["error"]
+
+    def execute_error_type(self, exec_ctx):
+        error = exec_ctx.symbol_table.get("error")
+
+        if not isinstance(error, ErrorValue):
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                "Argument must be an error",
+                exec_ctx
+            ))
+
+        return RTResult().success(String(error.error_type))
+    execute_error_type.arg_names = ["error"]
+
 # Create built-in function instances
 BuiltInFunction.show = BuiltInFunction("show")
 BuiltInFunction.input = BuiltInFunction("input")
@@ -352,3 +379,5 @@ BuiltInFunction.run = BuiltInFunction("run")
 BuiltInFunction.help = BuiltInFunction("help")
 BuiltInFunction.exit = BuiltInFunction("exit")
 BuiltInFunction.clear = BuiltInFunction("clear")
+BuiltInFunction.error_message = BuiltInFunction("error_message")
+BuiltInFunction.error_type = BuiltInFunction("error_type")

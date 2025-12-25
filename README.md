@@ -46,17 +46,19 @@ UTTR (Understandable Translation Tool for Routines) is a custom-built, procedure
 
 ##  Features
 
-- **Natural English-Like Syntax**: Write code that reads like plain English with keywords like `put`, `in`, `when`, `otherwise`, `make function`, `give`, `cut`, and `skip`
+- **Natural English-Like Syntax**: Write code that reads like plain English with keywords like `put`, `in`, `when`, `otherwise`, `make function`, `give`, `cut`, `skip`, `attempt`, and `handle`
 - **Complete Interpreter**: Full lexer-parser-interpreter pipeline built from scratch with comprehensive error handling and position tracking
 - **Procedure-Oriented Design**: Focus on procedures and sequential execution with modular, reusable functions
 - **Rich Data Types**: Support for integers, floats, strings, booleans, lists, and dictionaries with intuitive access using `@` operator
 - **Operators**: Arithmetic (`+`, `-`, `*`, `/`, `%`), comparison (`==`, `!=`, `<`, `>`, `<=`, `>=`), and logical (`and`, `or`, `not`)
 - **Control Structures**: Conditional statements (`when...otherwise`), loops (`cycle`, `as long as`, `repeat while`), and for-each iteration with loop control (`cut` for break, `skip` for continue)
+- **Error Handling**: Try-catch blocks using `attempt...handle` syntax with error introspection (`error_message`, `error_type`)
 - **Function Support**: Define and call custom functions with return values using `make function` and `give` keywords
 - **Built-in Functions**: Pre-defined utilities including:
   - I/O: `show`, `input`, `input_int`
   - Collections: `len`, `append`, `pop`, `extend`
   - Dictionaries: `keys`, `values`, `has_key`, `remove`
+  - Error handling: `error_message`, `error_type`
   - Execution: `run` (execute external .uttr files)
 - **Variable & Constant Management**: Mutable variables with `put...in` and immutable constants with `keep...as`
 - **Comment Support**: Single-line (`$`) and multi-line (`$[...]$`) comments for code documentation
@@ -209,6 +211,10 @@ UTTR (Understandable Translation Tool for Routines) is a custom-built, procedure
 				<td>AST node for continue statements (skip to next loop iteration)</td>
 			</tr>
 			<tr>
+				<td><b><a href='https://github.com/THAMIZH-ARASU/uttr/blob/master/nodes/try_catch_node.py'>try_catch_node.py</a></b></td>
+				<td>AST node for try-catch error handling blocks with attempt/handle keywords</td>
+			</tr>
+			<tr>
 				<td><b><a href='https://github.com/THAMIZH-ARASU/uttr/blob/master/nodes/list_node.py'>list_node.py</a></b></td>
 				<td>AST node representing list literals with element expressions</td>
 			</tr>
@@ -249,6 +255,10 @@ UTTR (Understandable Translation Tool for Routines) is a custom-built, procedure
 			<tr>
 				<td><b><a href='https://github.com/THAMIZH-ARASU/uttr/blob/master/values/dict_value.py'>dict_value.py</a></b></td>
 				<td>Runtime representation of dictionary/map collections with key-based access and manipulation operations</td>
+			</tr>
+			<tr>
+				<td><b><a href='https://github.com/THAMIZH-ARASU/uttr/blob/master/values/error_value.py'>error_value.py</a></b></td>
+				<td>Runtime representation of caught errors with message, type, and details for error handling</td>
 			</tr>
 			<tr>
 				<td><b><a href='https://github.com/THAMIZH-ARASU/uttr/blob/master/values/value.py'>value.py</a></b></td>
@@ -351,6 +361,10 @@ UTTR (Understandable Translation Tool for Routines) is a custom-built, procedure
 			<tr>
 				<td><b><a href='https://github.com/THAMIZH-ARASU/uttr/blob/master/examples/modulo.uttr'>modulo.uttr</a></b></td>
 				<td>Demonstrates modulo operator (%) usage for divisibility checks and patterns</td>
+			</tr>
+			<tr>
+				<td><b><a href='https://github.com/THAMIZH-ARASU/uttr/blob/master/examples/try_catch.uttr'>try_catch.uttr</a></b></td>
+				<td>Demonstrates try-catch error handling with attempt/handle syntax, error introspection, and recovery patterns</td>
 			</tr>
 			</table>
 		</blockquote>
@@ -471,6 +485,23 @@ show "Age: " + person @ "age";
 $ Dictionary operations
 put keys(person) in all_keys;
 show "Has 'email' key: " + has_key(person, "email");
+
+$ Try-catch error handling
+make function safe_divide(a, b):
+    attempt:
+        give a / b;
+    end
+    handle as error:
+        show "Error: " + error_message(error);
+        give 0;
+    end
+end;
+
+put safe_divide(10, 2) in result;
+show "Result: " + result;
+
+put safe_divide(10, 0) in result;
+show "Result: " + result;  $ Handles error gracefully
 ```
 
 ###  Testing
@@ -510,6 +541,7 @@ The test suite includes 20 test categories with 200+ individual tests covering:
 - Conditional statements
 - All loop types (for, while, do-while, for-each)
 - Loop control (break with `cut`, continue with `skip`)
+- Try-catch error handling (`attempt...handle` with error introspection)
 - Lists and dictionaries
 - List mutations (append, pop, extend) and dictionary mutations (remove)
 - Functions and built-ins
@@ -531,9 +563,9 @@ The test suite includes 20 test categories with 200+ individual tests covering:
 - [X] **`Task 8`**: <strike>Add break and continue statements for loop control (`cut` and `skip` keywords)</strike>
 - [X] **`Task 9`**: <strike>Add modulo operator (`%`) for arithmetic operations</strike>
 - [X] **`Task 10`**: <strike>Fix list/dictionary mutation functions (append, pop, extend, remove)</strike>
+- [X] **`Task 11`**: <strike>Implement try-catch error handling (`attempt...handle` syntax)</strike>
 
 ### Language Features
-- [ ] **`Task 11`**: Implement try-catch error handling (`attempt...handle` syntax)
 - [ ] **`Task 12`**: Add built-in methods for strings (split, join, upper, lower, replace, substring)
 - [ ] **`Task 13`**: Support for tuple data type (immutable lists with `<>` syntax)
 - [ ] **`Task 14`**: Add import/module system for code organization
