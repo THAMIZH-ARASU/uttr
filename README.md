@@ -58,6 +58,7 @@ UTTR (Understandable Translation Tool for Routines) is a custom-built, procedure
   - I/O: `show`, `input`, `input_int`
   - Collections: `len`, `append`, `pop`, `extend`
   - Dictionaries: `keys`, `values`, `has_key`, `remove`
+  - Strings: `split`, `join`, `upper`, `lower`, `replace`, `substring`
   - Error handling: `error_message`, `error_type`
   - Execution: `run` (execute external .uttr files)
 - **Variable & Constant Management**: Mutable variables with `put...in` and immutable constants with `keep...as`
@@ -486,6 +487,23 @@ $ Dictionary operations
 put keys(person) in all_keys;
 show "Has 'email' key: " + has_key(person, "email");
 
+$ String methods
+put "hello world from uttr" in text;
+put upper(text) in uppercase;
+show uppercase;
+
+put split(text, " ") in words;
+show "Word count: " + len(words);
+
+put join(words, "-") in joined;
+show joined;
+
+put replace(text, "uttr", "UTTR") in replaced;
+show replaced;
+
+put substring(text, 0, 5) in first_word;
+show first_word;
+
 $ Try-catch error handling
 make function safe_divide(a, b):
     attempt:
@@ -564,9 +582,9 @@ The test suite includes 20 test categories with 200+ individual tests covering:
 - [X] **`Task 9`**: <strike>Add modulo operator (`%`) for arithmetic operations</strike>
 - [X] **`Task 10`**: <strike>Fix list/dictionary mutation functions (append, pop, extend, remove)</strike>
 - [X] **`Task 11`**: <strike>Implement try-catch error handling (`attempt...handle` syntax)</strike>
+- [X] **`Task 12`**: <strike>Add built-in methods for strings (split, join, upper, lower, replace, substring)</strike>
 
 ### Language Features
-- [ ] **`Task 12`**: Add built-in methods for strings (split, join, upper, lower, replace, substring)
 - [ ] **`Task 13`**: Support for tuple data type (immutable lists with `<>` syntax)
 - [ ] **`Task 14`**: Add import/module system for code organization
 - [ ] **`Task 15`**: Implement lambda/anonymous functions with inline syntax

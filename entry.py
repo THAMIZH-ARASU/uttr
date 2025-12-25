@@ -34,6 +34,12 @@ global_symbol_table.set("exit", BuiltInFunction.exit)
 global_symbol_table.set("clear", BuiltInFunction.clear)
 global_symbol_table.set("error_message", BuiltInFunction.error_message)
 global_symbol_table.set("error_type", BuiltInFunction.error_type)
+global_symbol_table.set("split", BuiltInFunction.split)
+global_symbol_table.set("join", BuiltInFunction.join)
+global_symbol_table.set("upper", BuiltInFunction.upper)
+global_symbol_table.set("lower", BuiltInFunction.lower)
+global_symbol_table.set("replace", BuiltInFunction.replace)
+global_symbol_table.set("substring", BuiltInFunction.substring)
 
 def run(fn, text):
     # Generate tokens

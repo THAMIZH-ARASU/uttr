@@ -1,0 +1,242 @@
+$ String Methods Examples
+$ Practical demonstrations of split, join, upper, lower, replace, and substring
+
+show "===== UTTR String Methods Examples =====";
+show "";
+
+$ ==========================================
+$ 1. TEXT PROCESSING
+$ ==========================================
+show "--- 1. Text Processing ---";
+
+$ Parse comma-separated values
+put "apple,banana,orange,grape" in csv_data;
+put split(csv_data, ",") in items;
+show "Items: " + items;
+
+$ Create formatted output
+put join(items, " | ") in formatted;
+show "Formatted: " + formatted;
+show "";
+
+$ ==========================================
+$ 2. CASE CONVERSION
+$ ==========================================
+show "--- 2. Case Conversion ---";
+
+$ Convert to uppercase for constants
+put "database_connection" in config_name;
+put upper(config_name) in constant_name;
+show "Constant: " + constant_name;
+
+$ Convert to lowercase for comparison
+put "Hello" in input1;
+put "hello" in input2;
+put lower(input1) in normalized1;
+put lower(input2) in normalized2;
+show "Normalized comparison: " + (normalized1 == normalized2);
+show "";
+
+$ ==========================================
+$ 3. TEXT REPLACEMENT
+$ ==========================================
+show "--- 3. Text Replacement ---";
+
+$ Template replacement
+put "Hello, {name}! Welcome to {place}." in template;
+put replace(template, "{name}", "Alice") in step1;
+put replace(step1, "{place}", "UTTR") in message;
+show message;
+
+$ Remove extra spaces
+put "hello    world" in messy;
+put replace(messy, "    ", " ") in clean;
+show "Clean: '" + clean + "'";
+show "";
+
+$ ==========================================
+$ 4. SUBSTRING EXTRACTION
+$ ==========================================
+show "--- 4. Substring Extraction ---";
+
+$ Extract file extension
+put "document.pdf" in filename;
+put len(filename) in file_len;
+put substring(filename, file_len - 3, null) in extension;
+show "Extension: " + extension;
+
+$ Extract first name from full name
+put "John Michael Smith" in fullname;
+put split(fullname, " ") in name_parts;
+put name_parts @ 0 in firstname;
+show "First name: " + firstname;
+
+$ Get first 10 characters
+put "This is a very long string" in long_text;
+put substring(long_text, 0, 10) in preview;
+show "Preview: " + preview + "...";
+show "";
+
+$ ==========================================
+$ 5. URL MANIPULATION
+$ ==========================================
+show "--- 5. URL Manipulation ---";
+
+put "https://www.example.com/api/users" in url;
+put split(url, "/") in url_parts;
+show "Protocol: " + url_parts @ 0;
+show "Domain: " + url_parts @ 2;
+show "Endpoint: " + url_parts @ 4;
+
+$ Change protocol
+put replace(url, "https", "http") in http_url;
+show "HTTP URL: " + http_url;
+show "";
+
+$ ==========================================
+$ 6. DATA FORMATTING
+$ ==========================================
+show "--- 6. Data Formatting ---";
+
+$ Format phone number
+put "1234567890" in phone;
+put substring(phone, 0, 3) in area;
+put substring(phone, 3, 6) in prefix;
+put substring(phone, 6, null) in line;
+put "(" + area + ") " + prefix + "-" + line in formatted_phone;
+show "Phone: " + formatted_phone;
+
+$ Create initials
+put "Alice Betty Cooper" in name;
+put split(name, " ") in name_list;
+put upper(substring(name_list @ 0, 0, 1)) in initial1;
+put upper(substring(name_list @ 1, 0, 1)) in initial2;
+put upper(substring(name_list @ 2, 0, 1)) in initial3;
+put initial1 + "." + initial2 + "." + initial3 + "." in initials;
+show "Initials: " + initials;
+show "";
+
+$ ==========================================
+$ 7. PATH MANIPULATION
+$ ==========================================
+show "--- 7. Path Manipulation ---";
+
+$ Convert path separators
+put "home/user/documents/file.txt" in unix_path;
+put split(unix_path, "/") in path_segments;
+put join(path_segments, "\\") in windows_path;
+show "Unix path: " + unix_path;
+show "Windows path: " + windows_path;
+
+$ Extract directory and filename
+put len(path_segments) in num_segments;
+put path_segments @ (num_segments - 1) in filename2;
+show "Filename: " + filename2;
+show "";
+
+$ ==========================================
+$ 8. TEXT CENSORING
+$ ==========================================
+show "--- 8. Text Censoring ---";
+
+put "This is a bad word example" in text;
+put replace(text, "bad", "***") in censored;
+show "Censored: " + censored;
+show "";
+
+$ ==========================================
+$ 9. WORD COUNT
+$ ==========================================
+show "--- 9. Word Count ---";
+
+put "The quick brown fox jumps over the lazy dog" in sentence;
+put split(sentence, " ") in words;
+put len(words) in word_count;
+show "Sentence: " + sentence;
+show "Word count: " + word_count;
+show "";
+
+$ ==========================================
+$ 10. TAG REMOVAL (Simple)
+$ ==========================================
+show "--- 10. Simple Tag Removal ---";
+
+put "<h1>Title</h1>" in html;
+put replace(html, "<h1>", "") in step1;
+put replace(step1, "</h1>", "") in plain_text;
+show "Plain text: " + plain_text;
+show "";
+
+$ ==========================================
+$ 11. ACRONYM CREATION
+$ ==========================================
+show "--- 11. Acronym Creation ---";
+
+put "Understandable Translation Tool for Routines" in full_name;
+put split(full_name, " ") in words2;
+put upper(substring(words2 @ 0, 0, 1)) in letter1;
+put upper(substring(words2 @ 1, 0, 1)) in letter2;
+put upper(substring(words2 @ 2, 0, 1)) in letter3;
+put upper(substring(words2 @ 3, 0, 1)) in letter4;
+put upper(substring(words2 @ 4, 0, 1)) in letter5;
+put letter1 + letter2 + letter2 + letter4 + letter5 in acronym;
+show "Full name: " + full_name;
+show "Acronym: UTTR";
+show "";
+
+$ ==========================================
+$ 12. EMAIL VALIDATION (Simple Check)
+$ ==========================================
+show "--- 12. Email Parsing ---";
+
+put "user@example.com" in email;
+put split(email, "@") in email_parts;
+put email_parts @ 0 in username;
+put email_parts @ 1 in domain;
+show "Email: " + email;
+show "Username: " + username;
+show "Domain: " + domain;
+show "";
+
+$ ==========================================
+$ 13. SENTENCE CASE CONVERSION
+$ ==========================================
+show "--- 13. Sentence Case ---";
+
+put "this is a sentence" in lowercase_sentence;
+put upper(substring(lowercase_sentence, 0, 1)) in first_char;
+put substring(lowercase_sentence, 1, null) in rest;
+put first_char + rest in sentence_case;
+show "Original: " + lowercase_sentence;
+show "Sentence case: " + sentence_case;
+show "";
+
+$ ==========================================
+$ 14. SLUG CREATION
+$ ==========================================
+show "--- 14. URL Slug Creation ---";
+
+put "My Awesome Blog Post" in title;
+put lower(title) in lowercase_title;
+put replace(lowercase_title, " ", "-") in slug;
+show "Title: " + title;
+show "Slug: " + slug;
+show "";
+
+$ ==========================================
+$ 15. WORD WRAP SIMULATION
+$ ==========================================
+show "--- 15. Text Truncation ---";
+
+put "This is a very long text that needs to be truncated" in long_text2;
+keep 20 as max_length;
+put len(long_text2) in text_length;
+
+when text_length > max_length:
+    put substring(long_text2, 0, max_length) in truncated;
+    put truncated + "..." in result;
+    show "Truncated: " + result;
+end;
+show "";
+
+show "===== End of Examples =====";

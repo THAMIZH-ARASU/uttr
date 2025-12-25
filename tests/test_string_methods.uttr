@@ -1,0 +1,170 @@
+$ Test String Methods
+$ Tests for split, join, upper, lower, replace, and substring functions
+
+show "=== Testing String Methods ===";
+
+$ Test 1: split with default delimiter (space)
+show "Test 1: split with default delimiter";
+put split("hello world from uttr", null) in words;
+show words;
+show "Length: " + len(words);
+
+$ Test 2: split with custom delimiter
+show "Test 2: split with custom delimiter";
+put split("apple,banana,cherry", ",") in fruits;
+show fruits;
+show "First fruit: " + fruits @ 0;
+
+$ Test 3: split with multi-character delimiter
+show "Test 3: split with multi-character delimiter";
+put split("one::two::three", "::") in parts;
+show parts;
+
+$ Test 4: join list of strings
+show "Test 4: join list of strings";
+put ["hello", "world", "from", "uttr"] in word_list;
+put join(word_list, " ") in sentence;
+show sentence;
+
+$ Test 5: join with custom separator
+show "Test 5: join with custom separator";
+put ["apple", "banana", "cherry"] in fruit_list;
+put join(fruit_list, ", ") in fruit_string;
+show fruit_string;
+
+$ Test 6: join with numbers (should convert)
+show "Test 6: join with numbers";
+put [1, 2, 3, 4, 5] in numbers;
+put join(numbers, "-") in number_string;
+show number_string;
+
+$ Test 7: upper case conversion
+show "Test 7: upper case";
+put "hello world" in text;
+put upper(text) in uppercase_text;
+show uppercase_text;
+
+$ Test 8: lower case conversion
+show "Test 8: lower case";
+put "HELLO WORLD" in text2;
+put lower(text2) in lowercase_text;
+show lowercase_text;
+
+$ Test 9: upper with mixed case
+show "Test 9: upper with mixed case";
+put upper("HeLLo WoRLd") in result;
+show result;
+
+$ Test 10: replace single character
+show "Test 10: replace single character";
+put "hello world" in text3;
+put replace(text3, "o", "0") in replaced;
+show replaced;
+
+$ Test 11: replace word
+show "Test 11: replace word";
+put "I love Python" in text4;
+put replace(text4, "Python", "UTTR") in replaced2;
+show replaced2;
+
+$ Test 12: replace with empty string (remove)
+show "Test 12: replace with empty string";
+put "hello  world" in text5;
+put replace(text5, "  ", " ") in replaced3;
+show replaced3;
+
+$ Test 13: substring with start only
+show "Test 13: substring with start only";
+put "hello world" in text6;
+put substring(text6, 6, null) in substr1;
+show substr1;
+
+$ Test 14: substring with start and end
+show "Test 14: substring with start and end";
+put "programming" in text7;
+put substring(text7, 3, 7) in substr2;
+show substr2;
+
+$ Test 15: substring from beginning
+show "Test 15: substring from beginning";
+put substring("hello world", 0, 5) in substr3;
+show substr3;
+
+$ Test 16: Complex use case - parse CSV line
+show "Test 16: parse CSV line";
+put "John,Doe,30,Engineer" in csv_line;
+put split(csv_line, ",") in fields;
+show "First name: " + fields @ 0;
+show "Last name: " + fields @ 1;
+show "Age: " + fields @ 2;
+show "Job: " + fields @ 3;
+
+$ Test 17: Complex use case - format text
+show "Test 17: format text";
+put "  hello world  " in messy_text;
+put split(messy_text, null) in words2;
+put join(words2, " ") in clean_text;
+show "Clean: '" + clean_text + "'";
+
+$ Test 18: Complex use case - title case
+show "Test 18: title case simulation";
+put "hello world from uttr" in title;
+put split(title, " ") in title_words;
+put upper(substring(title_words @ 0, 0, 1)) in first_cap;
+put substring(title_words @ 0, 1, null) in first_rest;
+put first_cap + first_rest in first_word;
+show first_word;
+
+$ Test 19: Chain operations
+show "Test 19: chain operations";
+put "  HELLO WORLD  " in text8;
+put substring(text8, 2, 13) in trimmed;
+put lower(trimmed) in lowered;
+put replace(lowered, " ", "_") in final;
+show final;
+
+$ Test 20: split and rejoin
+show "Test 20: split and rejoin";
+put "path/to/some/file.txt" in path;
+put split(path, "/") in path_parts;
+put join(path_parts, "\\") in windows_path;
+show "Unix: " + path;
+show "Windows: " + windows_path;
+
+$ Test 21: Empty string edge cases
+show "Test 21: empty string edge cases";
+put split("", " ") in empty_split;
+show "Split empty: " + len(empty_split);
+put join([], "-") in empty_join;
+show "Join empty: '" + empty_join + "'";
+
+$ Test 22: Replace all occurrences
+show "Test 22: replace all occurrences";
+put "the quick brown fox jumps over the lazy dog" in sentence2;
+put replace(sentence2, "the", "THE") in replaced4;
+show replaced4;
+
+$ Test 23: Substring negative indices simulation
+show "Test 23: substring at end";
+put "hello world" in text9;
+put len(text9) in text_len;
+put substring(text9, text_len - 5, null) in last_five;
+show last_five;
+
+$ Test 24: Case conversion with special characters
+show "Test 24: case conversion with special chars";
+put upper("hello123!@#") in upper_special;
+show upper_special;
+put lower("HELLO123!@#") in lower_special;
+show lower_special;
+
+$ Test 25: Integration test - URL parsing
+show "Test 25: URL parsing simulation";
+put "https://example.com/path/to/page" in url;
+put split(url, "/") in url_parts;
+show "Protocol: " + url_parts @ 0;
+show "Domain: " + url_parts @ 2;
+put substring(url_parts @ 2, 0, len(url_parts @ 2)) in domain;
+show "Domain cleaned: " + domain;
+
+show "=== All String Method Tests Complete ===";
