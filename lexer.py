@@ -20,6 +20,19 @@ class Lexer:
         peek_idx = self.pos.idx + offset
         return self.text[peek_idx] if peek_idx < len(self.text) else None
 
+    def peek_word(self):
+        """Peek ahead and return the next word (identifier/keyword) after current position"""
+        idx = self.pos.idx
+        # Skip whitespace
+        while idx < len(self.text) and self.text[idx] in ' \t':
+            idx += 1
+        # Read word
+        word = ""
+        while idx < len(self.text) and (self.text[idx].isalnum() or self.text[idx] == '_'):
+            word += self.text[idx]
+            idx += 1
+        return word
+
     def make_tokens(self):
         tokens = []
 
@@ -257,25 +270,60 @@ class Lexer:
             return Token(TT_GTE, pos_start=pos_start, pos_end=self.pos)
         
         # Check if we're likely closing a tuple by looking at the last token
-        # RANGLE only makes sense after a value (number, identifier, string, rparen, rsquare, rangle)
-        # or after a comma within a tuple
-        if last_token and last_token.type in [TT_INT, TT_FLOAT, TT_STRING, TT_IDENTIFIER, 
-                                                TT_RPAREN, TT_RSQUARE, TT_RANGLE]:
+        # RANGLE makes sense after:
+        # 1. A value (number, identifier, string, rparen, rsquare, rangle) - normal tuple close
+        # 2. Specific keywords that can be tuple elements (true, false)
+        # 3. A comma - could be trailing comma before tuple close
+        # 4. LANGLE - empty tuple <>
+        # 
+        # We must be careful: keywords like 'cycle', 'when', etc. are followed by GT in comparisons
+        tuple_value_keywords = ['true', 'false']
+        is_tuple_keyword = (last_token and last_token.type == TT_KEYWORD and 
+                          last_token.value in tuple_value_keywords)
+        
+        if last_token and (last_token.type in [TT_INT, TT_FLOAT, TT_STRING, TT_IDENTIFIER,
+                                                TT_RPAREN, TT_RSQUARE, TT_RANGLE, TT_COMMA, TT_LANGLE] 
+                          or is_tuple_keyword):
             # Could be closing tuple or comparison
             # Check what comes next - if it's likely continuing an expression, it's comparison
             next_char = self.current_char
             
-            # After tuple close, we typically see: space+punctuation, comma, semicolon, newline, ), ], }
+            # After tuple close, we typically see: comma, semicolon, newline, ), ], }, >
             # After comparison, we typically see: space+identifier/number
-            if next_char in ',;\n)]}':
+            
+            # Special case: Empty tuple <> - always treat as RANGLE
+            if last_token.type == TT_LANGLE:
                 return Token(TT_RANGLE, pos_start=pos_start, pos_end=self.pos)
             
-            # If followed by whitespace, peek further
+            # For after comma, it's definitely RANGLE if followed by close paren/bracket
+            if last_token.type == TT_COMMA:
+                if next_char in ',;\n)]}>':
+                    return Token(TT_RANGLE, pos_start=pos_start, pos_end=self.pos)
+            
+            # If followed by punctuation (not whitespace), it's tuple close
+            if next_char in ',;\n)]}>':
+                return Token(TT_RANGLE, pos_start=pos_start, pos_end=self.pos)
+            
+            # If followed by whitespace, peek further to disambiguate
             if next_char in ' \t':
                 peek_char = self.peek(1)
-                # If followed by colon, it's likely end of tuple before statement
-                if peek_char == ':':
+                # If followed by colon or close punctuation, it's tuple close
+                if peek_char in ':,>;)\n':
                     return Token(TT_RANGLE, pos_start=pos_start, pos_end=self.pos)
+                # If followed by letter, need to check if it's a keyword (tuple close) or identifier (comparison)
+                # Common keywords after tuple close: in, show, and, or, etc.
+                # For now, if followed by 'i' (likely 'in'), treat as tuple close
+                elif peek_char and peek_char.isalpha():
+                    # Peek more to see if it's 'in' keyword
+                    peek_word = self.peek_word()
+                    tuple_following_keywords = ['in', 'show', 'and', 'or', 'plus', 'minus', 'times', 'over']
+                    if peek_word in tuple_following_keywords:
+                        return Token(TT_RANGLE, pos_start=pos_start, pos_end=self.pos)
+                    # Otherwise, assume comparison
+                    return Token(TT_GT, pos_start=pos_start, pos_end=self.pos)
+                # If followed by digit, it's comparison
+                elif peek_char and peek_char.isdigit():
+                    return Token(TT_GT, pos_start=pos_start, pos_end=self.pos)
         
         # Default to greater-than comparison
         return Token(TT_GT, pos_start=pos_start, pos_end=self.pos)
