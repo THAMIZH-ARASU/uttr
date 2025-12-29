@@ -9,10 +9,12 @@ from nodes.for_each_node import ForEachNode
 from nodes.for_node import ForNode
 from nodes.function_definition_node import FuncDefNode
 from nodes.if_node import IfNode
+from nodes.import_node import ImportNode
 from nodes.list_access_node import ListAccessNode
 from nodes.list_node import ListNode
 from nodes.number_node import NumberNode
 from nodes.return_node import ReturnNode
+from nodes.share_node import ShareNode
 from nodes.skip_node import SkipNode
 from nodes.string_node import StringNode
 from nodes.attempt_handle_node import AttemptHandleNode
@@ -103,6 +105,14 @@ class Parser:
     def statement(self):
         res = ParseResult()
         pos_start = self.current_tok.pos_start.copy()
+
+        # Check for 'bring' (import)
+        if self.current_tok.matches(TT_KEYWORD, 'bring'):
+            return self.import_expr()
+
+        # Check for 'share' (export)
+        if self.current_tok.matches(TT_KEYWORD, 'share'):
+            return self.share_expr()
 
         # Check for 'give' (return)
         if self.current_tok.matches(TT_KEYWORD, 'give'):
@@ -1144,3 +1154,204 @@ class Parser:
             left = BinOpNode(left, op_tok, right)
 
         return res.success(left)
+
+    def import_expr(self):
+        """
+        Parse import statements with natural English syntax.
+        
+        Syntax variants:
+        - bring in math;                          # Import entire module
+        - bring add from math;                    # Import specific item
+        - bring add, subtract from math;          # Import multiple items
+        - bring add as addition from math;        # Import with alias
+        - bring add as addition, subtract from math; # Multiple with aliases
+        """
+        res = ParseResult()
+        pos_start = self.current_tok.pos_start.copy()
+
+        # Skip 'bring' keyword
+        res.register_advancement()
+        self.advance()
+
+        items = None  # None means import all
+
+        # Check if it's 'bring in module' (full import)
+        if self.current_tok.matches(TT_KEYWORD, 'in'):
+            res.register_advancement()
+            self.advance()
+
+            # Parse module path (can include path separators)
+            module_name_tok = res.register(self.parse_module_path())
+            if res.error: return res
+
+            return res.success(ImportNode(module_name_tok, items=None))
+
+        # Otherwise, it's 'bring item(s) from module'
+        items = []
+        
+        # Parse first item
+        if self.current_tok.type != TT_IDENTIFIER:
+            return res.failure(InvalidSyntaxError(
+                self.current_tok.pos_start, self.current_tok.pos_end,
+                "Expected identifier or 'in'"
+            ))
+
+        item_name = self.current_tok
+        res.register_advancement()
+        self.advance()
+
+        # Check for alias
+        alias = None
+        if self.current_tok.matches(TT_KEYWORD, 'as'):
+            res.register_advancement()
+            self.advance()
+
+            if self.current_tok.type != TT_IDENTIFIER:
+                return res.failure(InvalidSyntaxError(
+                    self.current_tok.pos_start, self.current_tok.pos_end,
+                    "Expected identifier for alias"
+                ))
+
+            alias = self.current_tok
+            res.register_advancement()
+            self.advance()
+
+        items.append((item_name, alias))
+
+        # Parse additional items (comma-separated)
+        while self.current_tok.type == TT_COMMA:
+            res.register_advancement()
+            self.advance()
+
+            if self.current_tok.type != TT_IDENTIFIER:
+                return res.failure(InvalidSyntaxError(
+                    self.current_tok.pos_start, self.current_tok.pos_end,
+                    "Expected identifier"
+                ))
+
+            item_name = self.current_tok
+            res.register_advancement()
+            self.advance()
+
+            # Check for alias
+            alias = None
+            if self.current_tok.matches(TT_KEYWORD, 'as'):
+                res.register_advancement()
+                self.advance()
+
+                if self.current_tok.type != TT_IDENTIFIER:
+                    return res.failure(InvalidSyntaxError(
+                        self.current_tok.pos_start, self.current_tok.pos_end,
+                        "Expected identifier for alias"
+                    ))
+
+                alias = self.current_tok
+                res.register_advancement()
+                self.advance()
+
+            items.append((item_name, alias))
+
+        # Now expect 'from module'
+        if not self.current_tok.matches(TT_KEYWORD, 'from'):
+            return res.failure(InvalidSyntaxError(
+                self.current_tok.pos_start, self.current_tok.pos_end,
+                "Expected 'from'"
+            ))
+
+        res.register_advancement()
+        self.advance()
+
+        # Parse module path (can include path separators)
+        module_name_tok = res.register(self.parse_module_path())
+        if res.error: return res
+
+        return res.success(ImportNode(module_name_tok, items))
+
+    def parse_module_path(self):
+        r"""
+        Parse a module path which can contain path separators (/ or \\).
+        Returns a token with the full module path as value.
+        """
+        res = ParseResult()
+        
+        if self.current_tok.type != TT_IDENTIFIER:
+            return res.failure(InvalidSyntaxError(
+                self.current_tok.pos_start, self.current_tok.pos_end,
+                "Expected module name"
+            ))
+        
+        pos_start = self.current_tok.pos_start.copy()
+        module_path = self.current_tok.value
+        res.register_advancement()
+        self.advance()
+        
+        # Check for path separators (/ or \) followed by more path components
+        while self.current_tok.type == TT_DIV or (self.current_tok.type == TT_IDENTIFIER and self.current_tok.value == '\\'):
+            # Handle backslash separately since it's not a standard token
+            if self.current_tok.type == TT_DIV:
+                module_path += '/'
+                res.register_advancement()
+                self.advance()
+            else:
+                # This shouldn't happen since \ is illegal, but handle gracefully
+                break
+            
+            if self.current_tok.type != TT_IDENTIFIER:
+                return res.failure(InvalidSyntaxError(
+                    self.current_tok.pos_start, self.current_tok.pos_end,
+                    "Expected path component after separator"
+                ))
+            
+            module_path += self.current_tok.value
+            res.register_advancement()
+            self.advance()
+        
+        # Create a token with the full path
+        from tokens import Token
+        module_tok = Token(TT_IDENTIFIER, module_path, pos_start, self.current_tok.pos_start.copy())
+        return res.success(module_tok)
+
+    def share_expr(self):
+        """
+        Parse share (export) statements.
+        
+        Syntax:
+        - share add;              # Export single item
+        - share add, subtract;    # Export multiple items
+        """
+        res = ParseResult()
+        pos_start = self.current_tok.pos_start.copy()
+
+        # Skip 'share' keyword
+        res.register_advancement()
+        self.advance()
+
+        item_names = []
+
+        # Parse first item
+        if self.current_tok.type != TT_IDENTIFIER:
+            return res.failure(InvalidSyntaxError(
+                self.current_tok.pos_start, self.current_tok.pos_end,
+                "Expected identifier"
+            ))
+
+        item_names.append(self.current_tok)
+        res.register_advancement()
+        self.advance()
+
+        # Parse additional items (comma-separated)
+        while self.current_tok.type == TT_COMMA:
+            res.register_advancement()
+            self.advance()
+
+            if self.current_tok.type != TT_IDENTIFIER:
+                return res.failure(InvalidSyntaxError(
+                    self.current_tok.pos_start, self.current_tok.pos_end,
+                    "Expected identifier"
+                ))
+
+            item_names.append(self.current_tok)
+            res.register_advancement()
+            self.advance()
+
+        return res.success(ShareNode(item_names, pos_start, self.current_tok.pos_start.copy()))

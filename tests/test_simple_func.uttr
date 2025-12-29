@@ -1,0 +1,6 @@
+$ Test simple function
+make function test_func():
+    give 42;
+end;
+
+show test_func();

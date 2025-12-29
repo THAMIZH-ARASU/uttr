@@ -1,0 +1,51 @@
+$ Calculator module - demonstrates creating a reusable library
+$ Provides basic arithmetic operations with validation
+
+$ Add two numbers
+make function add(a, b):
+    give a + b;
+end;
+
+$ Subtract two numbers
+make function subtract(a, b):
+    give a - b;
+end;
+
+$ Multiply two numbers
+make function multiply(a, b):
+    give a * b;
+end;
+
+$ Divide two numbers with zero check
+make function divide(a, b):
+    when b == 0:
+        show "Error: Division by zero!";
+        give 0;
+    end;
+    give a / b;
+end;
+
+$ Calculate percentage
+make function percentage(value, total):
+    when total == 0:
+        give 0;
+    end;
+    give (value / total) * 100;
+end;
+
+$ Calculate average of a list
+make function average(numbers):
+    when len(numbers) == 0:
+        give 0;
+    end;
+    
+    put 0 in total;
+    cycle each num through numbers:
+        put total + num in total;
+    end;
+    
+    give total / len(numbers);
+end;
+
+$ Export all functions
+share add, subtract, multiply, divide, percentage, average;

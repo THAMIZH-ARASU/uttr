@@ -1,0 +1,4 @@
+$ Test direct import and use
+bring use_sibling from modules/subdir/import_sibling;
+put use_sibling() in result;
+show "Final result: " + result;

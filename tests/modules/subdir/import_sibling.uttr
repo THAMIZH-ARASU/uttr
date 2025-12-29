@@ -1,0 +1,12 @@
+$ Module that imports from sibling in same directory
+$ Located at tests/modules/subdir/import_sibling.uttr
+
+bring sibling_function, process_data from sibling_module;
+
+make function use_sibling():
+    put sibling_function() in msg;
+    show msg;
+    give process_data(10);
+end;
+
+share use_sibling;

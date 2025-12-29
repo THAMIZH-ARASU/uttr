@@ -256,14 +256,28 @@ class Lexer:
             self.advance()
             return Token(TT_GTE, pos_start=pos_start, pos_end=self.pos)
         
-        # Check context - if we're likely closing a tuple
-        # Look at what came before (check last few tokens would be better, but for now use heuristic)
-        # After >, we typically see: space, comma, semicolon, newline, ), ], }
-        next_char = self.current_char
-        if next_char in ' \t\n;,)]}>' or next_char is None:
-            return Token(TT_RANGLE, pos_start=pos_start, pos_end=self.pos)
+        # Check if we're likely closing a tuple by looking at the last token
+        # RANGLE only makes sense after a value (number, identifier, string, rparen, rsquare, rangle)
+        # or after a comma within a tuple
+        if last_token and last_token.type in [TT_INT, TT_FLOAT, TT_STRING, TT_IDENTIFIER, 
+                                                TT_RPAREN, TT_RSQUARE, TT_RANGLE]:
+            # Could be closing tuple or comparison
+            # Check what comes next - if it's likely continuing an expression, it's comparison
+            next_char = self.current_char
+            
+            # After tuple close, we typically see: space+punctuation, comma, semicolon, newline, ), ], }
+            # After comparison, we typically see: space+identifier/number
+            if next_char in ',;\n)]}':
+                return Token(TT_RANGLE, pos_start=pos_start, pos_end=self.pos)
+            
+            # If followed by whitespace, peek further
+            if next_char in ' \t':
+                peek_char = self.peek(1)
+                # If followed by colon, it's likely end of tuple before statement
+                if peek_char == ':':
+                    return Token(TT_RANGLE, pos_start=pos_start, pos_end=self.pos)
         
-        # Otherwise could be comparison
+        # Default to greater-than comparison
         return Token(TT_GT, pos_start=pos_start, pos_end=self.pos)
 
     def skip_comment(self):

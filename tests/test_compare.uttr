@@ -1,0 +1,11 @@
+$ Test comparison
+put 10 in a;
+put 20 in b;
+
+when a > b:
+    show "a is greater";
+end;
+
+when b > a:
+    show "b is greater";
+end;

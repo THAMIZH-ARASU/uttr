@@ -17,11 +17,15 @@ This test suite covers all major features of the UTTR language, including:
 - **Do-While Loops** - Post-condition loops with "repeat while"
 - **For-Each Loops** - Collection iteration with "cycle each through"
 - **Lists** - Creation, access, manipulation, built-in functions
+- **Tuples** - Immutable lists, tuple syntax, conversions
 - **Dictionaries** - Key-value pairs, access, keys(), values(), has_key(), remove()
 - **Functions** - Definition, parameters, return values, recursion
 - **Built-in Functions** - show, len, append, pop, extend, keys, values, etc.
+- **Module System** - Imports, exports, standard library, nested imports, path resolution
+- **Loop Control** - Break (cut) and continue (skip) statements
+- **Error Handling** - Try-catch with attempt/handle, error introspection
+- **Modulo Operator** - Divisibility checks, remainders, combined with cut/skip
 - **Comments** - Single-line ($) and multi-line ($[...]$) comments
-- **Error Handling** - Error detection and reporting
 - **Integration Tests** - Complex real-world scenarios
 
 ## Test Files
@@ -42,16 +46,42 @@ This test suite covers all major features of the UTTR language, including:
 
 ### Data Structures
 11. `test_lists.uttr` - List Operations (14 tests)
-12. `test_dictionaries.uttr` - Dictionary Operations (15 tests)
+12. `test_nested_lists.uttr` - Nested List Operations (8 tests)
+13. `test_list_mutations.uttr` - List Mutations (append, pop, extend) (6 tests)
+14. `test_tuples.uttr` - Tuple Operations (10 tests)
+15. `test_nested_tuples.uttr` - Nested Tuple Operations (6 tests)
+16. `test_dictionaries.uttr` - Dictionary Operations (15 tests)
+17. `test_dict_mutations.uttr` - Dictionary Mutations (6 tests)
 
 ### Functions
-13. `test_functions.uttr` - Function Definitions (12 tests)
-14. `test_builtins.uttr` - Built-in Functions (14 tests)
+18. `test_functions.uttr` - Function Definitions (12 tests)
+19. `test_function_call.uttr` - Function Calls (5 tests)
+20. `test_builtins.uttr` - Built-in Functions (14 tests)
+
+### Module System
+21. `test_imports.uttr` - Import System (10 tests)
+22. `test_imports_advanced.uttr` - Advanced Imports (8 tests)
+23. `test_import_scope.uttr` - Import Scope and Context (1 test)
+24. `test_nested_import.uttr` - Nested Module Imports (1 test)
+25. `test_nested_import2.uttr` - Indirect Module Imports (1 test)
+26. `test_paths.uttr` - Module Path Resolution (3 tests)
+27. `test_module_a.uttr` - Module A (test module)
+28. `test_module_b.uttr` - Module B (test module)
+
+### Loop Control and Operators
+29. `test_break_continue.uttr` - Break (cut) and Continue (skip) (10 tests)
+30. `test_modulo.uttr` - Modulo Operator (10 tests)
+
+### Error Handling
+31. `test_attempt_handle.uttr` - Try-Catch Error Handling (8 tests)
+32. `test_errors.uttr` - Error Detection (10 tests)
 
 ### Language Features
-15. `test_comments.uttr` - Comment Syntax (10 tests)
-16. `test_errors.uttr` - Error Handling (10 tests)
-17. `test_integration.uttr` - Complex Integration Tests (10 tests)
+33. `test_comments.uttr` - Comment Syntax (10 tests)
+34. `test_string_methods.uttr` - String Methods (10 tests)
+35. `test_mutations.uttr` - Mutation Operations (6 tests)
+36. `test_mixed_nesting.uttr` - Mixed Nesting (5 tests)
+37. `test_integration.uttr` - Complex Integration Tests (10 tests)
 
 ## Running Tests
 
@@ -109,14 +139,20 @@ python shell.py tests/test_builtins.uttr
 
 # Integration
 python shell.py tests/test_integration.uttr
+
+# Module system
+python shell.py tests/test_imports.uttr
+python shell.py tests/test_imports_advanced.uttr
+python shell.py tests/test_paths.uttr
 ```
 
 ## Test Statistics
 
-- **Total Test Files**: 17
-- **Total Individual Tests**: 170+
-- **Code Coverage**: All documented UTTR features
-- **Integration Tests**: 10 complex scenarios
+- **Total Test Files**: 43
+- **Total Individual Tests**: 230+
+- **Code Coverage**: All documented UTTR features including module system
+- **Integration Tests**: 10+ complex scenarios
+- **Module System Tests**: 8 test files covering imports, exports, standard library, and nested imports
 
 ## Test Results
 

@@ -1,0 +1,13 @@
+$ Test imported function scope
+bring sibling_function from modules/subdir/sibling_module;
+
+show "Imported: " + sibling_function;
+
+make function caller():
+    show "About to call sibling_function";
+    put sibling_function() in result;
+    show "Result: " + result;
+    give result;
+end;
+
+caller();

@@ -1,0 +1,18 @@
+$ Helper utilities module in subdirectory
+$ Located at tests/modules/helpers.uttr
+
+make function format_name(first, last):
+    give first + " " + last;
+end;
+
+make function format_address(street, city, zip):
+    give street + ", " + city + " " + zip;
+end;
+
+make function format_phone(area, number):
+    give "(" + area + ") " + number;
+end;
+
+put "Helper Module v1.0" in MODULE_INFO;
+
+share format_name, format_address, format_phone, MODULE_INFO;

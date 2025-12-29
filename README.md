@@ -49,6 +49,7 @@ UTTR (Understandable Translation Tool for Routines) is a custom-built, procedure
 - **Natural English-Like Syntax**: Write code that reads like plain English with keywords like `put`, `in`, `when`, `otherwise`, `make function`, `give`, `cut`, `skip`, `attempt`, and `handle`
 - **Complete Interpreter**: Full lexer-parser-interpreter pipeline built from scratch with comprehensive error handling and position tracking
 - **Procedure-Oriented Design**: Focus on procedures and sequential execution with modular, reusable functions
+- **Module System**: Import/export functionality for code organization with natural syntax (`bring in`, `share`), standard library modules, and automatic caching
 - **Rich Data Types**: Support for integers, floats, strings, booleans, lists, tuples (immutable lists), and dictionaries with intuitive access using `@` operator for dictionaries and `/` for indexing
 - **Operators**: Arithmetic (`+`, `-`, `*`, `/`, `%`), comparison (`==`, `!=`, `<`, `>`, `<=`, `>=`), and logical (`and`, `or`, `not`)
 - **Control Structures**: Conditional statements (`when...otherwise`), loops (`cycle`, `as long as`, `repeat while`), and for-each iteration with loop control (`cut` for break, `skip` for continue)
@@ -62,6 +63,10 @@ UTTR (Understandable Translation Tool for Routines) is a custom-built, procedure
   - Strings: `split`, `join`, `upper`, `lower`, `replace`, `substring`
   - Error handling: `error_message`, `error_type`
   - Execution: `run` (execute external .uttr files)
+- **Standard Library**: Built-in modules for common tasks:
+  - `math`: Mathematical functions (sqrt, pow, abs, max, min, etc.) and constants (PI, E)
+  - `lists`: List utilities (range, sum, reverse, contains, etc.)
+  - `strings`: String operations (starts_with, ends_with, repeat, capitalize, etc.)
 - **Variable & Constant Management**: Mutable variables with `put...in` and immutable constants with `keep...as`
 - **Comment Support**: Single-line (`$`) and multi-line (`$[...]$`) comments for code documentation
 - **Interactive REPL**: Test code snippets interactively or run complete `.uttr` files
@@ -553,6 +558,87 @@ put safe_divide(10, 0) in result;
 show "Result: " + result;  $ Handles error gracefully
 ```
 
+###  Module System
+
+UTTR includes a powerful module system for organizing code into reusable libraries.
+
+**Import Syntax:**
+```uttr
+$ Import entire module
+bring in math;
+
+$ Import specific items
+bring sqrt, pow from math;
+
+$ Import with alias
+bring sqrt as square_root from math;
+
+$ Import multiple items with aliases
+bring add as sum, multiply as product from calculator;
+```
+
+**Export Syntax:**
+```uttr
+$ In your module file (mymodule.uttr)
+make function helper():
+    give "I'm exported!";
+end;
+
+$ Explicitly export specific items
+share helper;
+
+$ Without share statement, all top-level definitions are exported automatically
+```
+
+**Standard Library Modules:**
+
+- **math**: Mathematical operations
+  - Constants: `PI`, `E`
+  - Functions: `abs`, `pow`, `max`, `min`, `round`, `floor`, `ceil`, `sqrt`
+  
+- **lists**: List utilities
+  - Functions: `range`, `sum`, `max_list`, `min_list`, `reverse`, `contains`
+  
+- **strings**: String operations
+  - Functions: `starts_with`, `ends_with`, `trim`, `count_occurrences`, `repeat`, `capitalize`
+
+**Module Search Paths:**
+1. Current directory of the importing file (for relative imports)
+2. Current working directory
+3. Standard library directory (`stdlib/`)
+
+**Example - Creating a Custom Module:**
+```uttr
+$ File: calculator.uttr
+make function add(a, b):
+    give a + b;
+end;
+
+make function multiply(a, b):
+    give a * b;
+end;
+
+share add, multiply;
+```
+
+```uttr
+$ File: main.uttr
+bring add, multiply from calculator;
+
+show add(10, 20);       $ Output: 30
+show multiply(5, 7);    $ Output: 35
+```
+
+See [examples/modules/](examples/modules/) for more examples.
+
+**Technical Notes:**
+
+- **Function Context Preservation**: When a function is imported from a module, it preserves its original defining context. This allows functions to access other symbols (variables, functions) defined in their module, even when called from a different module.
+- **Module Caching**: Modules are executed once and cached. Subsequent imports reuse the cached module.
+- **Circular Import Detection**: The module loader detects and prevents circular dependencies.
+- **Path Resolution**: Module paths support subdirectories using forward slashes (e.g., `subdir/module`). Absolute file system paths are not supported to maintain portability.
+- **Export Behavior**: Without an explicit `share` statement, all non-underscore top-level definitions are exported. Use underscore prefix (e.g., `_helper_func`) for private functions.
+
 ###  Testing
 
 UTTR includes a comprehensive test suite covering all language features. Run tests using:
@@ -575,6 +661,7 @@ UTTR includes a comprehensive test suite covering all language features. Run tes
 > python shell.py tests/test_functions.uttr
 > python shell.py tests/test_break_continue.uttr
 > python shell.py tests/test_modulo.uttr
+> python shell.py tests/test_imports.uttr
 ```
 
 **Test lexer output:**
@@ -582,7 +669,7 @@ UTTR includes a comprehensive test suite covering all language features. Run tes
 > python lexer_testing.py <file_name>
 ```
 
-The test suite includes 21 test categories with 220+ individual tests covering:
+The test suite includes 22 test categories with 230+ individual tests covering:
 - Variables and constants
 - Arithmetic and comparison operations
 - Modulo operator (`%`) for divisibility checks
@@ -596,6 +683,7 @@ The test suite includes 21 test categories with 220+ individual tests covering:
 - List mutations (append, pop, extend) and dictionary mutations (remove)
 - Tuple immutability and conversions
 - Functions and built-ins
+- Module system (imports, exports, standard library, error handling)
 - Comments and error handling
 - Complex integration scenarios
 
@@ -617,11 +705,11 @@ The test suite includes 21 test categories with 220+ individual tests covering:
 - [X] **`Task 11`**: <strike>Implement try-catch error handling (`attempt...handle` syntax)</strike>
 - [X] **`Task 12`**: <strike>Add built-in methods for strings (split, join, upper, lower, replace, substring)</strike>
 - [X] **`Task 13`**: <strike>Support for tuple data type (immutable lists with `<>` syntax)</strike>
+- [X] **`Task 14`**: <strike>Add import/module system for code organization</strike>
 
 ### Language Features
-- [ ] **`Task 14`**: Add import/module system for code organization
 - [ ] **`Task 15`**: Implement lambda/anonymous functions with inline syntax
-- [ ] **`Task 16`**: Add switch-case statements (`check...case...default` syntax)
+- [ ] **`Task 16`**: Add switch-case statements (`check...whether...default` syntax)
 - [ ] **`Task 17`**: Support for regular expressions with pattern matching
 - [ ] **`Task 18`**: Add set data type with set operations (union, intersection, difference)
 

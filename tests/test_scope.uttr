@@ -1,0 +1,8 @@
+$ Simple test of import scope
+put 42 in module_var;
+
+make function test():
+    show "module_var = " + module_var;
+end;
+
+test();

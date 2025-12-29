@@ -1,0 +1,25 @@
+$ Test module A for import testing
+$ Simple module with functions and variables
+
+put 100 in module_var;
+keep 42 as MODULE_CONST;
+
+make function greet(name):
+    give "Hello, " + name + "!";
+end;
+
+make function add(a, b):
+    give a + b;
+end;
+
+make function multiply(a, b):
+    give a * b;
+end;
+
+$ Private function (starts with _)
+make function _private_func():
+    give "This is private";
+end;
+
+$ Export specific items
+share module_var, MODULE_CONST, greet, add, multiply;

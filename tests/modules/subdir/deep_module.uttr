@@ -1,0 +1,16 @@
+$ Deep nested module
+$ Located at tests/modules/subdir/deep_module.uttr
+
+make function deep_function():
+    give "Called from deep module";
+end;
+
+make function calculate_distance(x1, y1, x2, y2):
+    put (x2 - x1) * (x2 - x1) in dx_squared;
+    put (y2 - y1) * (y2 - y1) in dy_squared;
+    give dx_squared + dy_squared;  $ Simplified - returns squared distance
+end;
+
+keep 999 as DEEP_CONSTANT;
+
+share deep_function, calculate_distance, DEEP_CONSTANT;

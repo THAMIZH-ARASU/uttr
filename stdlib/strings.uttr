@@ -1,0 +1,68 @@
+$ String utilities module for UTTR
+$ Provides additional string manipulation functions
+
+$ Check if string starts with a prefix
+make function starts_with(text, prefix):
+    put len(prefix) in prefix_len;
+    when len(text) < prefix_len:
+        give false;
+    end;
+    
+    put substring(text, 0, prefix_len) in start;
+    give start == prefix;
+end;
+
+$ Check if string ends with a suffix
+make function ends_with(text, suffix):
+    put len(suffix) in suffix_len;
+    put len(text) in text_len;
+    
+    when text_len < suffix_len:
+        give false;
+    end;
+    
+    put text_len - suffix_len in start_pos;
+    put substring(text, start_pos, text_len) in ending;
+    give ending == suffix;
+end;
+
+$ Trim whitespace from both ends of a string
+make function trim(text):
+    $ For now, return as-is (simplified implementation)
+    $ Full implementation would require character-by-character processing
+    give text;
+end;
+
+$ Count occurrences of a substring in a string
+make function count_occurrences(text, substr):
+    put split(text, substr) in parts;
+    put len(parts) - 1 in count;
+    give count;
+end;
+
+$ Repeat a string n times
+make function repeat(text, times):
+    put "" in result;
+    put 0 in i;
+    
+    as long as i < times:
+        put result + text in result;
+        put i + 1 in i;
+    end;
+    
+    give result;
+end;
+
+$ Capitalize first letter (simplified - works with lowercase input)
+make function capitalize(text):
+    when len(text) == 0:
+        give text;
+    end;
+    
+    put upper(substring(text, 0, 1)) in first;
+    put substring(text, 1, len(text)) in rest;
+    give first + rest;
+end;
+
+$ Export all functions
+share starts_with, ends_with, trim, count_occurrences, repeat, capitalize;

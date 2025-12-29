@@ -58,6 +58,7 @@ def run(fn, text):
     interpreter = Interpreter()
     context = Context('<program>')
     context.symbol_table = global_symbol_table
+    context.display_name = fn  # Store filename for relative imports
     result = interpreter.visit(ast.node, context)
 
     return result.value, result.error

@@ -1,0 +1,44 @@
+$ Standard library usage example
+$ Demonstrates using UTTR's built-in standard library modules
+
+show "=== Standard Library Demo ===";
+show "";
+
+$ Math module
+show "Math Module:";
+bring PI, E, sqrt, pow, abs, max, min from math;
+
+show "Constants:";
+show "  PI = " + PI;
+show "  E = " + E;
+show "";
+
+show "Functions:";
+show "  sqrt(144) = " + sqrt(144);
+show "  pow(2, 10) = " + pow(2, 10);
+show "  abs(-42) = " + abs(-42);
+show "  max(10, 20) = " + max(10, 20);
+show "  min(10, 20) = " + min(10, 20);
+show "";
+
+$ Lists module
+show "Lists Module:";
+bring range, sum, reverse, contains from lists;
+
+put range(1, 11, 1) in numbers;
+show "  range(1, 11, 1) = " + numbers;
+show "  sum = " + sum(numbers);
+show "  reversed = " + reverse(numbers);
+show "  contains 5? " + contains(numbers, 5);
+show "";
+
+$ Strings module
+show "Strings Module:";
+bring starts_with, ends_with, repeat, capitalize from strings;
+
+put "hello world" in text;
+show "  Text: '" + text + "'";
+show "  starts_with('hello')? " + starts_with(text, "hello");
+show "  ends_with('world')? " + ends_with(text, "world");
+show "  capitalize: " + capitalize(text);
+show "  repeat('*', 5): " + repeat("*", 5);
