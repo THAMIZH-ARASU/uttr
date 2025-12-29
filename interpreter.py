@@ -1,6 +1,7 @@
 from errors.run_time_error import RTError
 from functions.function import Function
 from run_time_result import RTResult
+from symbol_table import SymbolTable
 from tokens import TT_DIV, TT_EE, TT_GT, TT_GTE, TT_KEYWORD, TT_LT, TT_LTE, TT_MINUS, TT_MOD, TT_MUL, TT_NE, TT_PLUS
 from values.dict_value import Dict
 from values.error_value import ErrorValue
@@ -92,10 +93,18 @@ class Interpreter:
                 context
             ))
 
-        # For mutable types (List, Dict), don't copy to allow in-place modifications
+        # For mutable types (List, Dict) and functions, don't copy to preserve their context/state
         # For immutable types (Number, String), copy to prevent issues
-        if isinstance(value, (List, Dict)):
-            value = value.set_pos(node.pos_start, node.pos_end).set_context(context)
+        from functions.base_function import BaseFunction
+        from functions.builtin_function import BuiltInFunction
+        if isinstance(value, (List, Dict, BaseFunction)):
+            value = value.set_pos(node.pos_start, node.pos_end)
+            # Builtin functions should use current context
+            # User-defined functions should keep their defining context (from module)
+            if isinstance(value, BuiltInFunction):
+                value = value.set_context(context)
+            elif not isinstance(value, BaseFunction):
+                value = value.set_context(context)
         else:
             value = value.copy().set_pos(node.pos_start, node.pos_end).set_context(context)
         return res.success(value)
@@ -417,3 +426,167 @@ class Interpreter:
         if res.should_return(): return res
         
         return res.success(handle_result)
+
+    def visit_ImportNode(self, node, context):
+        """Handle import statements."""
+        res = RTResult()
+        from module_loader import module_loader
+        from errors.module_not_found_error import ModuleNotFoundError
+        from errors.circular_import_error import CircularImportError
+        from module import Module
+        from lexer import Lexer
+        from parser import Parser
+        from context import Context
+        
+        module_name = node.module_name_tok.value
+        
+        # Get the current file path for relative imports
+        current_file = context.display_name if hasattr(context, 'display_name') else '<program>'
+        if current_file == '<program>':
+            current_file = None
+        
+        # Find the module file
+        module_path, error_info = module_loader.find_module(module_name, current_file)
+        
+        if module_path is None:
+            return res.failure(ModuleNotFoundError(
+                node.pos_start, node.pos_end,
+                error_info['message'],
+                error_info['searched_paths']
+            ))
+        
+        # Check if module is already cached
+        if module_loader.is_cached(module_path):
+            module_obj = module_loader.get_cached_module(module_path)
+        else:
+            # Check for circular imports
+            if module_loader.is_loading(module_path):
+                chain = module_loader.get_loading_chain() + [module_path]
+                return res.failure(CircularImportError(
+                    node.pos_start, node.pos_end,
+                    f"Circular import detected involving '{module_name}'",
+                    chain
+                ))
+            
+            # Load module source
+            source, error_msg = module_loader.load_module_source(module_path)
+            if source is None:
+                return res.failure(RTError(
+                    node.pos_start, node.pos_end,
+                    error_msg,
+                    context
+                ))
+            
+            # Mark module as loading
+            module_loader.begin_loading(module_path)
+            
+            try:
+                # Tokenize module source
+                lexer = Lexer(module_path, source)
+                tokens, error = lexer.make_tokens()
+                if error:
+                    module_loader.end_loading(module_path)
+                    return res.failure(RTError(
+                        node.pos_start, node.pos_end,
+                        f"Error in module '{module_name}': {error.as_string()}",
+                        context
+                    ))
+                
+                # Parse module
+                parser = Parser(tokens)
+                ast = parser.parse()
+                if ast.error:
+                    module_loader.end_loading(module_path)
+                    return res.failure(RTError(
+                        node.pos_start, node.pos_end,
+                        f"Error in module '{module_name}': {ast.error.as_string()}",
+                        context
+                    ))
+                
+                # Create module context with its own symbol table
+                # Inherit global symbols but isolate module-specific definitions
+                from entry import global_symbol_table
+                module_context = Context(f'<module:{module_name}>')
+                module_context.symbol_table = SymbolTable(global_symbol_table)
+                module_context.display_name = module_path
+                
+                # Execute module
+                module_result = self.visit(ast.node, module_context)
+                module_loader.end_loading(module_path)
+                
+                if module_result.error:
+                    return res.failure(RTError(
+                        node.pos_start, node.pos_end,
+                        f"Error executing module '{module_name}': {module_result.error.as_string()}",
+                        context
+                    ))
+                
+                # Check if module has explicit exports
+                exports = None
+                if hasattr(module_context, '_exports'):
+                    exports = module_context._exports
+                
+                # Create module object
+                module_obj = Module(module_name, module_path, module_context.symbol_table, exports, source)
+                
+                # Cache the module
+                module_loader.cache_module(module_path, module_obj)
+            
+            except Exception as e:
+                module_loader.end_loading(module_path)
+                return res.failure(RTError(
+                    node.pos_start, node.pos_end,
+                    f"Unexpected error loading module '{module_name}': {str(e)}",
+                    context
+                ))
+        
+        # Import symbols into current context
+        if node.items is None:
+            # Import all exported symbols
+            exported = module_obj.get_exported_symbols()
+            for name, value in exported.items():
+                context.symbol_table.set(name, value)
+        else:
+            # Import specific items
+            exported = module_obj.get_exported_symbols()
+            for item_name_tok, alias_tok in node.items:
+                item_name = item_name_tok.value
+                
+                if item_name not in exported:
+                    return res.failure(RTError(
+                        item_name_tok.pos_start, item_name_tok.pos_end,
+                        f"Module '{module_name}' does not export '{item_name}'",
+                        context
+                    ))
+                
+                # Use alias if provided, otherwise use original name
+                import_name = alias_tok.value if alias_tok else item_name
+                context.symbol_table.set(import_name, exported[item_name])
+        
+        return res.success(Number.null)
+
+    def visit_ShareNode(self, node, context):
+        """Handle share (export) statements."""
+        res = RTResult()
+        
+        # Mark items for export in the module's context
+        # This is tracked at the module level, not during normal execution
+        # For now, we'll store export information in a special variable
+        if not hasattr(context, '_exports'):
+            context._exports = set()
+        
+        for item_tok in node.item_name_toks:
+            item_name = item_tok.value
+            
+            # Verify the item exists in the symbol table
+            value = context.symbol_table.get(item_name)
+            if value is None:
+                return res.failure(RTError(
+                    item_tok.pos_start, item_tok.pos_end,
+                    f"Cannot share undefined symbol '{item_name}'",
+                    context
+                ))
+            
+            context._exports.add(item_name)
+        
+        return res.success(Number.null)

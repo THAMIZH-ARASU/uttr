@@ -1,0 +1,100 @@
+$ Test suite for import/module system
+$ Tests various import scenarios and error conditions
+
+show "=== UTTR Import System Tests ===";
+show "";
+
+$ Test 1: Basic full module import
+show "Test 1: Full module import with 'bring in'";
+bring in test_module_b;
+put square(5) in result;
+show "square(5) = " + result;  $ Expected: 25
+put cube(3) in result;
+show "cube(3) = " + result;    $ Expected: 27
+show "DEFAULT_VALUE = " + DEFAULT_VALUE;  $ Expected: 10
+show "";
+
+$ Test 2: Selective import
+show "Test 2: Selective import with 'bring from'";
+bring greet, add from test_module_a;
+put greet("World") in greeting;
+show greeting;  $ Expected: Hello, World!
+put add(10, 20) in sum;
+show "add(10, 20) = " + sum;  $ Expected: 30
+show "";
+
+$ Test 3: Import with alias
+show "Test 3: Import with alias";
+bring multiply as mult from test_module_a;
+put mult(6, 7) in product;
+show "mult(6, 7) = " + product;  $ Expected: 42
+show "";
+
+$ Test 4: Multiple selective imports
+show "Test 4: Multiple selective imports";
+bring module_var, MODULE_CONST from test_module_a;
+show "module_var = " + module_var;  $ Expected: 100
+show "MODULE_CONST = " + MODULE_CONST;  $ Expected: 42
+show "";
+
+$ Test 5: Standard library import (math module)
+show "Test 5: Standard library math module";
+bring PI, sqrt, abs from math;
+show "PI = " + PI;  $ Expected: 3.14159...
+put sqrt(16) in root;
+show "sqrt(16) = " + root;  $ Expected: 4
+put abs(-42) in absolute;
+show "abs(-42) = " + absolute;  $ Expected: 42
+show "";
+
+$ Test 6: Standard library import (lists module)
+show "Test 6: Standard library lists module";
+bring range, sum from lists;
+put range(1, 6, 1) in numbers;
+show "range(1, 6, 1) = " + numbers;  $ Expected: [1, 2, 3, 4, 5]
+put sum(numbers) in total;
+show "sum(numbers) = " + total;  $ Expected: 15
+show "";
+
+$ Test 7: Standard library import (strings module)
+show "Test 7: Standard library strings module";
+bring starts_with, repeat from strings;
+put starts_with("hello world", "hello") in result;
+show "starts_with result = " + result;  $ Expected: 1 (true)
+put repeat("Ha", 3) in laugh;
+show "repeat('Ha', 3) = " + laugh;  $ Expected: HaHaHa
+show "";
+
+$ Test 8: Error handling - Module not found
+show "Test 8: Module not found error handling";
+attempt:
+    bring in nonexistent_module;
+    show "ERROR: Should not reach here";
+end
+handle as error:
+    show "Caught error: " + error_message(error);
+    show "Error type: " + error_type(error);
+end;
+show "";
+
+$ Test 9: Error handling - Symbol not exported
+show "Test 9: Symbol not exported error handling";
+attempt:
+    bring _private_func from test_module_a;
+    show "ERROR: Should not reach here";
+end
+handle as error:
+    show "Caught error: " + error_message(error);
+end;
+show "";
+
+$ Test 10: Multiple imports with aliases
+show "Test 10: Multiple imports with various patterns";
+bring add as sum_nums, multiply as prod from test_module_a;
+put sum_nums(5, 3) in result;
+show "sum_nums(5, 3) = " + result;  $ Expected: 8
+put prod(4, 5) in result;
+show "prod(4, 5) = " + result;  $ Expected: 20
+show "";
+
+show "=== All Import Tests Completed ===";

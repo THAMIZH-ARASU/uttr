@@ -1,0 +1,14 @@
+$ Test module B for import testing
+$ Module with mathematical utilities
+
+make function square(x):
+    give x * x;
+end;
+
+make function cube(x):
+    give x * x * x;
+end;
+
+keep 10 as DEFAULT_VALUE;
+
+$ Export all (implicit - no share statement)

@@ -1,0 +1,37 @@
+$ Using the calculator module
+$ Demonstrates importing and using a custom module
+
+show "=== Calculator Module Demo ===";
+show "";
+
+$ Import all calculator functions
+bring add, subtract, multiply, divide, percentage, average from calculator;
+
+$ Basic arithmetic
+show "Basic Arithmetic:";
+show "10 + 5 = " + add(10, 5);
+show "10 - 5 = " + subtract(10, 5);
+show "10 * 5 = " + multiply(10, 5);
+show "10 / 5 = " + divide(10, 5);
+show "";
+
+$ Percentage calculation
+show "Percentage Calculations:";
+put percentage(75, 100) in score;
+show "75 out of 100 = " + score + "%";
+put percentage(42, 60) in grade;
+show "42 out of 60 = " + grade + "%";
+show "";
+
+$ Average calculation
+show "Average Calculation:";
+put [85, 90, 78, 92, 88] in grades;
+put average(grades) in avg;
+show "Grades: " + grades;
+show "Average: " + avg;
+show "";
+
+$ Safe division
+show "Safe Division (handles division by zero):";
+put divide(10, 0) in result;
+show "Result: " + result;

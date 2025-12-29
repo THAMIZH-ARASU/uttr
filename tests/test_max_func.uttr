@@ -1,0 +1,9 @@
+$ Test max function
+make function max(a, b):
+    when a > b:
+        give a;
+    end;
+    give b;
+end;
+
+show max(10, 20);

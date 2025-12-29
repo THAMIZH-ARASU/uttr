@@ -1,0 +1,5 @@
+$ Test importing a module that has imports
+bring caller from test_import_scope;
+
+show "Calling imported caller function...";
+caller();

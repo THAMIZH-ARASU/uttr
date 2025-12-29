@@ -57,6 +57,8 @@ KEYWORDS = [
     'skip',
     'attempt',
     'handle',
+    'bring',
+    'share',
 ]
 
 class Token:

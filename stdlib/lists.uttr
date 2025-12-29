@@ -1,0 +1,95 @@
+$ List utilities module for UTTR
+$ Provides helpful list manipulation functions
+
+$ Create a range of numbers
+make function range(start_val, stop_val, step_val):
+    put [] in result;
+    put start_val in current;
+    
+    when step_val > 0:
+        as long as current < stop_val:
+            append(result, current);
+            put current + step_val in current;
+        end;
+    end;
+    
+    when step_val < 0:
+        as long as current > stop_val:
+            append(result, current);
+            put current + step_val in current;
+        end;
+    end;
+    
+    give result;
+end;
+
+$ Sum all numbers in a list
+make function sum(list):
+    put 0 in total;
+    
+    cycle each item through list:
+        put total + item in total;
+    end;
+    
+    give total;
+end;
+
+$ Find maximum value in a list
+make function max_list(list):
+    when len(list) == 0:
+        give null;
+    end;
+    
+    put list / 0 in max_val;
+    
+    cycle each item through list:
+        when item > max_val:
+            put item in max_val;
+        end;
+    end;
+    
+    give max_val;
+end;
+
+$ Find minimum value in a list
+make function min_list(list):
+    when len(list) == 0:
+        give null;
+    end;
+    
+    put list / 0 in min_val;
+    
+    cycle each item through list:
+        when item < min_val:
+            put item in min_val;
+        end;
+    end;
+    
+    give min_val;
+end;
+
+$ Reverse a list
+make function reverse(list):
+    put [] in result;
+    put len(list) - 1 in i;
+    
+    as long as i >= 0:
+        append(result, list / i);
+        put i - 1 in i;
+    end;
+    
+    give result;
+end;
+
+$ Check if list contains an item
+make function contains(list, item):
+    cycle each element through list:
+        when element == item:
+            give true;
+        end;
+    end;
+    give false;
+end;
+
+$ Export all functions
+share range, sum, max_list, min_list, reverse, contains;

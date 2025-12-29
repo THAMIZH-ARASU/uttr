@@ -1,0 +1,12 @@
+$ Another module in subdirectory for relative import testing
+$ Located at tests/modules/subdir/sibling_module.uttr
+
+make function sibling_function():
+    give "Hello from sibling";
+end;
+
+make function process_data(data):
+    give data * 2;
+end;
+
+share sibling_function, process_data;

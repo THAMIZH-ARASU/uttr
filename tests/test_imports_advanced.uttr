@@ -1,0 +1,76 @@
+$ Advanced import tests for subdirectories and paths
+$ Tests subdirectory imports, relative imports, and module resolution
+
+show "=== Advanced Import Tests ===";
+show "";
+
+$ Test 1: Import from subdirectory relative to current file
+show "Test 1: Import from subdirectory (modules/helpers.uttr)";
+bring format_name, format_address from modules/helpers;
+put format_name("John", "Doe") in full_name;
+show "Full name: " + full_name;  $ Expected: John Doe
+put format_address("123 Main St", "New York", "10001") in address;
+show "Address: " + address;  $ Expected: 123 Main St, New York 10001
+show "";
+
+$ Test 2: Import from nested subdirectory
+show "Test 2: Import from nested subdirectory (modules/subdir/deep_module.uttr)";
+bring deep_function, calculate_distance, DEEP_CONSTANT from modules/subdir/deep_module;
+put deep_function() in result;
+show result;  $ Expected: Called from deep module
+put calculate_distance(0, 0, 3, 4) in dist;
+show "Distance squared: " + dist;  $ Expected: 25
+show "DEEP_CONSTANT: " + DEEP_CONSTANT;  $ Expected: 999
+show "";
+
+$ Test 3: Import from sibling in same subdirectory
+show "Test 3: Import module that uses sibling imports";
+bring use_sibling from modules/subdir/import_sibling;
+put use_sibling() in result;
+show "Result: " + result;  $ Expected: 20 (process_data(10))
+show "";
+
+$ Test 4: Multiple imports from different subdirectories
+show "Test 4: Multiple imports from different subdirectories";
+bring MODULE_INFO from modules/helpers;
+bring sibling_function from modules/subdir/sibling_module;
+show "Module info: " + MODULE_INFO;  $ Expected: Helper Module v1.0
+show sibling_function();  $ Expected: Hello from sibling
+show "";
+
+$ Test 5: Import with alias from subdirectory
+show "Test 5: Import with alias from subdirectory";
+bring deep_function as deep_fn from modules/subdir/deep_module;
+show deep_fn();  $ Expected: Called from deep module
+show "";
+
+$ Test 6: Selective imports from subdirectory module
+show "Test 6: Selective imports with multiple aliases";
+bring format_name as name_fmt, format_phone as phone_fmt from modules/helpers;
+put name_fmt("Alice", "Smith") in name;
+show "Formatted: " + name;  $ Expected: Alice Smith
+put phone_fmt("555", "1234") in phone;
+show "Phone: " + phone;  $ Expected: (555) 1234
+show "";
+
+$ Test 7: Error handling - module not found in subdirectory
+show "Test 7: Module not found in subdirectory";
+attempt:
+    bring something from modules/nonexistent;
+    show "ERROR: Should not reach here";
+end
+handle as error:
+    show "Caught error: " + error_message(error);
+end;
+show "";
+
+$ Test 8: Full module import from subdirectory
+show "Test 8: Full module import from subdirectory";
+bring in modules/subdir/sibling_module;
+put sibling_function() in msg;
+show "Full import result: " + msg;  $ Expected: Hello from sibling
+put process_data(5) in val;
+show "Processed: " + val;  $ Expected: 10
+show "";
+
+show "=== Advanced Import Tests Completed ===";

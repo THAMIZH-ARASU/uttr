@@ -1,0 +1,43 @@
+$ Validation utilities module
+$ Provides input validation functions
+
+$ Check if a number is within a range
+make function in_range(value, min_val, max_val):
+    when value >= min_val and value <= max_val:
+        give true;
+    end;
+    give false;
+end;
+
+$ Check if a number is positive
+make function is_positive(value):
+    give value > 0;
+end;
+
+$ Check if a number is even
+make function is_even(value):
+    give value % 2 == 0;
+end;
+
+$ Check if a number is odd
+make function is_odd(value):
+    give value % 2 != 0;
+end;
+
+$ Check if a list is empty
+make function is_empty(collection):
+    give len(collection) == 0;
+end;
+
+$ Clamp a value between min and max
+make function clamp(value, min_val, max_val):
+    when value < min_val:
+        give min_val;
+    end;
+    when value > max_val:
+        give max_val;
+    end;
+    give value;
+end;
+
+share in_range, is_positive, is_even, is_odd, is_empty, clamp;

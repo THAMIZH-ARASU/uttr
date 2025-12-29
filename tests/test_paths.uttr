@@ -1,0 +1,23 @@
+$ Test absolute path imports
+$ UTTR supports relative paths (like "module" or "subdir/module") 
+$ but not absolute file system paths (like "C:/path/to/module")
+$ This is by design to keep modules portable
+
+$ Test 1: Verify relative import works
+bring format_name from modules/helpers;
+show "Test 1: Relative import works - " + format_name("John", "Doe");
+
+$ Test 2: Import from nested subdirectory
+bring deep_function from modules/subdir/deep_module;
+show "Test 2: Nested subdir import works - " + deep_function();
+
+$ Test 3: Multiple levels of nesting
+bring use_sibling from modules/subdir/import_sibling;
+put use_sibling() in result;
+show "Test 3: Multi-level nesting works - result = " + result;
+
+$ Test 4: Verify we can't use absolute paths (should fail gracefully)
+$ Note: This would need to be tested separately as it will cause an error
+$ bring something from C:/absolute/path/module;
+
+show "All relative path tests passed!";

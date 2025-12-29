@@ -1,0 +1,102 @@
+$ Math utilities module for UTTR
+$ Provides common mathematical functions and constants
+
+$ Constants
+keep 3.14159265359 as PI;
+keep 2.71828182846 as E;
+
+$ Absolute value function
+make function abs(x):
+    when x < 0:
+        give -x;
+    end;
+    give x;
+end;
+
+$ Power function (x^y)
+make function pow(base, exp):
+    when exp == 0:
+        give 1;
+    end;
+    
+    put base in result;
+    put 1 in i;
+    
+    as long as i < exp:
+        put result * base in result;
+        put i + 1 in i;
+    end;
+    
+    give result;
+end;
+
+$ Maximum of two numbers
+make function max(a, b):
+    when a > b:
+        give a;
+    end;
+    give b;
+end;
+
+$ Minimum of two numbers
+make function min(a, b):
+    when a < b:
+        give a;
+    end;
+    give b;
+end;
+
+$ Round to nearest integer
+make function round(x):
+    put x % 1 in decimal;
+    when decimal >= 0.5:
+        give x - decimal + 1;
+    end;
+    give x - decimal;
+end;
+
+$ Floor function (round down)
+make function floor(x):
+    put x % 1 in decimal;
+    give x - decimal;
+end;
+
+$ Ceiling function (round up)
+make function ceil(x):
+    put x % 1 in decimal;
+    when decimal > 0:
+        give x - decimal + 1;
+    end;
+    give x - decimal;
+end;
+
+$ Square root (using Newton's method)
+make function sqrt(x):
+    when x < 0:
+        give 0;  $ Return 0 for negative numbers
+    end;
+    
+    when x == 0:
+        give 0;
+    end;
+    
+    put x in guess;
+    put 0.00001 in tolerance;
+    put 1 in done;
+    
+    as long as done:
+        put (guess + x / guess) / 2 in new_guess;
+        put abs(new_guess - guess) in diff;
+        
+        when diff < tolerance:
+            give new_guess;
+        end;
+        
+        put new_guess in guess;
+    end;
+    
+    give guess;
+end;
+
+$ Export all functions and constants
+share PI, E, abs, pow, max, min, round, floor, ceil, sqrt;
