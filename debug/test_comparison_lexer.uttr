@@ -1,0 +1,5 @@
+$ Test comparisons
+put 5 > 3 in result1;
+when a > b:
+    show "a is greater";
+end;

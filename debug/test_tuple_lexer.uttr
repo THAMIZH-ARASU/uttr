@@ -1,0 +1,11 @@
+$ Test 1: Empty tuple
+put <> in empty;
+
+$ Test 2: Simple tuple
+put <1, 2, 3> in simple;
+
+$ Test 3: Tuple with booleans
+put <1, true, false> in mixed;
+
+$ Test 4: Nested tuples
+put <<1, 2>, <3, 4>> in nested;
