@@ -1,6 +1,6 @@
 from errors.illegal_character import IllegalCharError
 from position import Position
-from tokens import KEYWORDS, TT_AT, TT_COLON, TT_COMMA, TT_DIV, TT_EE, TT_EOF, TT_FLOAT, TT_GT, TT_GTE, TT_IDENTIFIER, TT_INT, TT_KEYWORD, TT_LANGLE, TT_LCURLY, TT_LPAREN, TT_LSQUARE, TT_LT, TT_LTE, TT_MINUS, TT_MOD, TT_MUL, TT_NE, TT_NEWLINE, TT_PLUS, TT_RANGLE, TT_RCURLY, TT_RPAREN, TT_RSQUARE, TT_STRING, Token
+from tokens import KEYWORDS, TT_ARROW, TT_AT, TT_COLON, TT_COMMA, TT_DIV, TT_EE, TT_EOF, TT_FLOAT, TT_GT, TT_GTE, TT_IDENTIFIER, TT_INT, TT_KEYWORD, TT_LANGLE, TT_LCURLY, TT_LPAREN, TT_LSQUARE, TT_LT, TT_LTE, TT_MINUS, TT_MOD, TT_MUL, TT_NE, TT_NEWLINE, TT_PLUS, TT_RANGLE, TT_RCURLY, TT_RPAREN, TT_RSQUARE, TT_STRING, Token
 from constants import DIGITS, LETTERS, LETTERS_DIGITS
 
 
@@ -214,11 +214,14 @@ class Lexer:
         pos_start = self.pos.copy()
         self.advance()
 
-        if self.current_char != '=':
+        if self.current_char == '=':
+            self.advance()
+            return Token(tok_type, pos_start=pos_start, pos_end=self.pos)
+        elif self.current_char == '>':
+            self.advance()
+            return Token(TT_ARROW, pos_start=pos_start, pos_end=self.pos)
+        else:
             return Token(TT_IDENTIFIER, '=', pos_start=pos_start, pos_end=self.pos)
-
-        self.advance()
-        return Token(tok_type, pos_start=pos_start, pos_end=self.pos)
 
     def make_less_than_or_langle(self, last_token=None):
         pos_start = self.pos.copy()

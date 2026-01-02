@@ -1,0 +1,34 @@
+$ Test lambda functions with lists and higher-order functions
+
+$ Lambda used inline in function calls
+make function apply(func, value):
+    give func(value);
+end;
+
+show "Apply double to 5: " + apply(lambda x => x * 2, 5);
+show "Apply triple to 7: " + apply(lambda x => x * 3, 7);
+
+$ Lambda for list processing
+make function map_list(func, list):
+    put [] in result;
+    cycle i from 0 to len(list):
+        append(result, func(list / i));
+    end;
+    give result;
+end;
+
+put [1, 2, 3, 4, 5] in numbers;
+put map_list(lambda x => x * x, numbers) in squares;
+show "Squares: " + squares;
+
+$ Lambda with logical operations
+put lambda x => x > 10 in is_greater_than_ten;
+show "15 > 10: " + is_greater_than_ten(15);
+show "5 > 10: " + is_greater_than_ten(5);
+
+$ Lambda returning strings
+put lambda name => "Hello, " + name + "!" in greet;
+show greet("Alice");
+show greet("Bob");
+
+show "Advanced lambda tests completed!";

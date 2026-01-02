@@ -10,6 +10,7 @@ from nodes.for_node import ForNode
 from nodes.function_definition_node import FuncDefNode
 from nodes.if_node import IfNode
 from nodes.import_node import ImportNode
+from nodes.lambda_node import LambdaNode
 from nodes.list_access_node import ListAccessNode
 from nodes.list_node import ListNode
 from nodes.number_node import NumberNode
@@ -24,7 +25,7 @@ from nodes.var_access_node import VarAccessNode
 from nodes.var_assign_node import VarAssignNode
 from nodes.while_node import WhileNode
 from parse_result import ParseResult
-from tokens import TT_AT, TT_COLON, TT_COMMA, TT_DIV, TT_EE, TT_EOF, TT_FLOAT, TT_GT, TT_GTE, TT_IDENTIFIER, TT_INT, TT_KEYWORD, TT_LANGLE, TT_LCURLY, TT_LPAREN, TT_LSQUARE, TT_LT, TT_LTE, TT_MINUS, TT_MOD, TT_MUL, TT_NE, TT_NEWLINE, TT_PLUS, TT_RANGLE, TT_RCURLY, TT_RPAREN, TT_RSQUARE, TT_STRING, Token
+from tokens import TT_ARROW, TT_AT, TT_COLON, TT_COMMA, TT_DIV, TT_EE, TT_EOF, TT_FLOAT, TT_GT, TT_GTE, TT_IDENTIFIER, TT_INT, TT_KEYWORD, TT_LANGLE, TT_LCURLY, TT_LPAREN, TT_LSQUARE, TT_LT, TT_LTE, TT_MINUS, TT_MOD, TT_MUL, TT_NE, TT_NEWLINE, TT_PLUS, TT_RANGLE, TT_RCURLY, TT_RPAREN, TT_RSQUARE, TT_STRING, Token
 
 
 class Parser:
@@ -409,6 +410,11 @@ class Parser:
             if res.error: return res
             return res.success(func_def)
 
+        elif tok.matches(TT_KEYWORD, 'lambda'):
+            lambda_expr = res.register(self.lambda_expr())
+            if res.error: return res
+            return res.success(lambda_expr)
+
         elif tok.matches(TT_KEYWORD, 'attempt'):
             attempt_handle_expr = res.register(self.attempt_handle_expr())
             if res.error: return res
@@ -416,7 +422,7 @@ class Parser:
 
         return res.failure(InvalidSyntaxError(
             tok.pos_start, tok.pos_end,
-            "Expected int, float, string, identifier, 'true', 'false', '+', '-', '(', '[', '<', 'when', 'cycle', 'as long as', 'repeat while', 'make function', or 'attempt'"
+            "Expected int, float, string, identifier, 'true', 'false', '+', '-', '(', '[', '<', 'when', 'cycle', 'as long as', 'repeat while', 'make function', 'lambda', or 'attempt'"
         ))
 
     def list_expr(self):
@@ -995,6 +1001,58 @@ class Parser:
         if res.error: return res
 
         return res.success(FuncDefNode(var_name_tok, arg_name_toks, body))
+
+    def lambda_expr(self):
+        res = ParseResult()
+        pos_start = self.current_tok.pos_start.copy()
+
+        if not self.current_tok.matches(TT_KEYWORD, 'lambda'):
+            return res.failure(InvalidSyntaxError(
+                self.current_tok.pos_start, self.current_tok.pos_end,
+                "Expected 'lambda'"
+            ))
+
+        res.register_advancement()
+        self.advance()
+
+        # Parse parameters (optional)
+        arg_name_toks = []
+
+        # Check if there are parameters (identifier followed by comma or arrow)
+        if self.current_tok.type == TT_IDENTIFIER:
+            arg_name_toks.append(self.current_tok)
+            res.register_advancement()
+            self.advance()
+
+            while self.current_tok.type == TT_COMMA:
+                res.register_advancement()
+                self.advance()
+
+                if self.current_tok.type != TT_IDENTIFIER:
+                    return res.failure(InvalidSyntaxError(
+                        self.current_tok.pos_start, self.current_tok.pos_end,
+                        "Expected identifier"
+                    ))
+
+                arg_name_toks.append(self.current_tok)
+                res.register_advancement()
+                self.advance()
+
+        # Expect arrow operator (=>)
+        if self.current_tok.type != TT_ARROW:
+            return res.failure(InvalidSyntaxError(
+                self.current_tok.pos_start, self.current_tok.pos_end,
+                "Expected '=>'"
+            ))
+
+        res.register_advancement()
+        self.advance()
+
+        # Parse body (single expression)
+        body = res.register(self.logic_expr())
+        if res.error: return res
+
+        return res.success(LambdaNode(arg_name_toks, body, pos_start, self.current_tok.pos_end.copy()))
 
     def attempt_handle_expr(self):
         res = ParseResult()

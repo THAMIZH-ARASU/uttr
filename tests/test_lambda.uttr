@@ -1,0 +1,142 @@
+$ Test lambda functions - Comprehensive test suite
+
+$ ========================================
+$ Test 1: Lambda with no parameters
+$ ========================================
+put lambda => 42 in get_answer;
+put get_answer() in result;
+when result == 42:
+    show "PASS: Lambda with no parameters";
+end;
+
+$ ========================================
+$ Test 2: Lambda with single parameter
+$ ========================================
+put lambda x => x * 2 in double;
+when double(5) == 10 and double(10) == 20:
+    show "PASS: Lambda with single parameter";
+end;
+
+$ ========================================
+$ Test 3: Lambda with multiple parameters
+$ ========================================
+put lambda a, b => a + b in add;
+when add(3, 7) == 10 and add(10, 20) == 30:
+    show "PASS: Lambda with multiple parameters";
+end;
+
+$ ========================================
+$ Test 4: Lambda with complex expressions
+$ ========================================
+put lambda x => x * x + 2 * x + 1 in poly;
+when poly(3) == 16 and poly(5) == 36:
+    show "PASS: Lambda with complex expressions";
+end;
+
+$ ========================================
+$ Test 5: Lambda as argument to function
+$ ========================================
+make function apply(func, value):
+    give func(value);
+end;
+
+put apply(lambda x => x * 3, 7) in result2;
+when result2 == 21:
+    show "PASS: Lambda as function argument";
+end;
+
+$ ========================================
+$ Test 6: Lambda with comparison operators
+$ ========================================
+put lambda a, b => a < b in less_than;
+when less_than(3, 5) == 1 and less_than(5, 3) == 0:
+    show "PASS: Lambda with comparison operators";
+end;
+
+$ ========================================
+$ Test 7: Lambda with logical operators
+$ ========================================
+put lambda x, y => x and y in both_true;
+when both_true(true, true) == 1 and both_true(true, false) == 0:
+    show "PASS: Lambda with logical operators";
+end;
+
+$ ========================================
+$ Test 8: Lambda returning strings
+$ ========================================
+put lambda name => "Hello, " + name in greet;
+when greet("Alice") == "Hello, Alice":
+    show "PASS: Lambda returning strings";
+end;
+
+$ ========================================
+$ Test 9: Lambda with global variable access
+$ ========================================
+put 10 in multiplier;
+put lambda x => x * multiplier in multiply_by_ten;
+when multiply_by_ten(5) == 50:
+    show "PASS: Lambda with global variable access";
+end;
+
+$ ========================================
+$ Test 10: Lambda with list operations
+$ ========================================
+make function map_list(func, list):
+    put [] in result;
+    cycle i from 0 to len(list):
+        append(result, func(list / i));
+    end;
+    give result;
+end;
+
+put [1, 2, 3, 4, 5] in numbers;
+put map_list(lambda x => x * x, numbers) in squares;
+when squares / 0 == 1 and squares / 1 == 4 and squares / 2 == 9:
+    show "PASS: Lambda with list operations";
+end;
+
+$ ========================================
+$ Test 11: Lambda with arithmetic operations
+$ ========================================
+put lambda a, b => a - b in subtract;
+put lambda a, b => a * b in multiply;
+put lambda a, b => a / b in divide;
+when subtract(10, 3) == 7 and multiply(4, 5) == 20 and divide(20, 4) == 5:
+    show "PASS: Lambda with arithmetic operations";
+end;
+
+$ ========================================
+$ Test 12: Lambda with modulo operator
+$ ========================================
+put lambda x => x % 2 in is_even_check;
+when is_even_check(4) == 0 and is_even_check(5) == 1:
+    show "PASS: Lambda with modulo operator";
+end;
+
+$ ========================================
+$ Test 13: Lambda with equality check
+$ ========================================
+put lambda a, b => a == b in equals;
+when equals(5, 5) == 1 and equals(5, 3) == 0:
+    show "PASS: Lambda with equality check";
+end;
+
+$ ========================================
+$ Test 14: Lambda with inequality check
+$ ========================================
+put lambda a, b => a != b in not_equals;
+when not_equals(5, 3) == 1 and not_equals(5, 5) == 0:
+    show "PASS: Lambda with inequality check";
+end;
+
+$ ========================================
+$ Test 15: Multiple lambdas in same scope
+$ ========================================
+put lambda x => x + 1 in inc;
+put lambda x => x - 1 in dec;
+when inc(5) == 6 and dec(5) == 4:
+    show "PASS: Multiple lambdas in same scope";
+end;
+
+show "";
+show "All lambda function tests completed!";

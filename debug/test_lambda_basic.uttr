@@ -1,0 +1,22 @@
+$ Test basic lambda functions
+
+$ Lambda with no parameters
+put lambda => 42 in get_answer;
+show "No params: " + get_answer();
+
+$ Lambda with one parameter
+put lambda x => x * 2 in double;
+show "Double 5: " + double(5);
+show "Double 10: " + double(10);
+
+$ Lambda with multiple parameters
+put lambda a, b => a + b in add;
+show "Add 3 + 7: " + add(3, 7);
+show "Add 10 + 20: " + add(10, 20);
+
+$ Lambda with more complex expression
+put lambda x => x * x + 2 * x + 1 in poly;
+show "Poly(3): " + poly(3);
+show "Poly(5): " + poly(5);
+
+show "Basic lambda tests completed!";

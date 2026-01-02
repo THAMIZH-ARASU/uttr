@@ -26,6 +26,7 @@ TT_COMMA = 'COMMA'
 TT_COLON = 'COLON'
 TT_SEMICOLON = 'SEMICOLON'
 TT_AT = 'AT'
+TT_ARROW = 'ARROW'
 TT_NEWLINE = 'NEWLINE'
 TT_EOF = 'EOF'
 
@@ -47,6 +48,7 @@ KEYWORDS = [
     'as long as',
     'repeat while',
     'make function',
+    'lambda',
     'give',
     'and',
     'or',
