@@ -1,0 +1,27 @@
+$ Test lambda functions with variable capturing
+$ Note: Full closures (capturing variables from outer function scope) 
+$ are not currently supported in UTTR. This is a language limitation,
+$ not specific to lambda functions.
+
+$ Lambda capturing variables from global scope works
+put 10 in multiplier;
+put lambda x => x * multiplier in multiply_by_ten;
+show "5 * 10: " + multiply_by_ten(5);
+
+$ Lambda with comparison operators
+put lambda a, b => a == b in equals;
+put lambda a, b => a < b in less_than;
+show "5 == 5: " + equals(5, 5);
+show "5 == 3: " + equals(5, 3);
+show "3 < 5: " + less_than(3, 5);
+show "5 < 3: " + less_than(5, 3);
+
+$ Lambda with logical operators
+put lambda x, y => x and y in both_true;
+put lambda x, y => x or y in either_true;
+show "true and true: " + both_true(true, true);
+show "true and false: " + both_true(true, false);
+show "false or true: " + either_true(false, true);
+show "false or false: " + either_true(false, false);
+
+show "Lambda variable capture tests completed!";

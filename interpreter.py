@@ -322,6 +322,17 @@ class Interpreter:
 
         return res.success(func_value)
 
+    def visit_LambdaNode(self, node, context):
+        res = RTResult()
+
+        # Lambda functions are anonymous (no name)
+        func_name = "<lambda>"
+        body_node = node.body_node
+        arg_names = [arg_name.value for arg_name in node.arg_name_toks]
+        func_value = Function(func_name, body_node, arg_names).set_context(context).set_pos(node.pos_start, node.pos_end)
+
+        return res.success(func_value)
+
     def visit_CallNode(self, node, context):
         res = RTResult()
         args = []

@@ -1,0 +1,96 @@
+$ Lambda Functions Examples
+$ Lambda functions are anonymous (unnamed) functions with inline syntax
+
+$ ========================================
+$ Basic Lambda Syntax
+$ ========================================
+
+$ Lambda with no parameters
+put lambda => 42 in get_answer;
+show "Answer: " + get_answer();
+
+$ Lambda with one parameter
+put lambda x => x * 2 in double;
+show "Double of 5: " + double(5);
+
+$ Lambda with multiple parameters
+put lambda a, b => a + b in add;
+show "3 + 7 = " + add(3, 7);
+
+$ ========================================
+$ Lambda with Complex Expressions
+$ ========================================
+
+$ Polynomial expression
+put lambda x => x * x + 2 * x + 1 in poly;
+show "Poly(3) = " + poly(3);
+
+$ Comparison
+put lambda a, b => a < b in less_than;
+show "3 < 5: " + less_than(3, 5);
+
+$ Logical operations
+put lambda x, y => x and y in both_true;
+show "true and false: " + both_true(true, false);
+
+$ ========================================
+$ Lambda as Function Arguments
+$ ========================================
+
+$ Higher-order function example
+make function apply(func, value):
+    give func(value);
+end;
+
+show "Apply square to 4: " + apply(lambda x => x * x, 4);
+show "Apply triple to 7: " + apply(lambda x => x * 3, 7);
+
+$ ========================================
+$ Lambda with Lists
+$ ========================================
+
+$ Map function using lambda
+make function map_list(func, list):
+    put [] in result;
+    cycle i from 0 to len(list):
+        append(result, func(list / i));
+    end;
+    give result;
+end;
+
+put [1, 2, 3, 4, 5] in numbers;
+put map_list(lambda x => x * x, numbers) in squares;
+show "Squares: " + squares;
+
+$ Filter function using lambda
+make function filter_list(func, list):
+    put [] in result;
+    cycle i from 0 to len(list):
+        when func(list / i):
+            append(result, list / i);
+        end;
+    end;
+    give result;
+end;
+
+put filter_list(lambda x => x > 2, numbers) in filtered;
+show "Numbers > 2: " + filtered;
+
+$ ========================================
+$ Lambda with String Operations
+$ ========================================
+
+put lambda name => "Hello, " + name + "!" in greet;
+show greet("Alice");
+show greet("Bob");
+
+$ ========================================
+$ Lambda with Global Variables
+$ ========================================
+
+put 10 in multiplier;
+put lambda x => x * multiplier in multiply_by_ten;
+show "5 * 10 = " + multiply_by_ten(5);
+
+show "";
+show "Lambda examples completed!";

@@ -1,0 +1,12 @@
+$ Simple closure test
+
+make function outer():
+    put 5 in x;
+    make function inner():
+        give x;
+    end;
+    give inner;
+end;
+
+put outer() in get_five;
+show "Value: " + get_five();

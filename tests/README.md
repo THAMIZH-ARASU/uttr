@@ -20,6 +20,7 @@ This test suite covers all major features of the UTTR language, including:
 - **Tuples** - Immutable lists, tuple syntax, conversions
 - **Dictionaries** - Key-value pairs, access, keys(), values(), has_key(), remove()
 - **Functions** - Definition, parameters, return values, recursion
+- **Lambda Functions** - Anonymous functions, inline syntax, higher-order functions
 - **Built-in Functions** - show, len, append, pop, extend, keys, values, etc.
 - **Module System** - Imports, exports, standard library, nested imports, path resolution
 - **Loop Control** - Break (cut) and continue (skip) statements
@@ -56,32 +57,33 @@ This test suite covers all major features of the UTTR language, including:
 ### Functions
 18. `test_functions.uttr` - Function Definitions (12 tests)
 19. `test_function_call.uttr` - Function Calls (5 tests)
-20. `test_builtins.uttr` - Built-in Functions (14 tests)
+20. `test_lambda.uttr` - Lambda/Anonymous Functions (15 tests)
+21. `test_builtins.uttr` - Built-in Functions (14 tests)
 
 ### Module System
-21. `test_imports.uttr` - Import System (10 tests)
-22. `test_imports_advanced.uttr` - Advanced Imports (8 tests)
-23. `test_import_scope.uttr` - Import Scope and Context (1 test)
-24. `test_nested_import.uttr` - Nested Module Imports (1 test)
-25. `test_nested_import2.uttr` - Indirect Module Imports (1 test)
-26. `test_paths.uttr` - Module Path Resolution (3 tests)
-27. `test_module_a.uttr` - Module A (test module)
-28. `test_module_b.uttr` - Module B (test module)
+22. `test_imports.uttr` - Import System (10 tests)
+23. `test_imports_advanced.uttr` - Advanced Imports (8 tests)
+24. `test_import_scope.uttr` - Import Scope and Context (1 test)
+25. `test_nested_import.uttr` - Nested Module Imports (1 test)
+26. `test_nested_import2.uttr` - Indirect Module Imports (1 test)
+27. `test_paths.uttr` - Module Path Resolution (3 tests)
+28. `test_module_a.uttr` - Module A (test module)
+29. `test_module_b.uttr` - Module B (test module)
 
 ### Loop Control and Operators
-29. `test_break_continue.uttr` - Break (cut) and Continue (skip) (10 tests)
-30. `test_modulo.uttr` - Modulo Operator (10 tests)
+30. `test_break_continue.uttr` - Break (cut) and Continue (skip) (10 tests)
+31. `test_modulo.uttr` - Modulo Operator (10 tests)
 
 ### Error Handling
-31. `test_attempt_handle.uttr` - Try-Catch Error Handling (8 tests)
-32. `test_errors.uttr` - Error Detection (10 tests)
+32. `test_attempt_handle.uttr` - Try-Catch Error Handling (8 tests)
+33. `test_errors.uttr` - Error Detection (10 tests)
 
 ### Language Features
-33. `test_comments.uttr` - Comment Syntax (10 tests)
-34. `test_string_methods.uttr` - String Methods (10 tests)
-35. `test_mutations.uttr` - Mutation Operations (6 tests)
-36. `test_mixed_nesting.uttr` - Mixed Nesting (5 tests)
-37. `test_integration.uttr` - Complex Integration Tests (10 tests)
+34. `test_comments.uttr` - Comment Syntax (10 tests)
+35. `test_string_methods.uttr` - String Methods (10 tests)
+36. `test_mutations.uttr` - Mutation Operations (6 tests)
+37. `test_mixed_nesting.uttr` - Mixed Nesting (5 tests)
+38. `test_integration.uttr` - Complex Integration Tests (10 tests)
 
 ## Running Tests
 

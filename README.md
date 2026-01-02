@@ -54,7 +54,10 @@ UTTR (Understandable Translation Tool for Routines) is a custom-built, procedure
 - **Operators**: Arithmetic (`+`, `-`, `*`, `/`, `%`), comparison (`==`, `!=`, `<`, `>`, `<=`, `>=`), and logical (`and`, `or`, `not`)
 - **Control Structures**: Conditional statements (`when...otherwise`), loops (`cycle`, `as long as`, `repeat while`), and for-each iteration with loop control (`cut` for break, `skip` for continue)
 - **Error Handling**: Try-catch blocks using `attempt...handle` syntax with error introspection (`error_message`, `error_type`)
-- **Function Support**: Define and call custom functions with return values using `make function` and `give` keywords
+- **Function Support**: 
+  - Named functions with `make function` and `give` keywords
+  - Anonymous lambda functions with inline syntax (`lambda x => x * 2`)
+  - Higher-order functions (functions as arguments/return values)
 - **Built-in Functions**: Pre-defined utilities including:
   - I/O: `show`, `input`, `input_int`
   - Collections: `len`, `append`, `pop`, `extend`
@@ -556,6 +559,34 @@ show "Result: " + result;
 
 put safe_divide(10, 0) in result;
 show "Result: " + result;  $ Handles error gracefully
+
+$ Lambda functions - anonymous functions with inline syntax
+put lambda x => x * 2 in double;
+show "Double of 5: " + double(5);
+
+$ Lambda with multiple parameters
+put lambda a, b => a + b in add;
+show "3 + 7 = " + add(3, 7);
+
+$ Lambda as function argument (higher-order functions)
+make function apply(func, value):
+    give func(value);
+end;
+
+show "Apply square: " + apply(lambda x => x * x, 4);
+
+$ Lambda with list processing
+make function map_list(func, list):
+    put [] in result;
+    cycle i from 0 to len(list):
+        append(result, func(list / i));
+    end;
+    give result;
+end;
+
+put [1, 2, 3, 4, 5] in numbers;
+put map_list(lambda x => x * x, numbers) in squares;
+show "Squares: " + squares;
 ```
 
 ###  Module System
@@ -683,6 +714,7 @@ The test suite includes 22 test categories with 230+ individual tests covering:
 - List mutations (append, pop, extend) and dictionary mutations (remove)
 - Tuple immutability and conversions
 - Functions and built-ins
+- Lambda/anonymous functions with inline syntax
 - Module system (imports, exports, standard library, error handling)
 - Comments and error handling
 - Complex integration scenarios
@@ -706,9 +738,9 @@ The test suite includes 22 test categories with 230+ individual tests covering:
 - [X] **`Task 12`**: <strike>Add built-in methods for strings (split, join, upper, lower, replace, substring)</strike>
 - [X] **`Task 13`**: <strike>Support for tuple data type (immutable lists with `<>` syntax)</strike>
 - [X] **`Task 14`**: <strike>Add import/module system for code organization</strike>
+- [X] **`Task 15`**: <strike>Implement lambda/anonymous functions with inline syntax (`lambda x => x * 2`)</strike>
 
 ### Language Features
-- [ ] **`Task 15`**: Implement lambda/anonymous functions with inline syntax
 - [ ] **`Task 16`**: Add switch-case statements (`check...whether...default` syntax)
 - [ ] **`Task 17`**: Support for regular expressions with pattern matching
 - [ ] **`Task 18`**: Add set data type with set operations (union, intersection, difference)
