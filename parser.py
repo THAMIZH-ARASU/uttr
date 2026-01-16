@@ -18,6 +18,7 @@ from nodes.return_node import ReturnNode
 from nodes.share_node import ShareNode
 from nodes.skip_node import SkipNode
 from nodes.string_node import StringNode
+from nodes.switch_case_node import SwitchCaseNode
 from nodes.attempt_handle_node import AttemptHandleNode
 from nodes.tuple_node import TupleNode
 from nodes.unary_operator_node import UnaryOpNode
@@ -420,9 +421,14 @@ class Parser:
             if res.error: return res
             return res.success(attempt_handle_expr)
 
+        elif tok.matches(TT_KEYWORD, 'check'):
+            switch_case_expr = res.register(self.switch_case_expr())
+            if res.error: return res
+            return res.success(switch_case_expr)
+
         return res.failure(InvalidSyntaxError(
             tok.pos_start, tok.pos_end,
-            "Expected int, float, string, identifier, 'true', 'false', '+', '-', '(', '[', '<', 'when', 'cycle', 'as long as', 'repeat while', 'make function', 'lambda', or 'attempt'"
+            "Expected int, float, string, identifier, 'true', 'false', '+', '-', '(', '[', '<', 'when', 'cycle', 'as long as', 'repeat while', 'make function', 'lambda', 'attempt', or 'check'"
         ))
 
     def list_expr(self):
@@ -1194,6 +1200,135 @@ class Parser:
         if res.error: return res
 
         return res.success(AttemptHandleNode(attempt_body, handle_body, error_var_name))
+
+    def switch_case_expr(self):
+        res = ParseResult()
+        cases = []
+        default_case = None
+
+        if not self.current_tok.matches(TT_KEYWORD, 'check'):
+            return res.failure(InvalidSyntaxError(
+                self.current_tok.pos_start, self.current_tok.pos_end,
+                "Expected 'check'"
+            ))
+
+        res.register_advancement()
+        self.advance()
+
+        # Parse the switch expression
+        switch_expr = res.register(self.logic_expr())
+        if res.error: return res
+
+        if self.current_tok.type != TT_COLON:
+            return res.failure(InvalidSyntaxError(
+                self.current_tok.pos_start, self.current_tok.pos_end,
+                "Expected ':'"
+            ))
+
+        res.register_advancement()
+        self.advance()
+
+        if self.current_tok.type != TT_NEWLINE:
+            return res.failure(InvalidSyntaxError(
+                self.current_tok.pos_start, self.current_tok.pos_end,
+                "Expected newline after ':'"
+            ))
+
+        res.register_advancement()
+        self.advance()
+
+        # Skip any additional newlines (from indentation)
+        while self.current_tok.type == TT_NEWLINE:
+            res.register_advancement()
+            self.advance()
+
+        # Parse whether cases
+        while self.current_tok.matches(TT_KEYWORD, 'whether'):
+            res.register_advancement()
+            self.advance()
+
+            # Parse the case value
+            case_value = res.register(self.logic_expr())
+            if res.error: return res
+
+            if self.current_tok.type != TT_COLON:
+                return res.failure(InvalidSyntaxError(
+                    self.current_tok.pos_start, self.current_tok.pos_end,
+                    "Expected ':'"
+                ))
+
+            res.register_advancement()
+            self.advance()
+
+            if self.current_tok.type == TT_NEWLINE:
+                res.register_advancement()
+                self.advance()
+
+                statements = res.register(self.statements())
+                if res.error: return res
+                cases.append((case_value, statements, True))
+            else:
+                # Single-line case
+                expr = res.register(self.statement())
+                if res.error: return res
+                cases.append((case_value, expr, False))
+
+                if self.current_tok.type == TT_NEWLINE:
+                    res.register_advancement()
+                    self.advance()
+
+            # Skip any additional newlines before next case/default/end
+            while self.current_tok.type == TT_NEWLINE:
+                res.register_advancement()
+                self.advance()
+
+        # Parse optional default case
+        if self.current_tok.matches(TT_KEYWORD, 'default'):
+            res.register_advancement()
+            self.advance()
+
+            if self.current_tok.type != TT_COLON:
+                return res.failure(InvalidSyntaxError(
+                    self.current_tok.pos_start, self.current_tok.pos_end,
+                    "Expected ':'"
+                ))
+
+            res.register_advancement()
+            self.advance()
+
+            if self.current_tok.type == TT_NEWLINE:
+                res.register_advancement()
+                self.advance()
+
+                statements = res.register(self.statements())
+                if res.error: return res
+                default_case = (statements, True)
+            else:
+                # Single-line default
+                expr = res.register(self.statement())
+                if res.error: return res
+                default_case = (expr, False)
+
+                if self.current_tok.type == TT_NEWLINE:
+                    res.register_advancement()
+                    self.advance()
+
+        # Skip any additional newlines before 'end'
+        while self.current_tok.type == TT_NEWLINE:
+            res.register_advancement()
+            self.advance()
+
+        # Expect 'end'
+        if not self.current_tok.matches(TT_KEYWORD, 'end'):
+            return res.failure(InvalidSyntaxError(
+                self.current_tok.pos_start, self.current_tok.pos_end,
+                "Expected 'whether', 'default', or 'end'"
+            ))
+
+        res.register_advancement()
+        self.advance()
+
+        return res.success(SwitchCaseNode(switch_expr, cases, default_case))
 
     def bin_op(self, func_a, ops, func_b=None):
         if func_b is None:

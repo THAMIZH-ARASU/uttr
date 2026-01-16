@@ -61,6 +61,9 @@ KEYWORDS = [
     'handle',
     'bring',
     'share',
+    'check',
+    'whether',
+    'default',
 ]
 
 class Token:

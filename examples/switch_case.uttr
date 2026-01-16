@@ -1,0 +1,123 @@
+$ Switch-Case Statement Examples
+
+$ Basic switch-case with numbers
+put 2 in choice;
+
+check choice:
+    whether 1: show "You chose one";
+    whether 2: show "You chose two";
+    whether 3: show "You chose three";
+    default: show "Invalid choice";
+end;
+
+$ Switch-case with strings
+put "apple" in fruit;
+
+check fruit:
+    whether "apple":
+        show "An apple a day keeps the doctor away!";
+    whether "banana":
+        show "Bananas are rich in potassium";
+    whether "orange":
+        show "Oranges are rich in vitamin C";
+    default:
+        show "Unknown fruit";
+end;
+
+$ Switch-case with expressions
+put 15 in age;
+
+check age:
+    whether 13:
+        show "You're a teenager!";
+    whether 18:
+        show "You're an adult now!";
+    whether 21:
+        show "You can drink legally in the US!";
+    default:
+        show "Just another year...";
+end;
+
+$ Switch-case with computed values
+put 4 in x;
+
+check x * 2:
+    whether 2: show "x * 2 = 2";
+    whether 4: show "x * 2 = 4";
+    whether 6: show "x * 2 = 6";
+    whether 8: show "x * 2 = 8";
+    default: show "x * 2 is something else";
+end;
+
+$ Switch-case for menu selection
+put 3 in menu_option;
+
+check menu_option:
+    whether 1:
+        show "Opening file...";
+    whether 2:
+        show "Saving file...";
+    whether 3:
+        show "Closing file...";
+    whether 4:
+        show "Exiting program...";
+    default:
+        show "Invalid menu option";
+end;
+
+$ Switch-case with no default
+put "red" in color;
+
+check color:
+    whether "red": show "Color is red";
+    whether "blue": show "Color is blue";
+    whether "green": show "Color is green";
+end;
+
+$ Nested switch-case
+put 1 in category;
+put "small" in size;
+
+check category:
+    whether 1:
+        show "Category: Electronics";
+        check size:
+            whether "small": show "Size: Small electronic";
+            whether "large": show "Size: Large electronic";
+            default: show "Size: Medium electronic";
+        end;
+    whether 2:
+        show "Category: Clothing";
+        check size:
+            whether "small": show "Size: S";
+            whether "large": show "Size: L";
+            default: show "Size: M";
+        end;
+    default:
+        show "Unknown category";
+end;
+
+$ Switch-case returning values (single-line cases)
+put 2 in day;
+put "" in day_name;
+
+check day:
+    whether 1: put "Monday" in day_name;
+    whether 2: put "Tuesday" in day_name;
+    whether 3: put "Wednesday" in day_name;
+    whether 4: put "Thursday" in day_name;
+    whether 5: put "Friday" in day_name;
+    whether 6: put "Saturday" in day_name;
+    whether 7: put "Sunday" in day_name;
+    default: put "Invalid day" in day_name;
+end;
+
+show day_name;
+
+$ Switch-case with boolean expressions
+put true in flag;
+
+check flag:
+    whether true: show "Flag is true";
+    whether false: show "Flag is false";
+end;

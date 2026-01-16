@@ -1,0 +1,8 @@
+$ Test basic switch-case
+put 2 in choice;
+
+check choice:
+    whether 1: show "one";
+    whether 2: show "two";
+    default: show "other";
+end;

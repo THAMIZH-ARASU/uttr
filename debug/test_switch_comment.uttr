@@ -1,0 +1,10 @@
+$ Test switch with comment-only case
+put 1 in x;
+
+check x:
+    whether 1: $ Just a comment;
+    whether 2: show "two";
+    default: show "default";
+end;
+
+show "Done";
