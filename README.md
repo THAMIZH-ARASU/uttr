@@ -46,13 +46,13 @@ UTTR (Understandable Translation Tool for Routines) is a custom-built, procedure
 
 ##  Features
 
-- **Natural English-Like Syntax**: Write code that reads like plain English with keywords like `put`, `in`, `when`, `otherwise`, `make function`, `give`, `cut`, `skip`, `attempt`, and `handle`
+- **Natural English-Like Syntax**: Write code that reads like plain English with keywords like `put`, `in`, `when`, `otherwise`, `check`, `whether`, `default`, `make function`, `give`, `cut`, `skip`, `attempt`, and `handle`
 - **Complete Interpreter**: Full lexer-parser-interpreter pipeline built from scratch with comprehensive error handling and position tracking
 - **Procedure-Oriented Design**: Focus on procedures and sequential execution with modular, reusable functions
 - **Module System**: Import/export functionality for code organization with natural syntax (`bring in`, `share`), standard library modules, and automatic caching
 - **Rich Data Types**: Support for integers, floats, strings, booleans, lists, tuples (immutable lists), and dictionaries with intuitive access using `@` operator for dictionaries and `/` for indexing
 - **Operators**: Arithmetic (`+`, `-`, `*`, `/`, `%`), comparison (`==`, `!=`, `<`, `>`, `<=`, `>=`), and logical (`and`, `or`, `not`)
-- **Control Structures**: Conditional statements (`when...otherwise`), loops (`cycle`, `as long as`, `repeat while`), and for-each iteration with loop control (`cut` for break, `skip` for continue)
+- **Control Structures**: Conditional statements (`when...otherwise`), switch-case statements (`check...whether...default`), loops (`cycle`, `as long as`, `repeat while`), and for-each iteration with loop control (`cut` for break, `skip` for continue)
 - **Error Handling**: Try-catch blocks using `attempt...handle` syntax with error introspection (`error_message`, `error_type`)
 - **Function Support**: 
   - Named functions with `make function` and `give` keywords
@@ -739,9 +739,9 @@ The test suite includes 22 test categories with 230+ individual tests covering:
 - [X] **`Task 13`**: <strike>Support for tuple data type (immutable lists with `<>` syntax)</strike>
 - [X] **`Task 14`**: <strike>Add import/module system for code organization</strike>
 - [X] **`Task 15`**: <strike>Implement lambda/anonymous functions with inline syntax (`lambda x => x * 2`)</strike>
+- [X] **`Task 16`**: <strike>Add switch-case statements (`check...whether...default` syntax)</strike>
 
 ### Language Features
-- [ ] **`Task 16`**: Add switch-case statements (`check...whether...default` syntax)
 - [ ] **`Task 17`**: Support for regular expressions with pattern matching
 - [ ] **`Task 18`**: Add set data type with set operations (union, intersection, difference)
 

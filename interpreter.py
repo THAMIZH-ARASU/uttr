@@ -203,6 +203,33 @@ class Interpreter:
 
         return res.success(Number.null)
 
+    def visit_SwitchCaseNode(self, node, context):
+        res = RTResult()
+
+        # Evaluate the switch expression
+        switch_value = res.register(self.visit(node.switch_expr, context))
+        if res.should_return(): return res
+
+        # Check each case
+        for case_value_node, expr, should_return_null in node.cases:
+            case_value = res.register(self.visit(case_value_node, context))
+            if res.should_return(): return res
+
+            # Check if values match (using == comparison)
+            if switch_value.get_comparison_eq(case_value)[0].is_true():
+                expr_value = res.register(self.visit(expr, context))
+                if res.should_return(): return res
+                return res.success(Number.null if should_return_null else expr_value)
+
+        # If no case matched, execute default if present
+        if node.default_case:
+            expr, should_return_null = node.default_case
+            expr_value = res.register(self.visit(expr, context))
+            if res.should_return(): return res
+            return res.success(Number.null if should_return_null else expr_value)
+
+        return res.success(Number.null)
+
     def visit_ForNode(self, node, context):
         res = RTResult()
         elements = []

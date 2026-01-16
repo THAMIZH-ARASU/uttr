@@ -1,0 +1,209 @@
+$ Test Suite: Switch-Case Statements
+
+$ TEST 1: Basic integer matching
+put 2 in test_value;
+check test_value:
+    whether 1: show "FAIL: Matched 1";
+    whether 2: show "PASS: Test 1 - Basic integer matching";
+    whether 3: show "FAIL: Matched 3";
+    default: show "FAIL: Hit default";
+end;
+
+$ TEST 2: String matching
+put "hello" in greeting;
+check greeting:
+    whether "hi": show "FAIL: Matched hi";
+    whether "hello": show "PASS: Test 2 - String matching";
+    whether "hey": show "FAIL: Matched hey";
+    default: show "FAIL: Hit default";
+end;
+
+$ TEST 3: Default case
+put 99 in unknown;
+check unknown:
+    whether 1: show "FAIL: Matched 1";
+    whether 2: show "FAIL: Matched 2";
+    default: show "PASS: Test 3 - Default case works";
+end;
+
+$ TEST 4: First match wins
+put 5 in value;
+check value:
+    whether 5: show "PASS: Test 4 - First match wins";
+    whether 5: show "FAIL: Second match executed";
+    default: show "FAIL: Hit default";
+end;
+
+$ TEST 5: Expression in switch
+put 3 in x;
+check x + 2:
+    whether 4: show "FAIL: Matched 4";
+    whether 5: show "PASS: Test 5 - Expression in switch";
+    whether 6: show "FAIL: Matched 6";
+    default: show "FAIL: Hit default";
+end;
+
+$ TEST 6: Expression in case value
+put 10 in num;
+check num:
+    whether 5 + 5: show "PASS: Test 6 - Expression in case value";
+    whether 20: show "FAIL: Matched 20";
+    default: show "FAIL: Hit default";
+end;
+
+$ TEST 7: Floating point matching
+put 3.14 in pi;
+check pi:
+    whether 2.71: show "FAIL: Matched e";
+    whether 3.14: show "PASS: Test 7 - Float matching";
+    whether 1.41: show "FAIL: Matched sqrt(2)";
+    default: show "FAIL: Hit default";
+end;
+
+$ TEST 8: Boolean matching
+put true in flag;
+check flag:
+    whether false: show "FAIL: Matched false";
+    whether true: show "PASS: Test 8 - Boolean matching";
+    default: show "FAIL: Hit default";
+end;
+
+$ TEST 9: No default, no match (should return null)
+put 100 in no_match;
+check no_match:
+    whether 1: show "FAIL: Matched 1";
+    whether 2: show "FAIL: Matched 2";
+end;
+show "PASS: Test 9 - No default, no match (no error)";
+
+$ TEST 10: Multi-line case body
+put 2 in multi;
+check multi:
+    whether 1:
+        show "FAIL: Wrong match";
+    whether 2:
+        show "PASS: Test 10 - Multi-line case";
+        show "Line 2 of case body";
+        show "Line 3 of case body";
+    whether 3:
+        show "FAIL: Wrong match";
+    default:
+        show "FAIL: Hit default";
+end;
+
+$ TEST 11: Nested switch-case
+put 1 in outer;
+put 2 in inner;
+check outer:
+    whether 1:
+        check inner:
+            whether 1: show "FAIL: Inner matched 1";
+            whether 2: show "PASS: Test 11 - Nested switch-case";
+            default: show "FAIL: Inner hit default";
+        end;
+    whether 2: show "FAIL: Outer matched 2";
+    default: show "FAIL: Outer hit default";
+end;
+
+$ TEST 12: Switch inside conditional
+put true in use_switch;
+put 3 in switch_val;
+
+when use_switch:
+    check switch_val:
+        whether 1: show "FAIL: Matched 1";
+        whether 2: show "FAIL: Matched 2";
+        whether 3: show "PASS: Test 12 - Switch inside conditional";
+        default: show "FAIL: Hit default";
+    end;
+end;
+
+$ TEST 13: Switch inside loop
+cycle i from 1 to 4:
+    check i:
+        whether 1: put 0 in dummy;
+        whether 2: put 0 in dummy;
+        whether 3: show "PASS: Test 13 - Switch inside loop";
+        default: put 0 in dummy;
+    end;
+end;
+
+$ TEST 14: Zero value matching
+put 0 in zero;
+check zero:
+    whether 1: show "FAIL: Matched 1";
+    whether 0: show "PASS: Test 14 - Zero value matching";
+    whether -1: show "FAIL: Matched -1";
+    default: show "FAIL: Hit default";
+end;
+
+$ TEST 15: Negative number matching
+put -5 in negative;
+check negative:
+    whether 5: show "FAIL: Matched 5";
+    whether -5: show "PASS: Test 15 - Negative number matching";
+    whether -10: show "FAIL: Matched -10";
+    default: show "FAIL: Hit default";
+end;
+
+$ TEST 16: Empty string matching
+put "" in empty;
+check empty:
+    whether "not empty": show "FAIL: Matched non-empty";
+    whether "": show "PASS: Test 16 - Empty string matching";
+    default: show "FAIL: Hit default";
+end;
+
+$ TEST 17: Case with variable assignment
+put 3 in assign_test;
+put 0 in result;
+check assign_test:
+    whether 1: put 10 in result;
+    whether 2: put 20 in result;
+    whether 3: put 30 in result;
+    default: put -1 in result;
+end;
+
+when result == 30:
+    show "PASS: Test 17 - Variable assignment in case";
+otherwise:
+    show "FAIL: Wrong result value";
+end;
+
+$ TEST 18: Single-line default
+put 999 in single_default;
+check single_default:
+    whether 1: show "FAIL";
+    whether 2: show "FAIL";
+    default: show "PASS: Test 18 - Single-line default";
+end;
+
+$ TEST 19: Multiple expressions in one case body
+put 5 in multi_expr;
+put 0 in counter;
+check multi_expr:
+    whether 5:
+        put counter + 1 in counter;
+        put counter + 1 in counter;
+        put counter + 1 in counter;
+    default:
+        show "FAIL: Hit default";
+end;
+
+when counter == 3:
+    show "PASS: Test 19 - Multiple expressions in case";
+otherwise:
+    show "FAIL: Counter not 3";
+end;
+
+$ TEST 20: Large number matching
+put 1000000 in large;
+check large:
+    whether 999999: show "FAIL: Matched 999999";
+    whether 1000000: show "PASS: Test 20 - Large number matching";
+    whether 1000001: show "FAIL: Matched 1000001";
+    default: show "FAIL: Hit default";
+end;
+
+show "";
+show "=== All switch-case tests completed ===";
