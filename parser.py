@@ -14,6 +14,7 @@ from nodes.lambda_node import LambdaNode
 from nodes.list_access_node import ListAccessNode
 from nodes.list_node import ListNode
 from nodes.number_node import NumberNode
+from nodes.regex_node import RegexNode
 from nodes.return_node import ReturnNode
 from nodes.share_node import ShareNode
 from nodes.skip_node import SkipNode
@@ -26,7 +27,7 @@ from nodes.var_access_node import VarAccessNode
 from nodes.var_assign_node import VarAssignNode
 from nodes.while_node import WhileNode
 from parse_result import ParseResult
-from tokens import TT_ARROW, TT_AT, TT_COLON, TT_COMMA, TT_DIV, TT_EE, TT_EOF, TT_FLOAT, TT_GT, TT_GTE, TT_IDENTIFIER, TT_INT, TT_KEYWORD, TT_LANGLE, TT_LCURLY, TT_LPAREN, TT_LSQUARE, TT_LT, TT_LTE, TT_MINUS, TT_MOD, TT_MUL, TT_NE, TT_NEWLINE, TT_PLUS, TT_RANGLE, TT_RCURLY, TT_RPAREN, TT_RSQUARE, TT_STRING, Token
+from tokens import TT_ARROW, TT_AT, TT_COLON, TT_COMMA, TT_DIV, TT_EE, TT_EOF, TT_FLOAT, TT_GT, TT_GTE, TT_IDENTIFIER, TT_INT, TT_KEYWORD, TT_LANGLE, TT_LCURLY, TT_LPAREN, TT_LSQUARE, TT_LT, TT_LTE, TT_MINUS, TT_MOD, TT_MUL, TT_NE, TT_NEWLINE, TT_PLUS, TT_RANGLE, TT_RCURLY, TT_REGEX, TT_RPAREN, TT_RSQUARE, TT_STRING, Token
 
 
 class Parser:
@@ -340,6 +341,11 @@ class Parser:
             res.register_advancement()
             self.advance()
             return res.success(StringNode(tok))
+
+        elif tok.type == TT_REGEX:
+            res.register_advancement()
+            self.advance()
+            return res.success(RegexNode(tok))
 
         elif tok.type == TT_IDENTIFIER:
             res.register_advancement()
