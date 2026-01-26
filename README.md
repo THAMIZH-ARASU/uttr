@@ -50,7 +50,8 @@ UTTR (Understandable Translation Tool for Routines) is a custom-built, procedure
 - **Complete Interpreter**: Full lexer-parser-interpreter pipeline built from scratch with comprehensive error handling and position tracking
 - **Procedure-Oriented Design**: Focus on procedures and sequential execution with modular, reusable functions
 - **Module System**: Import/export functionality for code organization with natural syntax (`bring in`, `share`), standard library modules, and automatic caching
-- **Rich Data Types**: Support for integers, floats, strings, booleans, lists, tuples (immutable lists), and dictionaries with intuitive access using `@` operator for dictionaries and `/` for indexing
+- **Rich Data Types**: Support for integers, floats, strings, booleans, lists, tuples (immutable lists), dictionaries, and regular expressions with intuitive access using `@` operator for dictionaries and `/` for indexing
+- **Regular Expressions**: Full regex support with pattern matching using `r"pattern"` syntax for text processing and validation
 - **Operators**: Arithmetic (`+`, `-`, `*`, `/`, `%`), comparison (`==`, `!=`, `<`, `>`, `<=`, `>=`), and logical (`and`, `or`, `not`)
 - **Control Structures**: Conditional statements (`when...otherwise`), switch-case statements (`check...whether...default`), loops (`cycle`, `as long as`, `repeat while`), and for-each iteration with loop control (`cut` for break, `skip` for continue)
 - **Error Handling**: Try-catch blocks using `attempt...handle` syntax with error introspection (`error_message`, `error_type`)
@@ -64,6 +65,7 @@ UTTR (Understandable Translation Tool for Routines) is a custom-built, procedure
   - Tuples: `tuple` (convert to tuple), `list` (convert to list)
   - Dictionaries: `keys`, `values`, `has_key`, `remove`
   - Strings: `split`, `join`, `upper`, `lower`, `replace`, `substring`
+  - Regular Expressions: `regex_match`, `regex_search`, `regex_replace`, `regex_findall`, `regex_split`
   - Error handling: `error_message`, `error_type`
   - Execution: `run` (execute external .uttr files)
 - **Standard Library**: Built-in modules for common tasks:
@@ -670,6 +672,115 @@ See [examples/modules/](examples/modules/) for more examples.
 - **Path Resolution**: Module paths support subdirectories using forward slashes (e.g., `subdir/module`). Absolute file system paths are not supported to maintain portability.
 - **Export Behavior**: Without an explicit `share` statement, all non-underscore top-level definitions are exported. Use underscore prefix (e.g., `_helper_func`) for private functions.
 
+###  Regular Expressions
+
+UTTR includes comprehensive regular expression support for pattern matching and text processing using Python's `re` module under the hood.
+
+**Regex Literal Syntax:**
+
+Use the `r"pattern"` syntax (similar to Python raw strings) to create regex patterns:
+
+```uttr
+put r"\d{3}-\d{4}" in phone_pattern;
+put r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" in email_pattern;
+```
+
+**Built-in Regex Functions:**
+
+1. **regex_match(pattern, text)** - Check if pattern matches from the start of string
+   ```uttr
+   put r"hello" in pattern;
+   put regex_match(pattern, "hello world") in result;  $ Returns match object
+   ```
+
+2. **regex_search(pattern, text)** - Search for pattern anywhere in string
+   ```uttr
+   put r"\d+" in pattern;
+   put regex_search(pattern, "I have 42 apples") in result;
+   when result:
+       show "Found: " + result @ "matched_text";
+       show "At position: " + result @ "start_pos";
+   end;
+   ```
+   Returns a dictionary with: `matched_text`, `start_pos`, `end_pos`, `groups` (list of captured groups)
+
+3. **regex_replace(pattern, replacement, text)** - Replace all pattern matches
+   ```uttr
+   put r"\d+" in pattern;
+   put regex_replace(pattern, "X", "I have 42 apples") in result;
+   $ Result: "I have X apples"
+   ```
+
+4. **regex_findall(pattern, text)** - Find all matches and return as list
+   ```uttr
+   put r"\d+" in pattern;
+   put regex_findall(pattern, "1 and 2 and 3") in numbers;
+   $ Result: ["1", "2", "3"]
+   ```
+
+5. **regex_split(pattern, text)** - Split string by pattern
+   ```uttr
+   put r"\s+" in pattern;
+   put regex_split(pattern, "one  two   three") in words;
+   $ Result: ["one", "two", "three"]
+   ```
+
+**Common Use Cases:**
+
+```uttr
+$ Email validation
+make function is_valid_email(email):
+    put r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" in pattern;
+    put regex_match(pattern, email) in match;
+    when match:
+        give 1;
+    end;
+    otherwise:
+        give 0;
+    end;
+end;
+
+$ Extract phone numbers
+put "Contact: 555-1234 or 555-5678" in text;
+put r"\d{3}-\d{4}" in phone_pattern;
+put regex_findall(phone_pattern, text) in phones;
+show phones;  $ ["555-1234", "555-5678"]
+
+$ Clean up whitespace
+put "Too    many     spaces" in messy;
+put r"\s+" in spaces_pattern;
+put regex_replace(spaces_pattern, " ", messy) in clean;
+show clean;  $ "Too many spaces"
+
+$ URL parsing with groups
+put "https://example.com:8080/path" in url;
+put r"(https?)://([^:]+):(\d+)(/.*)" in pattern;
+put regex_search(pattern, url) in match;
+when match:
+    put match @ "groups" in parts;
+    show "Protocol: " + parts / 0;  $ "https"
+    show "Domain: " + parts / 1;    $ "example.com"
+    show "Port: " + parts / 2;      $ "8080"
+    show "Path: " + parts / 3;      $ "/path"
+end;
+```
+
+**Error Handling:**
+
+Invalid regex patterns are caught at runtime:
+
+```uttr
+attempt:
+    put r"[invalid(" in bad_pattern;
+    put regex_match(bad_pattern, "test") in result;
+end
+handle as error:
+    show "Regex error: " + error_message(error);
+end;
+```
+
+See [examples/regex_basics.uttr](examples/regex_basics.uttr) for more examples.
+
 ###  Testing
 
 UTTR includes a comprehensive test suite covering all language features. Run tests using:
@@ -716,6 +827,7 @@ The test suite includes 22 test categories with 230+ individual tests covering:
 - Functions and built-ins
 - Lambda/anonymous functions with inline syntax
 - Module system (imports, exports, standard library, error handling)
+- Regular expressions (pattern matching, search, replace, findall, split)
 - Comments and error handling
 - Complex integration scenarios
 
@@ -740,9 +852,9 @@ The test suite includes 22 test categories with 230+ individual tests covering:
 - [X] **`Task 14`**: <strike>Add import/module system for code organization</strike>
 - [X] **`Task 15`**: <strike>Implement lambda/anonymous functions with inline syntax (`lambda x => x * 2`)</strike>
 - [X] **`Task 16`**: <strike>Add switch-case statements (`check...whether...default` syntax)</strike>
+- [X] **`Task 17`**: <strike>Support for regular expressions with pattern matching (`r"pattern"` syntax, `regex_match`, `regex_search`, `regex_replace`, `regex_findall`, `regex_split`)</strike>
 
 ### Language Features
-- [ ] **`Task 17`**: Support for regular expressions with pattern matching
 - [ ] **`Task 18`**: Add set data type with set operations (union, intersection, difference)
 
 ### Advanced Operations

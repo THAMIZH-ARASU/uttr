@@ -1,6 +1,6 @@
 from errors.illegal_character import IllegalCharError
 from position import Position
-from tokens import KEYWORDS, TT_ARROW, TT_AT, TT_COLON, TT_COMMA, TT_DIV, TT_EE, TT_EOF, TT_FLOAT, TT_GT, TT_GTE, TT_IDENTIFIER, TT_INT, TT_KEYWORD, TT_LANGLE, TT_LCURLY, TT_LPAREN, TT_LSQUARE, TT_LT, TT_LTE, TT_MINUS, TT_MOD, TT_MUL, TT_NE, TT_NEWLINE, TT_PLUS, TT_RANGLE, TT_RCURLY, TT_RPAREN, TT_RSQUARE, TT_STRING, Token
+from tokens import KEYWORDS, TT_ARROW, TT_AT, TT_COLON, TT_COMMA, TT_DIV, TT_EE, TT_EOF, TT_FLOAT, TT_GT, TT_GTE, TT_IDENTIFIER, TT_INT, TT_KEYWORD, TT_LANGLE, TT_LCURLY, TT_LPAREN, TT_LSQUARE, TT_LT, TT_LTE, TT_MINUS, TT_MOD, TT_MUL, TT_NE, TT_NEWLINE, TT_PLUS, TT_RANGLE, TT_RCURLY, TT_REGEX, TT_RPAREN, TT_RSQUARE, TT_STRING, Token
 from constants import DIGITS, LETTERS, LETTERS_DIGITS
 
 
@@ -157,6 +157,38 @@ class Lexer:
         self.advance()
         return Token(TT_STRING, string, pos_start, self.pos)
 
+    def make_regex(self):
+        """Parse a regex literal (r"pattern" or r'pattern')"""
+        pattern = ''
+        pos_start = self.pos.copy()
+        
+        # Skip the 'r' prefix
+        self.advance()
+        
+        if self.current_char not in ['"', "'"]:
+            return None, IllegalCharError(pos_start, self.pos, "Expected '\"' or \"'\" after 'r'")
+        
+        quote_char = self.current_char
+        self.advance()
+
+        # Read the regex pattern (raw string, no escape processing except for the quote)
+        while self.current_char is not None and self.current_char != quote_char:
+            # Allow escaped quotes inside the pattern
+            if self.current_char == '\\' and self.peek() == quote_char:
+                pattern += '\\'
+                self.advance()
+                pattern += self.current_char
+                self.advance()
+            else:
+                pattern += self.current_char
+                self.advance()
+        
+        if self.current_char != quote_char:
+            return None, IllegalCharError(pos_start, self.pos, f"Expected closing {quote_char}")
+        
+        self.advance()
+        return Token(TT_REGEX, pattern, pos_start, self.pos), None
+
     def make_identifier(self):
         id_str = ''
         pos_start = self.pos.copy()
@@ -164,6 +196,16 @@ class Lexer:
         while self.current_char is not None and self.current_char in LETTERS_DIGITS + '_':
             id_str += self.current_char
             self.advance()
+        
+        # Check if this is a regex literal (r"..." or r'...')
+        if id_str == 'r' and self.current_char in ['"', "'"]:
+            # Restore position to before 'r'
+            self.pos = pos_start
+            self.current_char = self.text[self.pos.idx] if self.pos.idx < len(self.text) else None
+            token, error = self.make_regex()
+            if error:
+                return error
+            return token
 
         # Check for multi-word keywords
         if id_str in ['as', 'make', 'each', 'repeat']:

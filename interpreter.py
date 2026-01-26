@@ -7,6 +7,7 @@ from values.dict_value import Dict
 from values.error_value import ErrorValue
 from values.list_value import List
 from values.number_value import Number
+from values.regex_value import Regex
 from values.string_value import String
 from values.tuple_value import Tuple
 
@@ -29,6 +30,19 @@ class Interpreter:
         return RTResult().success(
             String(node.tok.value).set_context(context).set_pos(node.pos_start, node.pos_end)
         )
+
+    def visit_RegexNode(self, node, context):
+        regex = Regex(node.tok.value).set_context(context).set_pos(node.pos_start, node.pos_end)
+        
+        # Check if there was a compilation error
+        if regex.compiled is None:
+            return RTResult().failure(RTError(
+                node.pos_start, node.pos_end,
+                f"Invalid regex pattern: {regex.compile_error}",
+                context
+            ))
+        
+        return RTResult().success(regex)
 
     def visit_ListNode(self, node, context):
         res = RTResult()

@@ -1,0 +1,161 @@
+$ ========================================
+$ UTTR Regular Expression Examples
+$ ========================================
+
+show "=== Basic Regex Matching ===";
+
+$ Simple pattern matching
+put r"hello" in pattern;
+put "hello world" in text;
+put regex_match(pattern, text) in match;
+show match;
+
+$ Pattern matching with digits
+put r"\d{3}-\d{4}" in phone_pattern;
+put "Call me at 555-1234" in message;
+put regex_search(phone_pattern, message) in found;
+show "Found phone: " + found @ "matched_text";
+show "At position: " + found @ "start_pos";
+
+show "";
+show "=== Email Validation ===";
+
+make function is_valid_email(email):
+    put r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" in pattern;
+    put regex_match(pattern, email) in match;
+    when match:
+        give 1;
+    end;
+    give 0;
+end;
+
+put is_valid_email("user@example.com") in result1;
+put is_valid_email("invalid.email") in result2;
+show "user@example.com is valid: " + result1;
+show "invalid.email is valid: " + result2;
+
+show "";
+show "=== Finding All Matches ===";
+
+$ Find all numbers in a string
+put "I have 42 apples and 13 oranges and 7 bananas" in text;
+put r"\d+" in number_pattern;
+put regex_findall(number_pattern, text) in numbers;
+show "Numbers found: " + numbers;
+
+$ Find all words
+put "The quick brown fox jumps" in sentence;
+put r"\w+" in word_pattern;
+put regex_findall(word_pattern, sentence) in words;
+show "Words: " + words;
+
+show "";
+show "=== Replacing Text ===";
+
+$ Replace phone numbers with masked version
+put "Contact: 555-1234 or 555-5678" in contact_info;
+put r"\d{3}-\d{4}" in phone_pattern;
+put regex_replace(phone_pattern, "XXX-XXXX", contact_info) in masked;
+show "Original: " + contact_info;
+show "Masked: " + masked;
+
+$ Replace multiple spaces with single space
+put "Too    many     spaces" in messy;
+put r"\s+" in spaces_pattern;
+put regex_replace(spaces_pattern, " ", messy) in clean;
+show "Messy: " + messy;
+show "Clean: " + clean;
+
+show "";
+show "=== Splitting Text ===";
+
+$ Split by whitespace
+put "one   two    three     four" in text;
+put r"\s+" in whitespace_pattern;
+put regex_split(whitespace_pattern, text) in parts;
+show "Split by whitespace: " + parts;
+
+$ Split by punctuation
+put "Hello, world! How are you?" in sentence;
+put r"[,!?]" in punctuation_pattern;
+put regex_split(punctuation_pattern, sentence) in segments;
+show "Split by punctuation: " + segments;
+
+show "";
+show "=== Capturing Groups ===";
+
+$ Extract date components
+put "Date: 2024-01-15" in date_text;
+put r"(\d{4})-(\d{2})-(\d{2})" in date_pattern;
+put regex_search(date_pattern, date_text) in date_match;
+when date_match:
+    put date_match @ "groups" in groups;
+    show "Year: " + groups / 0;
+    show "Month: " + groups / 1;
+    show "Day: " + groups / 2;
+end;
+
+show "";
+show "=== URL Parsing ===";
+
+put "Visit https://example.com:8080/path" in url_text;
+put r"(https?)://([^:]+):(\d+)(/.*)" in url_pattern;
+put regex_search(url_pattern, url_text) in url_match;
+when url_match:
+    put url_match @ "groups" in parts;
+    show "Protocol: " + parts / 0;
+    show "Domain: " + parts / 1;
+    show "Port: " + parts / 2;
+    show "Path: " + parts / 3;
+end;
+
+show "";
+show "=== Data Extraction ===";
+
+$ Extract prices from text
+put "Prices: $42.99, $13.50, $99.99" in price_text;
+put r"\$(\d+\.\d{2})" in price_pattern;
+put regex_findall(price_pattern, price_text) in prices;
+show "Prices found: " + prices;
+
+$ Sum the prices (convert strings to numbers)
+put 0 in total;
+cycle each price through prices:
+    $ Note: In real implementation, would need string-to-number conversion
+    show "Price: $" + price / 0;
+end;
+
+show "";
+show "=== Pattern Validation ===";
+
+$ Username validation (alphanumeric, 3-16 chars)
+make function is_valid_username(username):
+    put r"^[a-zA-Z0-9_]{3,16}$" in pattern;
+    give regex_match(pattern, username);
+end;
+
+$ Password strength check (at least one digit, one letter)
+make function is_strong_password(password):
+    put r"^(?=.*[A-Za-z])(?=.*\d).{8,}$" in pattern;
+    give regex_match(pattern, password);
+end;
+
+put is_valid_username("user123") in u1;
+put is_valid_username("ab") in u2;
+show "user123 is valid: " + u1;
+show "ab is valid: " + u2;
+
+show "";
+show "=== Error Handling ===";
+
+attempt:
+    $ Invalid regex pattern
+    put r"[invalid(" in bad_pattern;
+    put regex_match(bad_pattern, "test") in result;
+end
+handle as error:
+    show "Caught error: " + error_message(error);
+end;
+
+show "";
+show "=== Done with regex examples! ===";

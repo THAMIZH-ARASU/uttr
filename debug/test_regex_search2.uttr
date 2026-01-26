@@ -1,0 +1,9 @@
+$ Quick test for regex_search - final
+put r"\d+" in pattern;
+put "I have 42 apples" in text;
+put regex_search(pattern, text) in result;
+show "Result: " + result;
+put result @ "matched_text" in matched;
+show "Matched text: " + matched;
+put result @ "start_pos" in pos;
+show "Start position: " + pos;

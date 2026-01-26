@@ -1,0 +1,111 @@
+$ ========================================
+$ UTTR Regex Test Suite - Simplified
+$ Tests for regular expression functionality
+$ ========================================
+
+show "Starting regex tests...";
+show "";
+
+$ Test 1: Basic regex literal
+show "Test 1: Creating regex literal";
+put r"\d+" in pattern;
+show pattern;
+show "";
+
+$ Test 2: regex_match - Pattern matches from start
+show "Test 2: regex_match from start";
+put r"hello" in pattern;
+put regex_match(pattern, "hello world") in match;
+show "Match result: " + match;
+show "";
+
+$ Test 3: regex_search - Find anywhere
+show "Test 3: regex_search anywhere";
+put r"\d+" in pattern;
+put regex_search(pattern, "I have 42 apples") in result;
+when result:
+    show "Found: " + result @ "matched_text";
+    show "At position: " + result @ "start_pos";
+end;
+show "";
+
+$ Test 4: regex_search with groups
+show "Test 4: Capturing groups";
+put r"(\d+)-(\d+)" in pattern;
+put regex_search(pattern, "Phone: 555-1234") in result;
+when result:
+    put result @ "groups" in groups;
+    show "First group: " + groups / 0;
+    show "Second group: " + groups / 1;
+end;
+show "";
+
+$ Test 5: regex_replace
+show "Test 5: regex_replace";
+put r"\d+" in pattern;
+put regex_replace(pattern, "X", "I have 42 apples") in result;
+show "Result: " + result;
+show "";
+
+$ Test 6: regex_replace multiple
+show "Test 6: regex_replace multiple spaces";
+put r"\s+" in pattern;
+put regex_replace(pattern, " ", "too    many     spaces") in result;
+show "Result: " + result;
+show "";
+
+$ Test 7: regex_findall
+show "Test 7: regex_findall all numbers";
+put r"\d+" in pattern;
+put regex_findall(pattern, "1 and 2 and 3") in result;
+show "Numbers: " + result;
+show "Count: " + len(result);
+show "";
+
+$ Test 8: regex_split
+show "Test 8: regex_split by whitespace";
+put r"\s+" in pattern;
+put regex_split(pattern, "one  two   three") in result;
+show "Parts: " + result;
+show "Count: " + len(result);
+show "";
+
+$ Test 9: Email validation
+show "Test 9: Email validation";
+put r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" in email_pattern;
+put regex_match(email_pattern, "user@example.com") in valid;
+put regex_match(email_pattern, "invalid.email") in invalid;
+show "user@example.com is valid: " + valid;
+show "invalid.email is valid: " + invalid;
+show "";
+
+$ Test 10: String pattern
+show "Test 10: Using string pattern";
+put regex_match("\d+", "123abc") in result;
+show "Match: " + result;
+show "";
+
+$ Test 11: Phone extraction
+show "Test 11: Phone number extraction";
+put r"\d{3}-\d{4}" in phone_pattern;
+put regex_search(phone_pattern, "Call me at 555-1234") in result;
+when result:
+    show "Found phone: " + result @ "matched_text";
+end;
+show "";
+
+$ Test 12: URL parsing
+show "Test 12: URL parsing with groups";
+put "https://example.com:8080/path" in url;
+put r"(https?)://([^:]+):(\d+)(/.*)" in url_pattern;
+put regex_search(url_pattern, url) in result;
+when result:
+    put result @ "groups" in parts;
+    show "Protocol: " + parts / 0;
+    show "Domain: " + parts / 1;
+    show "Port: " + parts / 2;
+    show "Path: " + parts / 3;
+end;
+show "";
+
+show "=== All tests completed! ===";

@@ -1,0 +1,313 @@
+$ ========================================
+$ UTTR Regex Test Suite
+$ Tests for regular expression functionality
+$ ========================================
+
+put 0 in tests_passed;
+put 0 in tests_failed;
+
+$ Test 1: Basic regex literal creation
+attempt:
+    put r"\d+" in pattern;
+    put tests_passed + 1 in tests_passed;
+    show "[PASS] Test 1: Regex literal creation";
+end
+handle as error:
+    put tests_failed + 1 in tests_failed;
+    show "[FAIL] Test 1: " + error_message(error);
+end;
+
+$ Test 2: regex_match - Pattern matches from start
+attempt:
+    put r"hello" in pattern;
+    put regex_match(pattern, "hello world") in match;
+    when match:
+        put tests_passed + 1 in tests_passed;
+        show "[PASS] Test 2: regex_match basic";
+    end;
+    otherwise:
+        put tests_failed + 1 in tests_failed;
+        show "[FAIL] Test 2: Should match 'hello'";
+    end;
+end
+handle as error:
+    put tests_failed + 1 in tests_failed;
+    show "[FAIL] Test 2: " + error_message(error);
+end;
+
+$ Test 3: regex_match - Pattern doesn't match
+attempt:
+    put r"world" in pattern;
+    put regex_match(pattern, "hello world") in match;
+    when not match:
+        put tests_passed + 1 in tests_passed;
+        show "[PASS] Test 3: regex_match non-match";
+    end;
+    otherwise:
+        put tests_failed + 1 in tests_failed;
+        show "[FAIL] Test 3: Should not match 'world' at start";
+    end;
+end
+handle as error:
+    put tests_failed + 1 in tests_failed;
+    show "[FAIL] Test 3: " + error_message(error);
+end;
+
+$ Test 4: regex_search - Find pattern anywhere
+attempt:
+    put r"\d+" in pattern;
+    put regex_search(pattern, "I have 42 apples") in result;
+    when result:
+        put result @ "matched_text" in matched;
+        when matched == "42":
+            put tests_passed + 1 in tests_passed;
+            show "[PASS] Test 4: regex_search found number";
+        end;
+        otherwise:
+            put tests_failed + 1 in tests_failed;
+            show "[FAIL] Test 4: Found wrong match: " + matched;
+        end;
+    end;
+    otherwise:
+        put tests_failed + 1 in tests_failed;
+        show "[FAIL] Test 4: Should find number";
+    end;
+end
+handle as error:
+    put tests_failed + 1 in tests_failed;
+    show "[FAIL] Test 4: " + error_message(error);
+end;
+
+$ Test 5: regex_search - Capturing groups
+attempt:
+    put r"(\d+)-(\d+)" in pattern;
+    put regex_search(pattern, "Phone: 555-1234") in result;
+    when result:
+        put result @ "groups" in groups;
+        put groups / 0 in first;
+        put groups / 1 in second;
+        when first == "555" and second == "1234":
+            put tests_passed + 1 in tests_passed;
+            show "[PASS] Test 5: regex_search with groups";
+        end;
+        otherwise:
+            put tests_failed + 1 in tests_failed;
+            show "[FAIL] Test 5: Wrong groups captured";
+        end;
+    end;
+    otherwise:
+        put tests_failed + 1 in tests_failed;
+        show "[FAIL] Test 5: Should find pattern";
+    end;
+end
+handle as error:
+    put tests_failed + 1 in tests_failed;
+    show "[FAIL] Test 5: " + error_message(error);
+end;
+
+$ Test 6: regex_replace - Basic replacement
+attempt:
+    put r"\d+" in pattern;
+    put regex_replace(pattern, "X", "I have 42 apples") in result;
+    when result == "I have X apples":
+        put tests_passed + 1 in tests_passed;
+        show "[PASS] Test 6: regex_replace basic";
+    end;
+    otherwise:
+        put tests_failed + 1 in tests_failed;
+        show "[FAIL] Test 6: Wrong replacement: " + result;
+    end;
+end
+handle as error:
+    put tests_failed + 1 in tests_failed;
+    show "[FAIL] Test 6: " + error_message(error);
+end;
+
+$ Test 7: regex_replace - Multiple replacements
+attempt:
+    put r"\s+" in pattern;
+    put regex_replace(pattern, " ", "too    many     spaces") in result;
+    when result == "too many spaces":
+        put tests_passed + 1 in tests_passed;
+        show "[PASS] Test 7: regex_replace multiple";
+    end;
+    otherwise:
+        put tests_failed + 1 in tests_failed;
+        show "[FAIL] Test 7: Wrong result: " + result;
+    end;
+end
+handle as error:
+    put tests_failed + 1 in tests_failed;
+    show "[FAIL] Test 7: " + error_message(error);
+end;
+
+$ Test 8: regex_findall - Find all numbers
+attempt:
+    put r"\d+" in pattern;
+    put regex_findall(pattern, "1 and 2 and 3") in result;
+    put len(result) in count;
+    when count == 3:
+        put tests_passed + 1 in tests_passed;
+        show "[PASS] Test 8: regex_findall count";
+    end;
+    otherwise:
+        put tests_failed + 1 in tests_failed;
+        show "[FAIL] Test 8: Expected 3 matches, got " + count;
+    end;
+end
+handle as error:
+    put tests_failed + 1 in tests_failed;
+    show "[FAIL] Test 8: " + error_message(error);
+end;
+
+$ Test 9: regex_findall - First match value
+attempt:
+    put r"\d+" in pattern;
+    put regex_findall(pattern, "10 and 20 and 30") in result;
+    put result / 0 in first;
+    when first == "10":
+        put tests_passed + 1 in tests_passed;
+        show "[PASS] Test 9: regex_findall first value";
+    end;
+    otherwise:
+        put tests_failed + 1 in tests_failed;
+        show "[FAIL] Test 9: Expected '10', got " + first;
+    end;
+end
+handle as error:
+    put tests_failed + 1 in tests_failed;
+    show "[FAIL] Test 9: " + error_message(error);
+end;
+
+$ Test 10: regex_split - Split by pattern
+attempt:
+    put r"\s+" in pattern;
+    put regex_split(pattern, "one  two   three") in result;
+    put len(result) in count;
+    when count == 3:
+        put tests_passed + 1 in tests_passed;
+        show "[PASS] Test 10: regex_split count";
+    end;
+    otherwise:
+        put tests_failed + 1 in tests_failed;
+        show "[FAIL] Test 10: Expected 3 parts, got " + count;
+    end;
+end
+handle as error:
+    put tests_failed + 1 in tests_failed;
+    show "[FAIL] Test 10: " + error_message(error);
+end;
+
+$ Test 11: Email validation pattern
+attempt:
+    put r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" in email_pattern;
+    put regex_match(email_pattern, "user@example.com") in valid;
+    put regex_match(email_pattern, "invalid.email") in invalid;
+    when valid and not invalid:
+        put tests_passed + 1 in tests_passed;
+        show "[PASS] Test 11: Email validation";
+    end;
+    otherwise:
+        put tests_failed + 1 in tests_failed;
+        show "[FAIL] Test 11: Email validation failed";
+    end;
+end
+handle as error:
+    put tests_failed + 1 in tests_failed;
+    show "[FAIL] Test 11: " + error_message(error);
+end;
+
+$ Test 12: Phone number pattern
+attempt:
+    put r"\d{3}-\d{4}" in phone_pattern;
+    put regex_search(phone_pattern, "Call 555-1234") in result;
+    when result:
+        put result @ "matched_text" in phone;
+        when phone == "555-1234":
+            put tests_passed + 1 in tests_passed;
+            show "[PASS] Test 12: Phone number extraction";
+        end;
+        otherwise:
+            put tests_failed + 1 in tests_failed;
+            show "[FAIL] Test 12: Wrong phone: " + phone;
+        end;
+    end;
+    otherwise:
+        put tests_failed + 1 in tests_failed;
+        show "[FAIL] Test 12: No phone found";
+    end;
+end
+handle as error:
+    put tests_failed + 1 in tests_failed;
+    show "[FAIL] Test 12: " + error_message(error);
+end;
+
+$ Test 13: String pattern instead of regex object
+attempt:
+    put regex_match("\d+", "123") in result;
+    when result:
+        put tests_passed + 1 in tests_passed;
+        show "[PASS] Test 13: String pattern works";
+    end;
+    otherwise:
+        put tests_failed + 1 in tests_failed;
+        show "[FAIL] Test 13: String pattern should work";
+    end;
+end
+handle as error:
+    put tests_failed + 1 in tests_failed;
+    show "[FAIL] Test 13: " + error_message(error);
+end;
+
+$ Test 14: Invalid regex pattern error handling
+attempt:
+    put r"[invalid(" in bad_pattern;
+    put 0 in caught_error;
+    attempt:
+        put regex_match(bad_pattern, "test") in result;
+    end
+    handle as error:
+        put 1 in caught_error;
+    end;
+    when caught_error == 1:
+        put tests_passed + 1 in tests_passed;
+        show "[PASS] Test 14: Invalid pattern caught";
+    end;
+    otherwise:
+        put tests_failed + 1 in tests_failed;
+        show "[FAIL] Test 14: Should catch invalid pattern";
+    end;
+end
+handle as error:
+    put tests_failed + 1 in tests_failed;
+    show "[FAIL] Test 14: " + error_message(error);
+end;
+
+$ Test 15: Case insensitive search (via pattern)
+attempt:
+    put r"[Hh]ello" in pattern;
+    put regex_match(pattern, "Hello") in m1;
+    put regex_match(pattern, "hello") in m2;
+    when m1 and m2:
+        put tests_passed + 1 in tests_passed;
+        show "[PASS] Test 15: Case pattern matching";
+    end;
+    otherwise:
+        put tests_failed + 1 in tests_failed;
+        show "[FAIL] Test 15: Case pattern failed";
+    end;
+end
+handle as error:
+    put tests_failed + 1 in tests_failed;
+    show "[FAIL] Test 15: " + error_message(error);
+end;
+
+$ Summary
+show "";
+show "========================================";
+show "Test Results:";
+show "Passed: " + tests_passed;
+show "Failed: " + tests_failed;
+put tests_passed + tests_failed in total;
+show "Total: " + total;
+show "========================================";

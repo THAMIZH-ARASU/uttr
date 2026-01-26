@@ -1,0 +1,16 @@
+$ Quick test for regex_search
+put r"\d+" in pattern;
+put "I have 42 apples" in text;
+put regex_search(pattern, text) in result;
+show "Result type: " + result;
+
+when result != null:
+    show "Result exists";
+    show "Trying to access matched_text...";
+    put result @ "matched_text" in matched;
+    show "Matched: " + matched;
+end;
+
+when result == null:
+    show "Result is null";
+end;

@@ -42,6 +42,11 @@ global_symbol_table.set("replace", BuiltInFunction.replace)
 global_symbol_table.set("substring", BuiltInFunction.substring)
 global_symbol_table.set("tuple", BuiltInFunction.tuple)
 global_symbol_table.set("list", BuiltInFunction.list)
+global_symbol_table.set("regex_match", BuiltInFunction.regex_match)
+global_symbol_table.set("regex_search", BuiltInFunction.regex_search)
+global_symbol_table.set("regex_replace", BuiltInFunction.regex_replace)
+global_symbol_table.set("regex_findall", BuiltInFunction.regex_findall)
+global_symbol_table.set("regex_split", BuiltInFunction.regex_split)
 
 def run(fn, text):
     # Generate tokens

@@ -5,8 +5,10 @@ from values.dict_value import Dict
 from values.error_value import ErrorValue
 from values.list_value import List
 from values.number_value import Number
+from values.regex_value import Regex, Match
 from values.string_value import String
 from values.tuple_value import Tuple
+import re
 
 
 class BuiltInFunction(BaseFunction):
@@ -564,6 +566,199 @@ For full documentation, see README.md
             return RTResult().success(List([value]))
     execute_list.arg_names = ["value"]
 
+    def execute_regex_match(self, exec_ctx):
+        pattern = exec_ctx.symbol_table.get("pattern")
+        text = exec_ctx.symbol_table.get("text")
+
+        if not isinstance(pattern, (Regex, String)):
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                "First argument must be regex or string pattern",
+                exec_ctx
+            ))
+
+        if not isinstance(text, String):
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                "Second argument must be string",
+                exec_ctx
+            ))
+
+        try:
+            if isinstance(pattern, Regex):
+                regex_pattern = pattern.compiled
+            else:
+                regex_pattern = re.compile(pattern.value)
+            
+            match = regex_pattern.match(text.value)
+            return RTResult().success(Match(match))
+        except re.error as e:
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                f"Invalid regex pattern: {str(e)}",
+                exec_ctx
+            ))
+    execute_regex_match.arg_names = ["pattern", "text"]
+
+    def execute_regex_search(self, exec_ctx):
+        pattern = exec_ctx.symbol_table.get("pattern")
+        text = exec_ctx.symbol_table.get("text")
+
+        if not isinstance(pattern, (Regex, String)):
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                "First argument must be regex or string pattern",
+                exec_ctx
+            ))
+
+        if not isinstance(text, String):
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                "Second argument must be string",
+                exec_ctx
+            ))
+
+        try:
+            if isinstance(pattern, Regex):
+                regex_pattern = pattern.compiled
+            else:
+                regex_pattern = re.compile(pattern.value)
+            
+            match = regex_pattern.search(text.value)
+            
+            # Return a Dict with match information instead of Match object
+            if match:
+                match_dict = Dict({
+                    'matched_text': String(match.group(0)),
+                    'start_pos': Number(match.start()),
+                    'end_pos': Number(match.end()),
+                    'groups': List([String(g) if g else Number.null for g in match.groups()])
+                })
+                return RTResult().success(match_dict)
+            else:
+                return RTResult().success(Number.null)
+        except re.error as e:
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                f"Invalid regex pattern: {str(e)}",
+                exec_ctx
+            ))
+    execute_regex_search.arg_names = ["pattern", "text"]
+
+    def execute_regex_replace(self, exec_ctx):
+        pattern = exec_ctx.symbol_table.get("pattern")
+        replacement = exec_ctx.symbol_table.get("replacement")
+        text = exec_ctx.symbol_table.get("text")
+
+        if not isinstance(pattern, (Regex, String)):
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                "First argument must be regex or string pattern",
+                exec_ctx
+            ))
+
+        if not isinstance(replacement, String):
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                "Second argument must be string",
+                exec_ctx
+            ))
+
+        if not isinstance(text, String):
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                "Third argument must be string",
+                exec_ctx
+            ))
+
+        try:
+            if isinstance(pattern, Regex):
+                regex_pattern = pattern.compiled
+            else:
+                regex_pattern = re.compile(pattern.value)
+            
+            result = regex_pattern.sub(replacement.value, text.value)
+            return RTResult().success(String(result))
+        except re.error as e:
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                f"Invalid regex pattern: {str(e)}",
+                exec_ctx
+            ))
+    execute_regex_replace.arg_names = ["pattern", "replacement", "text"]
+
+    def execute_regex_findall(self, exec_ctx):
+        pattern = exec_ctx.symbol_table.get("pattern")
+        text = exec_ctx.symbol_table.get("text")
+
+        if not isinstance(pattern, (Regex, String)):
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                "First argument must be regex or string pattern",
+                exec_ctx
+            ))
+
+        if not isinstance(text, String):
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                "Second argument must be string",
+                exec_ctx
+            ))
+
+        try:
+            if isinstance(pattern, Regex):
+                regex_pattern = pattern.compiled
+            else:
+                regex_pattern = re.compile(pattern.value)
+            
+            matches = regex_pattern.findall(text.value)
+            result_list = [String(match) if isinstance(match, str) else 
+                          List([String(g) if g else Number.null for g in match]) 
+                          for match in matches]
+            return RTResult().success(List(result_list))
+        except re.error as e:
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                f"Invalid regex pattern: {str(e)}",
+                exec_ctx
+            ))
+    execute_regex_findall.arg_names = ["pattern", "text"]
+
+    def execute_regex_split(self, exec_ctx):
+        pattern = exec_ctx.symbol_table.get("pattern")
+        text = exec_ctx.symbol_table.get("text")
+
+        if not isinstance(pattern, (Regex, String)):
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                "First argument must be regex or string pattern",
+                exec_ctx
+            ))
+
+        if not isinstance(text, String):
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                "Second argument must be string",
+                exec_ctx
+            ))
+
+        try:
+            if isinstance(pattern, Regex):
+                regex_pattern = pattern.compiled
+            else:
+                regex_pattern = re.compile(pattern.value)
+            
+            parts = regex_pattern.split(text.value)
+            result_list = [String(part) for part in parts]
+            return RTResult().success(List(result_list))
+        except re.error as e:
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                f"Invalid regex pattern: {str(e)}",
+                exec_ctx
+            ))
+    execute_regex_split.arg_names = ["pattern", "text"]
+
 # Create built-in function instances
 BuiltInFunction.show = BuiltInFunction("show")
 BuiltInFunction.input = BuiltInFunction("input")
@@ -590,3 +785,8 @@ BuiltInFunction.replace = BuiltInFunction("replace")
 BuiltInFunction.substring = BuiltInFunction("substring")
 BuiltInFunction.tuple = BuiltInFunction("tuple")
 BuiltInFunction.list = BuiltInFunction("list")
+BuiltInFunction.regex_match = BuiltInFunction("regex_match")
+BuiltInFunction.regex_search = BuiltInFunction("regex_search")
+BuiltInFunction.regex_replace = BuiltInFunction("regex_replace")
+BuiltInFunction.regex_findall = BuiltInFunction("regex_findall")
+BuiltInFunction.regex_split = BuiltInFunction("regex_split")
