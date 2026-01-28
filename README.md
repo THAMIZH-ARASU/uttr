@@ -50,9 +50,9 @@ UTTR (Understandable Translation Tool for Routines) is a custom-built, procedure
 - **Complete Interpreter**: Full lexer-parser-interpreter pipeline built from scratch with comprehensive error handling and position tracking
 - **Procedure-Oriented Design**: Focus on procedures and sequential execution with modular, reusable functions
 - **Module System**: Import/export functionality for code organization with natural syntax (`bring in`, `share`), standard library modules, and automatic caching
-- **Rich Data Types**: Support for integers, floats, strings, booleans, lists, tuples (immutable lists), dictionaries, and regular expressions with intuitive access using `@` operator for dictionaries and `/` for indexing
+- **Rich Data Types**: Support for integers, floats, strings, booleans, lists, tuples (immutable lists), sets (unique unordered collections), dictionaries, and regular expressions with intuitive access using `@` operator for dictionaries and `/` for indexing
 - **Regular Expressions**: Full regex support with pattern matching using `r"pattern"` syntax for text processing and validation
-- **Operators**: Arithmetic (`+`, `-`, `*`, `/`, `%`), comparison (`==`, `!=`, `<`, `>`, `<=`, `>=`), and logical (`and`, `or`, `not`)
+- **Operators**: Arithmetic (`+`, `-`, `*`, `/`, `%`), comparison (`==`, `!=`, `<`, `>`, `<=`, `>=`), logical (`and`, `or`, `not`), and set operations (`+` for union, `&` for intersection, `-` for difference, `^` for symmetric difference)
 - **Control Structures**: Conditional statements (`when...otherwise`), switch-case statements (`check...whether...default`), loops (`cycle`, `as long as`, `repeat while`), and for-each iteration with loop control (`cut` for break, `skip` for continue)
 - **Error Handling**: Try-catch blocks using `attempt...handle` syntax with error introspection (`error_message`, `error_type`)
 - **Function Support**: 
@@ -63,6 +63,7 @@ UTTR (Understandable Translation Tool for Routines) is a custom-built, procedure
   - I/O: `show`, `input`, `input_int`
   - Collections: `len`, `append`, `pop`, `extend`
   - Tuples: `tuple` (convert to tuple), `list` (convert to list)
+  - Sets: `union`, `intersection`, `difference`, `symmetric_difference`, `add`, `remove`, `contains`, `is_subset`, `is_superset`, `set_from_list`
   - Dictionaries: `keys`, `values`, `has_key`, `remove`
   - Strings: `split`, `join`, `upper`, `lower`, `replace`, `substring`
   - Regular Expressions: `regex_match`, `regex_search`, `regex_replace`, `regex_findall`, `regex_split`
@@ -284,6 +285,10 @@ UTTR (Understandable Translation Tool for Routines) is a custom-built, procedure
 				<td><b><a href='https://github.com/THAMIZH-ARASU/uttr/blob/master/values/list_value.py'>list_value.py</a></b></td>
 				<td>Runtime representation of list collections with indexing, concatenation, and mutation operations</td>
 			</tr>
+			<tr>
+				<td><b><a href='https://github.com/THAMIZH-ARASU/uttr/blob/master/values/set_value.py'>set_value.py</a></b></td>
+				<td>Runtime representation of set collections with unique elements and set operations (union, intersection, difference)</td>
+			</tr>
 			</table>
 		</blockquote>
 	</details>
@@ -399,7 +404,7 @@ UTTR (Understandable Translation Tool for Routines) is a custom-built, procedure
 			</tr>
 			<tr>
 				<td><b>Test Files</b></td>
-				<td>21 test files covering all language features: variables, arithmetic, comparisons, logical operations, strings, conditionals, loops (for/while/do-while/for-each), lists, tuples, dictionaries, list/dict mutations, functions, built-ins, comments, errors, break/continue, modulo operator, and integration tests</td>
+				<td>48 test files covering all language features: variables, arithmetic, comparisons, logical operations, strings, conditionals, loops (for/while/do-while/for-each), lists, tuples, sets, dictionaries, list/dict/set mutations, functions, built-ins, comments, errors, break/continue, modulo operator, and integration tests</td>
 			</tr>
 			</table>
 		</blockquote>
@@ -544,6 +549,51 @@ end
 handle as error:
     show "Error: " + error_message(error);
 end;
+
+$ Sets - unique unordered collections with {: :} syntax
+put {: 1, 2, 3, 4, 5 :} in set_a;
+put {: 4, 5, 6, 7, 8 :} in set_b;
+show "Set A: " + set_a;
+show "Set B: " + set_b;
+
+$ Set operations
+put set_a + set_b in union_result;
+show "Union (A + B): " + union_result;
+
+put set_a & set_b in intersection_result;
+show "Intersection (A & B): " + intersection_result;
+
+put set_a - set_b in difference_result;
+show "Difference (A - B): " + difference_result;
+
+put set_a ^ set_b in symmetric_diff;
+show "Symmetric Difference (A ^ B): " + symmetric_diff;
+
+$ Set operations with built-in functions
+put union(set_a, set_b) in union_func;
+put intersection(set_a, set_b) in inter_func;
+
+$ Automatic duplicate removal
+put {: 1, 2, 2, 3, 3, 3 :} in deduped;
+show "Deduplicated: " + deduped;  $ Output: {: 1, 2, 3 :}
+
+$ Set membership and operations
+put contains(set_a, 3) in has_three;
+show "Set A contains 3: " + has_three;
+
+put add(set_a, 10) in set_with_10;
+show "After adding 10: " + set_with_10;
+show "Original unchanged: " + set_a;  $ Sets are immutable
+
+$ Subset and superset checks
+put {: 1, 2, 3 :} in small_set;
+put is_subset(small_set, set_a) in is_sub;
+show "Is subset: " + is_sub;
+
+$ Convert list to set
+put [1, 2, 2, 3, 3, 3] in list_with_dups;
+put set_from_list(list_with_dups) in unique_set;
+show "Unique values: " + unique_set;
 
 $ Try-catch error handling
 make function safe_divide(a, b):
@@ -799,6 +849,7 @@ UTTR includes a comprehensive test suite covering all language features. Run tes
 ```sh
 > python shell.py tests/test_variables.uttr
 > python shell.py tests/test_tuples.uttr
+> python shell.py tests/test_sets.uttr
 > python shell.py tests/test_dictionaries.uttr
 > python shell.py tests/test_functions.uttr
 > python shell.py tests/test_break_continue.uttr
@@ -811,7 +862,7 @@ UTTR includes a comprehensive test suite covering all language features. Run tes
 > python lexer_testing.py <file_name>
 ```
 
-The test suite includes 22 test categories with 230+ individual tests covering:
+The test suite includes 48 test files with 300+ individual tests covering:
 - Variables and constants
 - Arithmetic and comparison operations
 - Modulo operator (`%`) for divisibility checks
@@ -821,9 +872,10 @@ The test suite includes 22 test categories with 230+ individual tests covering:
 - All loop types (for, while, do-while, for-each)
 - Loop control (break with `cut`, continue with `skip`)
 - Try-catch error handling (`attempt...handle` with error introspection)
-- Lists, tuples (immutable lists), and dictionaries
-- List mutations (append, pop, extend) and dictionary mutations (remove)
+- Lists, tuples (immutable lists), sets (unique unordered collections), and dictionaries
+- List mutations (append, pop, extend), dictionary mutations (remove), and set operations
 - Tuple immutability and conversions
+- Set operations (union, intersection, difference, symmetric difference)
 - Functions and built-ins
 - Lambda/anonymous functions with inline syntax
 - Module system (imports, exports, standard library, error handling)
@@ -836,6 +888,8 @@ The test suite includes 22 test categories with 230+ individual tests covering:
 ##  Project Roadmap
 
 ### Completed
+
+#### Language Features
 - [X] **`Task 1`**: <strike>Implement lexer with tokenization for all language constructs</strike>
 - [X] **`Task 2`**: <strike>Build parser to generate AST from tokens</strike>
 - [X] **`Task 3`**: <strike>Create interpreter with runtime execution</strike>
@@ -853,27 +907,27 @@ The test suite includes 22 test categories with 230+ individual tests covering:
 - [X] **`Task 15`**: <strike>Implement lambda/anonymous functions with inline syntax (`lambda x => x * 2`)</strike>
 - [X] **`Task 16`**: <strike>Add switch-case statements (`check...whether...default` syntax)</strike>
 - [X] **`Task 17`**: <strike>Support for regular expressions with pattern matching (`r"pattern"` syntax, `regex_match`, `regex_search`, `regex_replace`, `regex_findall`, `regex_split`)</strike>
+- [X] **`Task 18`**: <strike>Add set data type with set operations (union, intersection, difference, symmetric difference)</strike>
 
-### Language Features
-- [ ] **`Task 18`**: Add set data type with set operations (union, intersection, difference)
+### To - Do
 
-### Advanced Operations
+#### Advanced Operations
 - [ ] **`Task 19`**: Implement list comprehensions with natural syntax
 - [ ] **`Task 20`**: Add dictionary comprehensions
 - [ ] **`Task 21`**: Support for multiple return values from functions
 - [ ] **`Task 22`**: Implement variadic functions (variable argument count) with natural syntax
 - [ ] **`Task 23`**: Support for ternary conditional expressions
 
-### File & I/O Operations
+#### File & I/O Operations
 - [ ] **`Task 22`**: Add file I/O operations (read_file, write_file, append_file)
 - [ ] **`Task 23`**: Implement JSON parsing and generation functions
-### File & I/O Operations
+#### File & I/O Operations
 - [ ] **`Task 24`**: Add file I/O operations (read_file, write_file, append_file)
 - [ ] **`Task 25`**: Implement JSON parsing and generation functions
 - [ ] **`Task 26`**: Add CSV file reading and writing capabilities
 - [ ] **`Task 27`**: Support for command-line arguments in .uttr files
 
-### Standard Library Expansion
+#### Standard Library Expansion
 - [ ] **`Task 28`**: Add math functions (sqrt, pow, abs, round, floor, ceil, sin, cos, tan)
 - [ ] **`Task 29`**: Implement random number generation functions
 - [ ] **`Task 30`**: Add date and time manipulation functions
@@ -881,29 +935,29 @@ The test suite includes 22 test categories with 230+ individual tests covering:
 - [ ] **`Task 32`**: Add list sorting and filtering built-in functions
 - [ ] **`Task 33`**: Implement type checking and conversion functions
 
-### Optimization & Performance
+#### Optimization & Performance
 - [ ] **`Task 34`**: Optimize interpreter with bytecode compilation
 - [ ] **`Task 35`**: Implement caching for frequently used expressions
 - [ ] **`Task 36`**: Add tail call optimization for recursive functions
 - [ ] **`Task 37`**: Create AST optimization passes before interpretation
 
-### Interoperability
+#### Interoperability
 - [ ] **`Task 38`**: Add Python interop to call Python libraries from UTTR
 - [ ] **`Task 39`**: Create UTTR-to-Python transpiler for performance
 - [ ] **`Task 40`**: Support for calling external executables/shell commands
 - [ ] **`Task 41`**: Add HTTP client functions for web requests
 
-### Documentation & Examples
+#### Documentation & Examples
 - [ ] **`Task 42`**: Create interactive tutorial website for UTTR
 - [ ] **`Task 43`**: Add more complex example projects
 - [ ] **`Task 44`**: Create video tutorials for language features
 
-### Quality Assurance & Testing
+#### Quality Assurance & Testing
 - [ ] **`Task 45`**: Expand test coverage to 100% of codebase
 - [ ] **`Task 46`**: Add benchmark suite to track performance over time
 - [ ] **`Task 47`**: Implement fuzzing tests for parser robustness
 
-### Developer Tools
+#### Developer Tools
 - [ ] **`Task 48`**: Build debugging tools with breakpoint support
 - [ ] **`Task 49`**: Add code formatter/prettifier for UTTR files
 - [ ] **`Task 50`**: Create syntax highlighting extension for VS Code
