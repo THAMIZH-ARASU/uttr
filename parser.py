@@ -5,6 +5,7 @@ from nodes.const_assign_node import ConstAssignNode
 from nodes.cut_node import CutNode
 from nodes.dict_node import DictNode
 from nodes.do_while_node import DoWhileNode
+from nodes.set_node import SetNode
 from nodes.for_each_node import ForEachNode
 from nodes.for_node import ForNode
 from nodes.function_definition_node import FuncDefNode
@@ -27,7 +28,7 @@ from nodes.var_access_node import VarAccessNode
 from nodes.var_assign_node import VarAssignNode
 from nodes.while_node import WhileNode
 from parse_result import ParseResult
-from tokens import TT_ARROW, TT_AT, TT_COLON, TT_COMMA, TT_DIV, TT_EE, TT_EOF, TT_FLOAT, TT_GT, TT_GTE, TT_IDENTIFIER, TT_INT, TT_KEYWORD, TT_LANGLE, TT_LCURLY, TT_LPAREN, TT_LSQUARE, TT_LT, TT_LTE, TT_MINUS, TT_MOD, TT_MUL, TT_NE, TT_NEWLINE, TT_PLUS, TT_RANGLE, TT_RCURLY, TT_REGEX, TT_RPAREN, TT_RSQUARE, TT_STRING, Token
+from tokens import TT_AMPERSAND, TT_ARROW, TT_AT, TT_CARET, TT_COLON, TT_COMMA, TT_DIV, TT_EE, TT_EOF, TT_FLOAT, TT_GT, TT_GTE, TT_IDENTIFIER, TT_INT, TT_KEYWORD, TT_LANGLE, TT_LCURLY, TT_LPAREN, TT_LSETBRACE, TT_LSQUARE, TT_LT, TT_LTE, TT_MINUS, TT_MOD, TT_MUL, TT_NE, TT_NEWLINE, TT_PLUS, TT_RANGLE, TT_RCURLY, TT_REGEX, TT_RPAREN, TT_RSETBRACE, TT_RSQUARE, TT_STRING, Token
 
 
 class Parser:
@@ -260,7 +261,10 @@ class Parser:
         return res.success(node)
 
     def comp_expr(self):
-        return self.bin_op(self.arith_expr, (TT_EE, TT_NE, TT_LT, TT_GT, TT_LTE, TT_GTE))
+        return self.bin_op(self.set_expr_op, (TT_EE, TT_NE, TT_LT, TT_GT, TT_LTE, TT_GTE))
+
+    def set_expr_op(self):
+        return self.bin_op(self.arith_expr, (TT_AMPERSAND, TT_CARET))
 
     def arith_expr(self):
         return self.bin_op(self.term, (TT_PLUS, TT_MINUS))
@@ -392,6 +396,11 @@ class Parser:
             if res.error: return res
             return res.success(dict_expr)
 
+        elif tok.type == TT_LSETBRACE:
+            set_expr = res.register(self.set_expr())
+            if res.error: return res
+            return res.success(set_expr)
+
         elif tok.matches(TT_KEYWORD, 'when'):
             if_expr = res.register(self.if_expr())
             if res.error: return res
@@ -514,6 +523,45 @@ class Parser:
             self.advance()
 
         return res.success(TupleNode(element_nodes, pos_start, self.current_tok.pos_end.copy()))
+
+    def set_expr(self):
+        res = ParseResult()
+        element_nodes = []
+        pos_start = self.current_tok.pos_start.copy()
+
+        if self.current_tok.type != TT_LSETBRACE:
+            return res.failure(InvalidSyntaxError(
+                self.current_tok.pos_start, self.current_tok.pos_end,
+                "Expected '{:'"
+            ))
+
+        res.register_advancement()
+        self.advance()
+
+        if self.current_tok.type == TT_RSETBRACE:
+            res.register_advancement()
+            self.advance()
+        else:
+            element_nodes.append(res.register(self.logic_expr()))
+            if res.error: return res
+
+            while self.current_tok.type == TT_COMMA:
+                res.register_advancement()
+                self.advance()
+
+                element_nodes.append(res.register(self.logic_expr()))
+                if res.error: return res
+
+            if self.current_tok.type != TT_RSETBRACE:
+                return res.failure(InvalidSyntaxError(
+                    self.current_tok.pos_start, self.current_tok.pos_end,
+                    "Expected ',' or ':}'"
+                ))
+
+            res.register_advancement()
+            self.advance()
+
+        return res.success(SetNode(element_nodes, pos_start, self.current_tok.pos_end.copy()))
 
     def dict_expr(self):
         res = ParseResult()

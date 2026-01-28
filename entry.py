@@ -47,6 +47,15 @@ global_symbol_table.set("regex_search", BuiltInFunction.regex_search)
 global_symbol_table.set("regex_replace", BuiltInFunction.regex_replace)
 global_symbol_table.set("regex_findall", BuiltInFunction.regex_findall)
 global_symbol_table.set("regex_split", BuiltInFunction.regex_split)
+global_symbol_table.set("union", BuiltInFunction.union)
+global_symbol_table.set("intersection", BuiltInFunction.intersection)
+global_symbol_table.set("difference", BuiltInFunction.difference)
+global_symbol_table.set("symmetric_difference", BuiltInFunction.symmetric_difference)
+global_symbol_table.set("add", BuiltInFunction.add)
+global_symbol_table.set("contains", BuiltInFunction.contains)
+global_symbol_table.set("is_subset", BuiltInFunction.is_subset)
+global_symbol_table.set("is_superset", BuiltInFunction.is_superset)
+global_symbol_table.set("set_from_list", BuiltInFunction.set_from_list)
 
 def run(fn, text):
     # Generate tokens

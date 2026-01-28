@@ -1,0 +1,392 @@
+$ Test file for set data type
+$ Tests set creation, operations, methods, and immutability
+
+$ ========================================
+$ BASIC SET CREATION TESTS
+$ ========================================
+
+$ Test 1: Empty set creation
+put {: :} in empty_set;
+show "Test 1 - Empty set:";
+show empty_set;
+show "Length: " + len(empty_set);
+
+$ Test 2: Set with single element
+put {: 42 :} in single_set;
+show "Test 2 - Single element set:";
+show single_set;
+show "Length: " + len(single_set);
+
+$ Test 3: Set with multiple integers
+put {: 1, 2, 3, 4, 5 :} in numbers;
+show "Test 3 - Multiple integers:";
+show numbers;
+show "Length: " + len(numbers);
+
+$ Test 4: Set with mixed types
+put {: 1, "hello", 3.14, true, false :} in mixed;
+show "Test 4 - Mixed types:";
+show mixed;
+
+$ Test 5: Set with duplicate values (should remove duplicates)
+put {: 1, 2, 2, 3, 3, 3, 4, 4, 4, 4 :} in deduped;
+show "Test 5 - Duplicate removal:";
+show deduped;
+show "Expected 4 elements, got: " + len(deduped);
+
+$ Test 6: Set with strings
+put {: "apple", "banana", "cherry", "date" :} in fruits;
+show "Test 6 - String set:";
+show fruits;
+
+$ Test 7: Set with duplicate strings
+put {: "a", "b", "a", "c", "b" :} in deduped_strings;
+show "Test 7 - Deduplicated strings:";
+show deduped_strings;
+show "Expected 3 elements, got: " + len(deduped_strings);
+
+$ ========================================
+$ UNION OPERATION TESTS
+$ ========================================
+
+$ Test 8: Union with + operator
+put {: 1, 2, 3 :} in set_a;
+put {: 3, 4, 5 :} in set_b;
+put set_a + set_b in union_result;
+show "Test 8 - Union with + operator:";
+show "Set A: " + set_a;
+show "Set B: " + set_b;
+show "Union: " + union_result;
+show "Expected 5 elements, got: " + len(union_result);
+
+$ Test 9: Union with built-in function
+put union(set_a, set_b) in union_func;
+show "Test 9 - Union with function:";
+show union_func;
+
+$ Test 10: Union with disjoint sets
+put {: 1, 2, 3 :} in disjoint_a;
+put {: 4, 5, 6 :} in disjoint_b;
+put disjoint_a + disjoint_b in disjoint_union;
+show "Test 10 - Union of disjoint sets:";
+show disjoint_union;
+show "Expected 6 elements, got: " + len(disjoint_union);
+
+$ Test 11: Union with empty set
+put {: 1, 2, 3 :} in non_empty;
+put {: :} in empty;
+put non_empty + empty in union_empty;
+show "Test 11 - Union with empty set:";
+show union_empty;
+
+$ Test 12: Union with identical sets
+put {: 1, 2, 3 :} in identical_a;
+put {: 1, 2, 3 :} in identical_b;
+put identical_a + identical_b in identical_union;
+show "Test 12 - Union of identical sets:";
+show identical_union;
+show "Expected 3 elements, got: " + len(identical_union);
+
+$ ========================================
+$ INTERSECTION OPERATION TESTS
+$ ========================================
+
+$ Test 13: Intersection with & operator
+put {: 1, 2, 3, 4, 5 :} in inter_a;
+put {: 3, 4, 5, 6, 7 :} in inter_b;
+put inter_a & inter_b in intersection_result;
+show "Test 13 - Intersection with & operator:";
+show "Set A: " + inter_a;
+show "Set B: " + inter_b;
+show "Intersection: " + intersection_result;
+show "Expected 3 elements (3,4,5), got: " + len(intersection_result);
+
+$ Test 14: Intersection with built-in function
+put intersection(inter_a, inter_b) in inter_func;
+show "Test 14 - Intersection with function:";
+show inter_func;
+
+$ Test 15: Intersection with disjoint sets
+put {: 1, 2, 3 :} in disj_a;
+put {: 4, 5, 6 :} in disj_b;
+put disj_a & disj_b in disj_inter;
+show "Test 15 - Intersection of disjoint sets (empty):";
+show disj_inter;
+show "Expected 0 elements, got: " + len(disj_inter);
+
+$ Test 16: Intersection with empty set
+put {: 1, 2, 3 :} in non_empty_2;
+put {: :} in empty_2;
+put non_empty_2 & empty_2 in inter_empty;
+show "Test 16 - Intersection with empty set:";
+show inter_empty;
+show "Expected 0 elements, got: " + len(inter_empty);
+
+$ Test 17: Intersection with identical sets
+put {: 1, 2, 3 :} in same_a;
+put {: 1, 2, 3 :} in same_b;
+put same_a & same_b in same_inter;
+show "Test 17 - Intersection of identical sets:";
+show same_inter;
+show "Expected 3 elements, got: " + len(same_inter);
+
+$ ========================================
+$ DIFFERENCE OPERATION TESTS
+$ ========================================
+
+$ Test 18: Difference with - operator
+put {: 1, 2, 3, 4, 5 :} in diff_a;
+put {: 3, 4, 5, 6, 7 :} in diff_b;
+put diff_a - diff_b in difference_result;
+show "Test 18 - Difference with - operator:";
+show "Set A: " + diff_a;
+show "Set B: " + diff_b;
+show "Difference (A - B): " + difference_result;
+show "Expected 2 elements (1,2), got: " + len(difference_result);
+
+$ Test 19: Difference with built-in function
+put difference(diff_a, diff_b) in diff_func;
+show "Test 19 - Difference with function:";
+show diff_func;
+
+$ Test 20: Reverse difference
+put diff_b - diff_a in reverse_diff;
+show "Test 20 - Reverse difference (B - A):";
+show reverse_diff;
+show "Expected 2 elements (6,7), got: " + len(reverse_diff);
+
+$ Test 21: Difference with disjoint sets
+put {: 1, 2, 3 :} in disj_diff_a;
+put {: 4, 5, 6 :} in disj_diff_b;
+put disj_diff_a - disj_diff_b in disj_diff;
+show "Test 21 - Difference of disjoint sets:";
+show disj_diff;
+show "Expected 3 elements, got: " + len(disj_diff);
+
+$ Test 22: Difference with empty set
+put {: 1, 2, 3 :} in non_empty_3;
+put {: :} in empty_3;
+put non_empty_3 - empty_3 in diff_empty;
+show "Test 22 - Difference with empty set:";
+show diff_empty;
+show "Expected 3 elements, got: " + len(diff_empty);
+
+$ Test 23: Difference with identical sets
+put {: 1, 2, 3 :} in ident_a;
+put {: 1, 2, 3 :} in ident_b;
+put ident_a - ident_b in ident_diff;
+show "Test 23 - Difference of identical sets:";
+show ident_diff;
+show "Expected 0 elements, got: " + len(ident_diff);
+
+$ ========================================
+$ SYMMETRIC DIFFERENCE OPERATION TESTS
+$ ========================================
+
+$ Test 24: Symmetric difference with ^ operator
+put {: 1, 2, 3, 4, 5 :} in sym_a;
+put {: 3, 4, 5, 6, 7 :} in sym_b;
+put sym_a ^ sym_b in symmetric_diff;
+show "Test 24 - Symmetric difference with ^ operator:";
+show "Set A: " + sym_a;
+show "Set B: " + sym_b;
+show "Symmetric difference: " + symmetric_diff;
+show "Expected 4 elements (1,2,6,7), got: " + len(symmetric_diff);
+
+$ Test 25: Symmetric difference with built-in function
+put symmetric_difference(sym_a, sym_b) in sym_func;
+show "Test 25 - Symmetric difference with function:";
+show sym_func;
+
+$ Test 26: Symmetric difference with disjoint sets
+put {: 1, 2, 3 :} in disj_sym_a;
+put {: 4, 5, 6 :} in disj_sym_b;
+put disj_sym_a ^ disj_sym_b in disj_sym;
+show "Test 26 - Symmetric difference of disjoint sets:";
+show disj_sym;
+show "Expected 6 elements, got: " + len(disj_sym);
+
+$ Test 27: Symmetric difference with identical sets
+put {: 1, 2, 3 :} in same_sym_a;
+put {: 1, 2, 3 :} in same_sym_b;
+put same_sym_a ^ same_sym_b in same_sym;
+show "Test 27 - Symmetric difference of identical sets:";
+show same_sym;
+show "Expected 0 elements, got: " + len(same_sym);
+
+$ ========================================
+$ SET METHOD TESTS
+$ ========================================
+
+$ Test 28: Add element to set
+put {: 1, 2, 3 :} in original_set;
+put add(original_set, 4) in set_with_4;
+show "Test 28 - Add element:";
+show "Original: " + original_set;
+show "After adding 4: " + set_with_4;
+show "Original unchanged (immutable): " + original_set;
+
+$ Test 29: Add existing element (no change)
+put add(original_set, 2) in set_add_existing;
+show "Test 29 - Add existing element:";
+show set_add_existing;
+show "Expected same size: " + len(set_add_existing);
+
+$ Test 30: Remove element from set
+put {: 1, 2, 3, 4, 5 :} in remove_set;
+put remove(remove_set, 3) in set_without_3;
+show "Test 30 - Remove element:";
+show "Original: " + remove_set;
+show "After removing 3: " + set_without_3;
+show "Original unchanged (immutable): " + remove_set;
+
+$ Test 31: Check membership - element exists
+put {: 1, 2, 3, 4, 5 :} in member_set;
+put contains(member_set, 3) in has_3;
+show "Test 31 - Check membership (exists):";
+show "Set contains 3: " + has_3;
+
+$ Test 32: Check membership - element doesn't exist
+put contains(member_set, 10) in has_10;
+show "Test 32 - Check membership (doesn't exist):";
+show "Set contains 10: " + has_10;
+
+$ Test 33: Check subset - true case
+put {: 1, 2, 3 :} in subset;
+put {: 1, 2, 3, 4, 5 :} in superset;
+put is_subset(subset, superset) in is_sub;
+show "Test 33 - Check subset (true):";
+show "{: 1, 2, 3 :} is subset of {: 1, 2, 3, 4, 5 :}: " + is_sub;
+
+$ Test 34: Check subset - false case
+put {: 1, 2, 6 :} in not_subset;
+put is_subset(not_subset, superset) in is_not_sub;
+show "Test 34 - Check subset (false):";
+show "{: 1, 2, 6 :} is subset of {: 1, 2, 3, 4, 5 :}: " + is_not_sub;
+
+$ Test 35: Check superset - true case
+put is_superset(superset, subset) in is_super;
+show "Test 35 - Check superset (true):";
+show "{: 1, 2, 3, 4, 5 :} is superset of {: 1, 2, 3 :}: " + is_super;
+
+$ Test 36: Check superset - false case
+put is_superset(subset, superset) in is_not_super;
+show "Test 36 - Check superset (false):";
+show "{: 1, 2, 3 :} is superset of {: 1, 2, 3, 4, 5 :}: " + is_not_super;
+
+$ Test 37: Convert list to set
+put [1, 2, 2, 3, 3, 3, 4, 4, 4, 4] in dup_list;
+put set_from_list(dup_list) in set_from_list_result;
+show "Test 37 - Convert list to set:";
+show "Original list: " + dup_list;
+show "As set (duplicates removed): " + set_from_list_result;
+show "Expected 4 elements, got: " + len(set_from_list_result);
+
+$ Test 38: Convert empty list to set
+put [] in empty_list;
+put set_from_list(empty_list) in empty_set_from_list;
+show "Test 38 - Convert empty list to set:";
+show empty_set_from_list;
+
+$ ========================================
+$ IMMUTABILITY TESTS
+$ ========================================
+
+$ Test 39: Verify set immutability with add
+put {: 1, 2, 3 :} in immut_set;
+put add(immut_set, 4) in new_set;
+show "Test 39 - Set immutability (add):";
+show "Original after add operation: " + immut_set;
+show "New set: " + new_set;
+
+$ Test 40: Verify set immutability with remove
+put remove(immut_set, 2) in new_set_2;
+show "Test 40 - Set immutability (remove):";
+show "Original after remove operation: " + immut_set;
+show "New set: " + new_set_2;
+
+$ Test 41: Verify set immutability with union
+put {: 4, 5 :} in other_set;
+put immut_set + other_set in union_set;
+show "Test 41 - Set immutability (union):";
+show "Original after union: " + immut_set;
+show "Union result: " + union_set;
+
+$ ========================================
+$ EDGE CASE TESTS
+$ ========================================
+
+$ Test 42: Set with itself (union)
+put {: 1, 2, 3 :} in self_set;
+put self_set + self_set in self_union;
+show "Test 42 - Set union with itself:";
+show self_union;
+show "Expected 3 elements, got: " + len(self_union);
+
+$ Test 43: Set with itself (intersection)
+put self_set & self_set in self_inter;
+show "Test 43 - Set intersection with itself:";
+show self_inter;
+show "Expected 3 elements, got: " + len(self_inter);
+
+$ Test 44: Set with itself (difference)
+put self_set - self_set in self_diff;
+show "Test 44 - Set difference with itself:";
+show self_diff;
+show "Expected 0 elements, got: " + len(self_diff);
+
+$ Test 45: Chained operations
+put {: 1, 2, 3 :} in chain_a;
+put {: 3, 4, 5 :} in chain_b;
+put {: 5, 6, 7 :} in chain_c;
+put (chain_a + chain_b) & chain_c in chained;
+show "Test 45 - Chained operations:";
+show "({: 1, 2, 3 :} + {: 3, 4, 5 :}) & {: 5, 6, 7 :}:";
+show chained;
+show "Expected 1 element (5), got: " + len(chained);
+
+$ Test 46: Large set
+put {: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 :} in large_set;
+show "Test 46 - Large set:";
+show "Length: " + len(large_set);
+
+$ Test 47: Set equality comparison
+put {: 1, 2, 3 :} in eq_a;
+put {: 3, 2, 1 :} in eq_b;
+put {: 1, 2, 4 :} in eq_c;
+show "Test 47 - Set equality:";
+show "{: 1, 2, 3 :} == {: 3, 2, 1 :} (same elements): " + (eq_a == eq_b);
+show "{: 1, 2, 3 :} == {: 1, 2, 4 :} (different elements): " + (eq_a == eq_c);
+
+$ Test 48: Set inequality comparison
+show "Test 48 - Set inequality:";
+show "{: 1, 2, 3 :} != {: 3, 2, 1 :}: " + (eq_a != eq_b);
+show "{: 1, 2, 3 :} != {: 1, 2, 4 :}: " + (eq_a != eq_c);
+
+$ ========================================
+$ ERROR HANDLING TESTS
+$ ========================================
+
+$ Test 49: Error on invalid operation (indexing not allowed)
+show "Test 49 - Error handling (invalid indexing):";
+attempt:
+    put {: 1, 2, 3 :} in index_set;
+    put index_set / 0 in element;
+    show "Should not reach here";
+end
+handle as error:
+    show "Caught error: " + error_message(error);
+end;
+
+$ Test 50: Error on remove non-existent element
+show "Test 50 - Error handling (remove non-existent):";
+attempt:
+    put {: 1, 2, 3 :} in remove_error_set;
+    put remove(remove_error_set, 10) in result;
+    show "Result: " + result;
+end
+handle as error:
+    show "Caught error: " + error_message(error);
+end;
+
+show "All set tests completed!";

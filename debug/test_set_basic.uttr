@@ -1,0 +1,32 @@
+$ Debug file for basic set syntax testing
+$ Use this to test lexer tokenization and basic set creation
+
+$ Test 1: Empty set
+put {: :} in empty_set;
+show "Empty set:";
+show empty_set;
+
+$ Test 2: Set with integers
+put {: 1, 2, 3, 4, 5 :} in numbers;
+show "Number set:";
+show numbers;
+
+$ Test 3: Set with strings
+put {: "apple", "banana", "cherry" :} in fruits;
+show "Fruit set:";
+show fruits;
+
+$ Test 4: Set with duplicate values (should remove duplicates)
+put {: 1, 2, 2, 3, 3, 3 :} in deduped;
+show "Deduplicated set:";
+show deduped;
+
+$ Test 5: Set with mixed types
+put {: 1, "hello", 3.14, true :} in mixed;
+show "Mixed type set:";
+show mixed;
+
+$ Test 6: Nested structure
+put {: 1, 2, {: 3, 4 :} :} in nested;
+show "Nested set:";
+show nested;

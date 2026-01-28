@@ -1,0 +1,20 @@
+$ Simple set syntax for lexer token analysis
+$ Use: python lexer_testing.py debug/test_set_lexer.uttr
+
+$ Basic set literal
+put {: 1, 2, 3 :} in s;
+
+$ Empty set
+put {: :} in empty;
+
+$ Union
+put s1 + s2 in union;
+
+$ Intersection
+put s1 & s2 in inter;
+
+$ Difference
+put s1 - s2 in diff;
+
+$ Symmetric difference
+put s1 ^ s2 in sym;

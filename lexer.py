@@ -1,6 +1,6 @@
 from errors.illegal_character import IllegalCharError
 from position import Position
-from tokens import KEYWORDS, TT_ARROW, TT_AT, TT_COLON, TT_COMMA, TT_DIV, TT_EE, TT_EOF, TT_FLOAT, TT_GT, TT_GTE, TT_IDENTIFIER, TT_INT, TT_KEYWORD, TT_LANGLE, TT_LCURLY, TT_LPAREN, TT_LSQUARE, TT_LT, TT_LTE, TT_MINUS, TT_MOD, TT_MUL, TT_NE, TT_NEWLINE, TT_PLUS, TT_RANGLE, TT_RCURLY, TT_REGEX, TT_RPAREN, TT_RSQUARE, TT_STRING, Token
+from tokens import KEYWORDS, TT_AMPERSAND, TT_ARROW, TT_AT, TT_CARET, TT_COLON, TT_COMMA, TT_DIV, TT_EE, TT_EOF, TT_FLOAT, TT_GT, TT_GTE, TT_IDENTIFIER, TT_INT, TT_KEYWORD, TT_LANGLE, TT_LCURLY, TT_LPAREN, TT_LSETBRACE, TT_LSQUARE, TT_LT, TT_LTE, TT_MINUS, TT_MOD, TT_MUL, TT_NE, TT_NEWLINE, TT_PLUS, TT_RANGLE, TT_RCURLY, TT_REGEX, TT_RPAREN, TT_RSETBRACE, TT_RSQUARE, TT_STRING, Token
 from constants import DIGITS, LETTERS, LETTERS_DIGITS
 
 
@@ -78,10 +78,22 @@ class Lexer:
                 tokens.append(Token(TT_RSQUARE, pos_start=self.pos))
                 self.advance()
             elif self.current_char == '{':
-                tokens.append(Token(TT_LCURLY, pos_start=self.pos))
+                # Check for set syntax {:
+                pos_start = self.pos.copy()
                 self.advance()
+                if self.current_char == ':':
+                    tokens.append(Token(TT_LSETBRACE, pos_start=pos_start, pos_end=self.pos))
+                    self.advance()
+                else:
+                    tokens.append(Token(TT_LCURLY, pos_start=pos_start))
             elif self.current_char == '}':
                 tokens.append(Token(TT_RCURLY, pos_start=self.pos))
+                self.advance()
+            elif self.current_char == '&':
+                tokens.append(Token(TT_AMPERSAND, pos_start=self.pos))
+                self.advance()
+            elif self.current_char == '^':
+                tokens.append(Token(TT_CARET, pos_start=self.pos))
                 self.advance()
             elif self.current_char == '!':
                 token, error = self.make_not_equals()
@@ -99,8 +111,14 @@ class Lexer:
                 tokens.append(Token(TT_COMMA, pos_start=self.pos))
                 self.advance()
             elif self.current_char == ':':
-                tokens.append(Token(TT_COLON, pos_start=self.pos))
+                # Check for set closing :}
+                pos_start = self.pos.copy()
                 self.advance()
+                if self.current_char == '}':
+                    tokens.append(Token(TT_RSETBRACE, pos_start=pos_start, pos_end=self.pos))
+                    self.advance()
+                else:
+                    tokens.append(Token(TT_COLON, pos_start=pos_start))
             elif self.current_char == '@':
                 tokens.append(Token(TT_AT, pos_start=self.pos))
                 self.advance()

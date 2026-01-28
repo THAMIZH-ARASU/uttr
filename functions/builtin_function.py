@@ -6,6 +6,7 @@ from values.error_value import ErrorValue
 from values.list_value import List
 from values.number_value import Number
 from values.regex_value import Regex, Match
+from values.set_value import Set
 from values.string_value import String
 from values.tuple_value import Tuple
 import re
@@ -71,12 +72,14 @@ class BuiltInFunction(BaseFunction):
             return RTResult().success(Number(len(list_.elements)))
         elif isinstance(list_, Tuple):
             return RTResult().success(Number(len(list_.elements)))
+        elif isinstance(list_, Set):
+            return RTResult().success(Number(len(list_.elements)))
         elif isinstance(list_, String):
             return RTResult().success(Number(len(list_.value)))
         else:
             return RTResult().failure(RTError(
                 self.pos_start, self.pos_end,
-                "Argument must be list, tuple, or string",
+                "Argument must be list, tuple, set, or string",
                 exec_ctx
             ))
     execute_len.arg_names = ["list"]
@@ -245,38 +248,52 @@ class BuiltInFunction(BaseFunction):
     execute_has_key.arg_names = ["dict", "key"]
 
     def execute_remove(self, exec_ctx):
-        dict_ = exec_ctx.symbol_table.get("dict")
+        collection = exec_ctx.symbol_table.get("dict")
         key = exec_ctx.symbol_table.get("key")
 
-        if not isinstance(dict_, Dict):
-            return RTResult().failure(RTError(
-                self.pos_start, self.pos_end,
-                "First argument must be dictionary",
-                exec_ctx
-            ))
+        if isinstance(collection, Dict):
+            # Convert key to hashable
+            if isinstance(key, String):
+                hashable_key = key.value
+            elif isinstance(key, Number):
+                hashable_key = key.value
+            else:
+                return RTResult().failure(RTError(
+                    self.pos_start, self.pos_end,
+                    "Key must be string or number",
+                    exec_ctx
+                ))
 
-        # Convert key to hashable
-        if isinstance(key, String):
-            hashable_key = key.value
-        elif isinstance(key, Number):
-            hashable_key = key.value
+            if hashable_key in collection.elements:
+                # Modify dictionary in-place (like append and pop for lists)
+                removed_value = collection.elements.pop(hashable_key)
+                return RTResult().success(removed_value)
+            else:
+                return RTResult().failure(RTError(
+                    self.pos_start, self.pos_end,
+                    f'Key "{hashable_key}" not found in dictionary',
+                    exec_ctx
+                ))
+        elif isinstance(collection, Set):
+            # For sets, remove element and return new set (immutable)
+            hashable_elem = collection._make_hashable(key)
+            if hashable_elem in collection.elements:
+                new_set = collection.copy()
+                new_set.elements.remove(hashable_elem)
+                return RTResult().success(new_set)
+            else:
+                return RTResult().failure(RTError(
+                    self.pos_start, self.pos_end,
+                    f'Element not found in set',
+                    exec_ctx
+                ))
         else:
             return RTResult().failure(RTError(
                 self.pos_start, self.pos_end,
-                "Key must be string or number",
+                "First argument must be dictionary or set",
                 exec_ctx
             ))
-
-        if hashable_key in dict_.elements:
-            # Modify dictionary in-place (like append and pop for lists)
-            removed_value = dict_.elements.pop(hashable_key)
-            return RTResult().success(removed_value)
-        else:
-            return RTResult().failure(RTError(
-                self.pos_start, self.pos_end,
-                f'Key "{hashable_key}" not found in dictionary',
-                exec_ctx
-            ))
+        
     execute_remove.arg_names = ["dict", "key"]
 
     def execute_help(self, exec_ctx):
@@ -759,6 +776,159 @@ For full documentation, see README.md
             ))
     execute_regex_split.arg_names = ["pattern", "text"]
 
+    # Set operations
+    def execute_union(self, exec_ctx):
+        set1 = exec_ctx.symbol_table.get("set1")
+        set2 = exec_ctx.symbol_table.get("set2")
+
+        if not isinstance(set1, Set) or not isinstance(set2, Set):
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                "Both arguments must be sets",
+                exec_ctx
+            ))
+
+        result, error = set1.added_to(set2)
+        if error:
+            return RTResult().failure(error)
+        return RTResult().success(result)
+    execute_union.arg_names = ["set1", "set2"]
+
+    def execute_intersection(self, exec_ctx):
+        set1 = exec_ctx.symbol_table.get("set1")
+        set2 = exec_ctx.symbol_table.get("set2")
+
+        if not isinstance(set1, Set) or not isinstance(set2, Set):
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                "Both arguments must be sets",
+                exec_ctx
+            ))
+
+        result, error = set1.intersected_with(set2)
+        if error:
+            return RTResult().failure(error)
+        return RTResult().success(result)
+    execute_intersection.arg_names = ["set1", "set2"]
+
+    def execute_difference(self, exec_ctx):
+        set1 = exec_ctx.symbol_table.get("set1")
+        set2 = exec_ctx.symbol_table.get("set2")
+
+        if not isinstance(set1, Set) or not isinstance(set2, Set):
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                "Both arguments must be sets",
+                exec_ctx
+            ))
+
+        result, error = set1.subbed_by(set2)
+        if error:
+            return RTResult().failure(error)
+        return RTResult().success(result)
+    execute_difference.arg_names = ["set1", "set2"]
+
+    def execute_symmetric_difference(self, exec_ctx):
+        set1 = exec_ctx.symbol_table.get("set1")
+        set2 = exec_ctx.symbol_table.get("set2")
+
+        if not isinstance(set1, Set) or not isinstance(set2, Set):
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                "Both arguments must be sets",
+                exec_ctx
+            ))
+
+        result, error = set1.symmetric_diff_with(set2)
+        if error:
+            return RTResult().failure(error)
+        return RTResult().success(result)
+    execute_symmetric_difference.arg_names = ["set1", "set2"]
+
+    def execute_add(self, exec_ctx):
+        set_ = exec_ctx.symbol_table.get("set")
+        element = exec_ctx.symbol_table.get("element")
+
+        if isinstance(set_, Set):
+            # For sets, add element and return new set
+            new_set = set_.copy()
+            new_set.elements.add(new_set._make_hashable(element))
+            return RTResult().success(new_set)
+        else:
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                "First argument must be a set",
+                exec_ctx
+            ))
+    execute_add.arg_names = ["set", "element"]
+
+    def execute_contains(self, exec_ctx):
+        collection = exec_ctx.symbol_table.get("collection")
+        element = exec_ctx.symbol_table.get("element")
+
+        if isinstance(collection, Set):
+            hashable_elem = collection._make_hashable(element)
+            result = Number(1 if hashable_elem in collection.elements else 0)
+            return RTResult().success(result)
+        elif isinstance(collection, List):
+            # Also support lists for backwards compatibility
+            for item in collection.elements:
+                eq_result, _ = item.get_comparison_eq(element)
+                if eq_result.value == 1:
+                    return RTResult().success(Number(1))
+            return RTResult().success(Number(0))
+        else:
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                "First argument must be a set or list",
+                exec_ctx
+            ))
+    execute_contains.arg_names = ["collection", "element"]
+
+    def execute_is_subset(self, exec_ctx):
+        set1 = exec_ctx.symbol_table.get("set1")
+        set2 = exec_ctx.symbol_table.get("set2")
+
+        if not isinstance(set1, Set) or not isinstance(set2, Set):
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                "Both arguments must be sets",
+                exec_ctx
+            ))
+
+        result = Number(1 if set1.elements <= set2.elements else 0)
+        return RTResult().success(result)
+    execute_is_subset.arg_names = ["set1", "set2"]
+
+    def execute_is_superset(self, exec_ctx):
+        set1 = exec_ctx.symbol_table.get("set1")
+        set2 = exec_ctx.symbol_table.get("set2")
+
+        if not isinstance(set1, Set) or not isinstance(set2, Set):
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                "Both arguments must be sets",
+                exec_ctx
+            ))
+
+        result = Number(1 if set1.elements >= set2.elements else 0)
+        return RTResult().success(result)
+    execute_is_superset.arg_names = ["set1", "set2"]
+
+    def execute_set_from_list(self, exec_ctx):
+        list_ = exec_ctx.symbol_table.get("list")
+
+        if not isinstance(list_, List):
+            return RTResult().failure(RTError(
+                self.pos_start, self.pos_end,
+                "Argument must be a list",
+                exec_ctx
+            ))
+
+        new_set = Set(list_.elements)
+        return RTResult().success(new_set)
+    execute_set_from_list.arg_names = ["list"]
+
 # Create built-in function instances
 BuiltInFunction.show = BuiltInFunction("show")
 BuiltInFunction.input = BuiltInFunction("input")
@@ -790,3 +960,12 @@ BuiltInFunction.regex_search = BuiltInFunction("regex_search")
 BuiltInFunction.regex_replace = BuiltInFunction("regex_replace")
 BuiltInFunction.regex_findall = BuiltInFunction("regex_findall")
 BuiltInFunction.regex_split = BuiltInFunction("regex_split")
+BuiltInFunction.union = BuiltInFunction("union")
+BuiltInFunction.intersection = BuiltInFunction("intersection")
+BuiltInFunction.difference = BuiltInFunction("difference")
+BuiltInFunction.symmetric_difference = BuiltInFunction("symmetric_difference")
+BuiltInFunction.add = BuiltInFunction("add")
+BuiltInFunction.contains = BuiltInFunction("contains")
+BuiltInFunction.is_subset = BuiltInFunction("is_subset")
+BuiltInFunction.is_superset = BuiltInFunction("is_superset")
+BuiltInFunction.set_from_list = BuiltInFunction("set_from_list")

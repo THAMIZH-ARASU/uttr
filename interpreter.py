@@ -2,12 +2,13 @@ from errors.run_time_error import RTError
 from functions.function import Function
 from run_time_result import RTResult
 from symbol_table import SymbolTable
-from tokens import TT_DIV, TT_EE, TT_GT, TT_GTE, TT_KEYWORD, TT_LT, TT_LTE, TT_MINUS, TT_MOD, TT_MUL, TT_NE, TT_PLUS
+from tokens import TT_AMPERSAND, TT_CARET, TT_DIV, TT_EE, TT_GT, TT_GTE, TT_KEYWORD, TT_LT, TT_LTE, TT_MINUS, TT_MOD, TT_MUL, TT_NE, TT_PLUS
 from values.dict_value import Dict
 from values.error_value import ErrorValue
 from values.list_value import List
 from values.number_value import Number
 from values.regex_value import Regex
+from values.set_value import Set
 from values.string_value import String
 from values.tuple_value import Tuple
 
@@ -66,6 +67,18 @@ class Interpreter:
 
         return res.success(
             Tuple(elements).set_context(context).set_pos(node.pos_start, node.pos_end)
+        )
+
+    def visit_SetNode(self, node, context):
+        res = RTResult()
+        elements = []
+
+        for element_node in node.element_nodes:
+            elements.append(res.register(self.visit(element_node, context)))
+            if res.should_return(): return res
+
+        return res.success(
+            Set(elements).set_context(context).set_pos(node.pos_start, node.pos_end)
         )
 
     def visit_DictNode(self, node, context):
@@ -170,6 +183,10 @@ class Interpreter:
             result, error = left.get_comparison_lte(right)
         elif node.op_tok.type == TT_GTE:
             result, error = left.get_comparison_gte(right)
+        elif node.op_tok.type == TT_AMPERSAND:
+            result, error = left.intersected_with(right)
+        elif node.op_tok.type == TT_CARET:
+            result, error = left.symmetric_diff_with(right)
         elif node.op_tok.matches(TT_KEYWORD, 'and'):
             result, error = left.anded_by(right)
         elif node.op_tok.matches(TT_KEYWORD, 'or'):

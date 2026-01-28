@@ -1,0 +1,102 @@
+$ Debug file for set operations testing
+$ Test union, intersection, difference, and other operations
+
+$ Setup test sets
+put {: 1, 2, 3, 4, 5 :} in set1;
+put {: 4, 5, 6, 7, 8 :} in set2;
+put {: 1, 2, 3 :} in set3;
+
+show "Set 1: " + set1;
+show "Set 2: " + set2;
+show "Set 3: " + set3;
+
+$ Test 1: Union (all elements)
+put set1 + set2 in union_result;
+show "Union (set1 + set2):";
+show union_result;
+
+$ Test 2: Intersection (common elements)
+put set1 & set2 in intersection_result;
+show "Intersection (set1 & set2):";
+show intersection_result;
+
+$ Test 3: Difference (in set1 but not set2)
+put set1 - set2 in difference_result;
+show "Difference (set1 - set2):";
+show difference_result;
+
+$ Test 4: Symmetric difference (in either but not both)
+put set1 ^ set2 in symmetric_diff;
+show "Symmetric difference (set1 ^ set2):";
+show symmetric_diff;
+
+$ Test 5: Union with built-in function
+put union(set1, set2) in union_func;
+show "Union function result:";
+show union_func;
+
+$ Test 6: Intersection with built-in function
+put intersection(set1, set2) in inter_func;
+show "Intersection function result:";
+show inter_func;
+
+$ Test 7: Difference with built-in function
+put difference(set1, set2) in diff_func;
+show "Difference function result:";
+show diff_func;
+
+$ Test 8: Symmetric difference with built-in function
+put symmetric_difference(set1, set2) in sym_diff_func;
+show "Symmetric difference function result:";
+show sym_diff_func;
+
+$ Test 9: Add element to set
+put add(set1, 10) in set_with_10;
+show "Set1 after adding 10:";
+show set_with_10;
+show "Original set1 unchanged:";
+show set1;
+
+$ Test 10: Remove element from set
+put remove(set1, 3) in set_without_3;
+show "Set1 after removing 3:";
+show set_without_3;
+show "Original set1 unchanged:";
+show set1;
+
+$ Test 11: Check membership
+put contains(set1, 3) in has_3;
+put contains(set1, 10) in has_10;
+show "Set1 contains 3: " + has_3;
+show "Set1 contains 10: " + has_10;
+
+$ Test 12: Check subset
+put is_subset(set3, set1) in is_sub;
+show "Set3 is subset of Set1: " + is_sub;
+
+$ Test 13: Check superset
+put is_superset(set1, set3) in is_super;
+show "Set1 is superset of Set3: " + is_super;
+
+$ Test 14: Set length
+show "Length of set1: " + len(set1);
+show "Length of set2: " + len(set2);
+
+$ Test 15: Empty set operations
+put {: :} in empty;
+put empty + set1 in union_empty;
+show "Empty union with set1:";
+show union_empty;
+
+$ Test 16: Convert list to set
+put [1, 2, 2, 3, 3, 3] in dup_list;
+put set_from_list(dup_list) in from_list;
+show "Set from list with duplicates:";
+show from_list;
+
+$ Test 17: Set equality (if implemented)
+put {: 1, 2, 3 :} in s_a;
+put {: 3, 2, 1 :} in s_b;
+put {: 1, 2, 4 :} in s_c;
+show "Set A == Set B (same elements, different order): " + (s_a == s_b);
+show "Set A == Set C (different elements): " + (s_a == s_c);
