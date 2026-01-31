@@ -45,7 +45,7 @@ def run_interactive():
     print()
     
     # Keywords that start multi-line blocks
-    block_starters = ['make function', 'when', 'cycle', 'as long as', 'repeat']
+    block_starters = ['make function', 'when', 'cycle', 'as long as', 'repeat', 'attempt']
     
     while True:
         try:
@@ -58,36 +58,52 @@ def run_interactive():
             is_block = any(text.strip().startswith(starter) for starter in block_starters)
             
             if is_block and not text.strip().endswith('end;'):
-                # Multi-line input mode with nested block tracking
+                # Multi-line input mode with nested block tracking and auto-indentation
                 lines = [text]
                 block_depth = 1  # Start with depth 1 for the initial block
+                indent_level = 1  # Current indentation level
                 
                 while True:
                     try:
-                        line = input('...  > ')
-                        lines.append(line)
+                        # Create indented prompt
+                        indent = '    ' * indent_level
+                        line = input(f'...  > {indent}')
+                        
+                        # Store line with indentation
+                        lines.append(indent + line)
                         
                         # Count block starters and ends in this line
                         line_stripped = line.strip()
                         
-                        # Check for new block starters (including 'otherwise' and 'when')
+                        # Check if this line ends a block before we process it
+                        is_end = line_stripped == 'end;' or line_stripped.endswith('end;')
+                        
+                        if is_end:
+                            block_depth -= 1
+                            indent_level -= 1
+                            if block_depth == 0:
+                                break
+                            continue
+                        
+                        # Check for new block starters
+                        starts_block = False
                         for starter in block_starters:
                             if line_stripped.startswith(starter):
                                 block_depth += 1
+                                starts_block = True
                                 break
                         
-                        # 'otherwise' and 'when' inside blocks don't increase depth
-                        # but we need to handle them properly
-                        if line_stripped.startswith('otherwise:') or line_stripped.startswith('when '):
-                            # These are part of the current conditional, check if already counted
-                            # Actually, 'when' at start already counted above, 'otherwise' doesn't start new depth
-                            pass
+                        # Check for 'otherwise:' which continues a conditional at same level
+                        if line_stripped.startswith('otherwise:'):
+                            starts_block = True
                         
-                        # Check for 'end;' - this closes one block level
-                        if line_stripped == 'end;' or line_stripped.endswith('end;'):
-                            block_depth -= 1
-                            if block_depth == 0:
-                                break
+                        # Check for 'handle' which is part of attempt...handle
+                        if line_stripped.startswith('handle'):
+                            starts_block = True
+                        
+                        # Increase indent for next line if this line starts a block
+                        if starts_block and line_stripped.endswith(':'):
+                            indent_level += 1
                                 
                     except (KeyboardInterrupt, EOFError):
                         print("\nBlock input cancelled")

@@ -90,6 +90,9 @@ class Dict(Value):
         copy.set_context(self.context)
         return copy
 
+    def is_true(self):
+        return len(self.elements) > 0
+
     def __str__(self):
         pairs = [f"{self._format_key(k)}: {v}" for k, v in self.elements.items()]
         return ", ".join(pairs)
