@@ -14,30 +14,29 @@
   - `values/`: Runtime value types
 
 ### Design Decisions
-- **Syntax**: Clean, English-like syntax consistent with UTTR philosophy
-  - Basic: `[x * 2 for x in list]`
-  - Filtered: `[x for x in list where x > 5]`
-  - Nested: `[x + y for x in list1 for y in list2]`
-  - Multiple conditions: `[x for x in list where cond1 where cond2]`
+- **Syntax**: Clean, English-like syntax consistent with UTTR philosophy, using `cycle` keyword (already used for loops)
+  - Basic: `[x * 2 cycle x in list]`
+  - Filtered: `[x cycle x in list where x > 5]`
+  - Nested: `[x + y cycle x in list1 cycle y in list2]`
+  - Multiple conditions: `[x cycle x in list where cond1 where cond2]`
 
 ## Implementation Details
 
 ### 1. Lexer & Tokens (`tokens.py`)
-- Added `'where'` keyword for filtering conditions
-- Added `'for'` keyword (explicit list comprehension support)
-- Both keywords were integrated into the KEYWORDS list
+- Removed `'for'` keyword (no longer needed for comprehensions)
+- Uses existing `'cycle'` keyword for comprehensions
 
 ### 2. Parser (`parser.py`)
 **Modified `list_expr()` method to:**
-- Detect comprehension syntax after `[`
-- Parse comprehension clauses with `for var in iterable` pattern
+- Detect comprehension syntax after `[` using `cycle` keyword
+- Parse comprehension clauses with `cycle var in iterable` pattern
 - Support optional `where` conditions (multiple allowed)
 - Parse nested comprehensions recursively
 - Proper error handling for invalid syntax
 
 **Key Parsing Flow:**
 ```
-[ expr [for var in iterable [where condition]* ]+ ]
+[ expr [cycle var in iterable [where condition]* ]+ ]
 ```
 
 ### 3. AST Node (`nodes/list_comprehension_node.py`)
@@ -72,10 +71,10 @@ Implemented `visit_ListComprehensionNode()` with:
 ## Testing & Validation
 
 ### Debug Files (`debug/`)
-✓ `debug_list_comp_simple.uttr` - Basic mapping operations
-✓ `debug_list_comp_filter.uttr` - Filtering with where clause
-✓ `debug_list_comp_nested.uttr` - Nested comprehensions
-✓ `debug_list_comp_complex.uttr` - Complex expressions with multiple conditions
+✓ `debug_list_comp_simple.uttr` - Basic mapping: `[x * 2 cycle x in list]`
+✓ `debug_list_comp_filter.uttr` - Filtering: `[x cycle x in list where condition]`
+✓ `debug_list_comp_nested.uttr` - Nested: `[x + y cycle x in l1 cycle y in l2]`
+✓ `debug_list_comp_complex.uttr` - Complex with multiple conditions
 
 ### Unit Tests (`tests/test_list_comprehensions.uttr`)
 ✓ 20 comprehensive test cases covering:
@@ -137,22 +136,22 @@ Implemented `visit_ListComprehensionNode()` with:
 
 ✅ **Basic List Comprehensions**
 ```uttr
-put [x * 2 for x in [1, 2, 3, 4, 5]] in doubled;
+put [x * 2 cycle x in [1, 2, 3, 4, 5]] in doubled;
 ```
 
 ✅ **Filtered Comprehensions**
 ```uttr
-put [x for x in numbers where x > 5] in filtered;
+put [x cycle x in numbers where x > 5] in filtered;
 ```
 
 ✅ **Nested Comprehensions**
 ```uttr
-put [x + y for x in list1 for y in list2] in pairs;
+put [x + y cycle x in list1 cycle y in list2] in pairs;
 ```
 
 ✅ **Multiple Conditions**
 ```uttr
-put [x for x in list where x > 3 where x < 8 where x % 2 == 0] in result;
+put [x cycle x in list where x > 3 where x < 8 where x % 2 == 0] in result;
 ```
 
 ✅ **Proper Variable Scoping**
@@ -178,7 +177,7 @@ put [x for x in list where x > 3 where x < 8 where x % 2 == 0] in result;
 ## Future Enhancements
 
 Potential improvements for future work:
-- Dictionary comprehensions: `{k: v for k, v in pairs}`
-- Set comprehensions: `{x * 2 for x in list}`
+- Dictionary comprehensions: `{k: v cycle k, v in pairs}`
+- Set comprehensions: `{x * 2 cycle x in list}`
 - Comprehension with assignment operators
 - Generator expressions (if needed)

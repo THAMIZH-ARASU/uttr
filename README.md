@@ -55,11 +55,11 @@ UTTR (Understandable Translation Tool for Routines) is a custom-built, procedure
 - **Operators**: Arithmetic (`+`, `-`, `*`, `/`, `%`), comparison (`==`, `!=`, `<`, `>`, `<=`, `>=`), logical (`and`, `or`, `not`), and set operations (`+` for union, `&` for intersection, `-` for difference, `^` for symmetric difference)
 - **Control Structures**: Conditional statements (`when...otherwise`), switch-case statements (`check...whether...default`), loops (`cycle`, `as long as`, `repeat while`), and for-each iteration with loop control (`cut` for break, `skip` for continue)
 - **List Comprehensions**: Concise syntax for creating and transforming lists with filtering capabilities:
-  - Basic comprehensions: `[x * 2 for x in list]`
-  - Filtered comprehensions: `[x for x in list where x > 5]`
-  - Multiple conditions: `[x for x in list where x > 5 where x < 10]`
-  - Nested comprehensions: `[x + y for x in list1 for y in list2]`
-  - Nested with filters: `[x + y for x in list1 where x > 0 for y in list2 where y < 100]`
+  - Basic comprehensions: `[x * 2 cycle x in list]`
+  - Filtered comprehensions: `[x cycle x in list where x > 5]`
+  - Multiple conditions: `[x cycle x in list where x > 5 where x < 10]`
+  - Nested comprehensions: `[x + y cycle x in list1 cycle y in list2]`
+  - Nested with filters: `[x + y cycle x in list1 where x > 0 cycle y in list2 where y < 100]`
 - **Error Handling**: Try-catch blocks using `attempt...handle` syntax with error introspection (`error_message`, `error_type`)
 - **Function Support**: 
   - Named functions with `make function` and `give` keywords

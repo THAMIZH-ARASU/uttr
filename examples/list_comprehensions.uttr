@@ -10,17 +10,17 @@ $ ========================================
 
 $ Double each number in a list
 put [1, 2, 3, 4, 5] in numbers;
-put [x * 2 for x in numbers] in doubled;
+put [x * 2 cycle x in numbers] in doubled;
 show "Original numbers: " + numbers;
 show "Doubled: " + doubled;
 
 $ Square each number
-put [x * x for x in [1, 2, 3, 4, 5]] in squares;
+put [x * x cycle x in [1, 2, 3, 4, 5]] in squares;
 show "Squares: " + squares;
 
 $ Convert strings to uppercase
 put ["hello", "world", "uttr"] in words;
-put [upper(w) for w in words] in uppercase_words;
+put [upper(w) cycle w in words] in uppercase_words;
 show "Words: " + words;
 show "Uppercase: " + uppercase_words;
 
@@ -29,16 +29,16 @@ $ List Comprehension with Filter (where clause)
 $ ========================================
 
 $ Filter even numbers
-put [x for x in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] where x % 2 == 0] in evens;
+put [x cycle x in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] where x % 2 == 0] in evens;
 show "Even numbers from 1-10: " + evens;
 
 $ Filter numbers greater than 5
-put [x for x in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] where x > 5] in greater_than_5;
+put [x cycle x in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] where x > 5] in greater_than_5;
 show "Numbers > 5: " + greater_than_5;
 
 $ Filter strings by length
 put ["a", "abc", "ab", "abcd", "xy"] in short_words;
-put [w for w in short_words where len(w) > 2] in filtered_words;
+put [w cycle w in short_words where len(w) > 2] in filtered_words;
 show "Words with length > 2: " + filtered_words;
 
 $ ========================================
@@ -46,7 +46,7 @@ $ Multiple Filter Conditions (AND logic)
 $ ========================================
 
 $ Find even numbers between 3 and 8
-put [x for x in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] where x > 3 where x < 8 where x % 2 == 0] in result;
+put [x cycle x in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] where x > 3 where x < 8 where x % 2 == 0] in result;
 show "Even numbers in range (3, 8): " + result;
 
 $ ========================================
@@ -56,11 +56,11 @@ $ ========================================
 $ Create all combinations of two lists (addition)
 put [1, 2, 3] in list_a;
 put [10, 20, 30] in list_b;
-put [x + y for x in list_a for y in list_b] in all_sums;
+put [x + y cycle x in list_a cycle y in list_b] in all_sums;
 show "All combinations (x + y): " + all_sums;
 
 $ Create all combinations with filter
-put [x * y for x in [1, 2, 3, 4] for y in [2, 4, 6] where x * y < 12] in products;
+put [x * y cycle x in [1, 2, 3, 4] cycle y in [2, 4, 6] where x * y < 12] in products;
 show "Products where x * y < 12: " + products;
 
 $ ========================================
@@ -71,7 +71,7 @@ $ Generate all combinations of three lists
 put [1, 2] in dim_x;
 put [10, 20] in dim_y;
 put [100, 200] in dim_z;
-put [x + y + z for x in dim_x for y in dim_y for z in dim_z] in all_combinations;
+put [x + y + z cycle x in dim_x cycle y in dim_y cycle z in dim_z] in all_combinations;
 show "All 3D combinations: " + all_combinations;
 
 $ ========================================
@@ -79,12 +79,12 @@ $ Complex Expressions in Comprehensions
 $ ========================================
 
 $ Complex arithmetic expression
-put [x * x + 2 * x + 1 for x in [1, 2, 3, 4, 5]] in polynomial;
+put [x * x + 2 * x + 1 cycle x in [1, 2, 3, 4, 5]] in polynomial;
 show "x^2 + 2x + 1 for x in [1..5]: " + polynomial;
 
 $ String concatenation
 put ["Hello", "World", "UTTR"] in greetings;
-put [w + "!" for w in greetings] in excited;
+put [w + "!" cycle w in greetings] in excited;
 show "Excited greetings: " + excited;
 
 $ ========================================
@@ -93,7 +93,7 @@ $ ========================================
 
 $ Function that uses list comprehensions
 make function filter_positive(numbers):
-    give [x for x in numbers where x > 0];
+    give [x cycle x in numbers where x > 0];
 end;
 
 put [-3, -1, 0, 1, 2, 3] in mixed_numbers;
@@ -101,7 +101,7 @@ show "Positive numbers: " + filter_positive(mixed_numbers);
 
 $ Function for processing data
 make function multiply_list(lst, factor):
-    give [x * factor for x in lst];
+    give [x * factor cycle x in lst];
 end;
 
 put [1, 2, 3, 4, 5] in base_list;
@@ -112,11 +112,11 @@ $ Lambda Functions with List Comprehensions
 $ ========================================
 
 $ Lambda function using comprehension
-put lambda lst => [x * 2 for x in lst] in double_all;
+put lambda lst => [x * 2 cycle x in lst] in double_all;
 show "Using lambda to double: " + double_all([1, 2, 3, 4, 5]);
 
 $ Nested lambdas with comprehensions
-put lambda n => [x for x in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] where x % n == 0] in get_multiples;
+put lambda n => [x cycle x in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] where x % n == 0] in get_multiples;
 show "Multiples of 3: " + get_multiples(3);
 
 $ ========================================
@@ -130,11 +130,11 @@ show "Negative numbers: " + negatives;
 
 $ Extract specific elements (every other element)
 put [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] in all_numbers;
-put [x for x in all_numbers where x % 2 == 0] in even_indexed;
+put [x cycle x in all_numbers where x % 2 == 0] in even_indexed;
 show "Even numbers: " + even_indexed;
 
 $ Create a range of squares
-put [x * x for x in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]] in all_squares;
+put [x * x cycle x in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]] in all_squares;
 show "All squares from 1-10: " + all_squares;
 
 show "========================================";

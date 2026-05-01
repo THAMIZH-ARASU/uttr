@@ -70,7 +70,6 @@ KEYWORDS = [
     'whether',
     'default',
     'where',
-    'for',
 ]
 
 class Token:

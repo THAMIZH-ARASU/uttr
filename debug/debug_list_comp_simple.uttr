@@ -1,5 +1,5 @@
 $ Simple list comprehension - double each number
 put [1, 2, 3, 4, 5] in numbers;
-put [x * 2 for x in numbers] in doubled;
+put [x * 2 cycle x in numbers] in doubled;
 show "Original: " + numbers;
 show "Doubled: " + doubled;

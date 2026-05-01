@@ -15,29 +15,29 @@ UTTR is a procedure-oriented programming language built from scratch in Python w
 
 ### Basic List Comprehension
 ```uttr
-put [x * 2 for x in [1, 2, 3, 4, 5]] in doubled;
+put [x * 2 cycle x in [1, 2, 3, 4, 5]] in doubled;
 ```
 
 ### With Filter Condition
 ```uttr
-put [x * 2 for x in [1, 2, 3, 4, 5] where x > 2] in result;
+put [x * 2 cycle x in [1, 2, 3, 4, 5] where x > 2] in result;
 ```
 
 ### Nested Comprehensions
 ```uttr
-put [x + y for x in [1, 2] for y in [10, 20]] in nested;
+put [x + y cycle x in [1, 2] cycle y in [10, 20]] in nested;
 ```
 
 ### Multiple Conditions
 ```uttr
-put [x for x in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] where x > 2 where x < 8] in filtered;
+put [x cycle x in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] where x > 2 where x < 8] in filtered;
 ```
 
 ## Implementation Plan
 
 ### 1. Keywords
-Add to `tokens.py`:
-- `for` - already exists
+Update `tokens.py`:
+- `cycle` - for comprehensions (already exists for loops)
 - `where` - for filtering conditions
 - `in` - already exists
 

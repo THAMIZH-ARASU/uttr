@@ -1,5 +1,5 @@
 $ List comprehension with filter
 put [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] in numbers;
-put [x for x in numbers where x > 5] in filtered;
+put [x cycle x in numbers where x > 5] in filtered;
 show "All numbers: " + numbers;
 show "Numbers > 5: " + filtered;

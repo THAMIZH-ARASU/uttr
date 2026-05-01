@@ -470,12 +470,12 @@ class Parser:
             if res.error: return res
 
             # Check if this is a list comprehension
-            if self.current_tok.matches(TT_KEYWORD, 'for'):
+            if self.current_tok.matches(TT_KEYWORD, 'cycle'):
                 # This is a list comprehension
                 comprehension_clauses = []
                 
                 # Parse first comprehension clause
-                res.register_advancement()  # consume 'for'
+                res.register_advancement()  # consume 'cycle'
                 self.advance()
                 
                 # Get the variable name
@@ -515,8 +515,8 @@ class Parser:
                 
                 comprehension_clauses.append((var_tok, iterable_expr, conditions))
                 
-                # Parse additional for clauses
-                while self.current_tok.matches(TT_KEYWORD, 'for'):
+                # Parse additional cycle clauses
+                while self.current_tok.matches(TT_KEYWORD, 'cycle'):
                     res.register_advancement()
                     self.advance()
                     

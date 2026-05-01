@@ -1,7 +1,7 @@
 $ Nested list comprehensions (Cartesian product)
 put [1, 2, 3] in list1;
 put [10, 20, 30] in list2;
-put [x + y for x in list1 for y in list2] in pairs;
+put [x + y cycle x in list1 cycle y in list2] in pairs;
 show "List 1: " + list1;
 show "List 2: " + list2;
 show "Sum of all pairs: " + pairs;

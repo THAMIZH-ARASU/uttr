@@ -2,11 +2,11 @@ $ Complex list comprehension with multiple conditions
 put [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] in numbers;
 
 $ Filter even numbers and greater than 3
-put [x for x in numbers where x > 3 where x % 2 == 0] in result;
+put [x cycle x in numbers where x > 3 where x % 2 == 0] in result;
 
 show "Original numbers: " + numbers;
 show "Even numbers > 3: " + result;
 
 $ Map and filter combined
-put [x * x for x in numbers where x <= 5] in squares;
+put [x * x cycle x in numbers where x <= 5] in squares;
 show "Squares of numbers <= 5: " + squares;
