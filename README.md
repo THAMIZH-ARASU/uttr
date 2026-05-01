@@ -54,6 +54,12 @@ UTTR (Understandable Translation Tool for Routines) is a custom-built, procedure
 - **Regular Expressions**: Full regex support with pattern matching using `r"pattern"` syntax for text processing and validation
 - **Operators**: Arithmetic (`+`, `-`, `*`, `/`, `%`), comparison (`==`, `!=`, `<`, `>`, `<=`, `>=`), logical (`and`, `or`, `not`), and set operations (`+` for union, `&` for intersection, `-` for difference, `^` for symmetric difference)
 - **Control Structures**: Conditional statements (`when...otherwise`), switch-case statements (`check...whether...default`), loops (`cycle`, `as long as`, `repeat while`), and for-each iteration with loop control (`cut` for break, `skip` for continue)
+- **List Comprehensions**: Concise syntax for creating and transforming lists with filtering capabilities:
+  - Basic comprehensions: `[x * 2 for x in list]`
+  - Filtered comprehensions: `[x for x in list where x > 5]`
+  - Multiple conditions: `[x for x in list where x > 5 where x < 10]`
+  - Nested comprehensions: `[x + y for x in list1 for y in list2]`
+  - Nested with filters: `[x + y for x in list1 where x > 0 for y in list2 where y < 100]`
 - **Error Handling**: Try-catch blocks using `attempt...handle` syntax with error introspection (`error_message`, `error_type`)
 - **Function Support**: 
   - Named functions with `make function` and `give` keywords
@@ -908,19 +914,19 @@ The test suite includes 48 test files with 300+ individual tests covering:
 - [X] **`Task 16`**: <strike>Add switch-case statements (`check...whether...default` syntax)</strike>
 - [X] **`Task 17`**: <strike>Support for regular expressions with pattern matching (`r"pattern"` syntax, `regex_match`, `regex_search`, `regex_replace`, `regex_findall`, `regex_split`)</strike>
 - [X] **`Task 18`**: <strike>Add set data type with set operations (union, intersection, difference, symmetric difference)</strike>
+- [X] **`Task 19`**: <strike>Implement list comprehensions with natural syntax</strike>
 
 ### To - Do
 
 #### Advanced Operations
-- [ ] **`Task 19`**: Implement list comprehensions with natural syntax
 - [ ] **`Task 20`**: Add dictionary comprehensions
 - [ ] **`Task 21`**: Support for multiple return values from functions
 - [ ] **`Task 22`**: Implement variadic functions (variable argument count) with natural syntax
 - [ ] **`Task 23`**: Support for ternary conditional expressions
 
 #### File & I/O Operations
-- [ ] **`Task 22`**: Add file I/O operations (read_file, write_file, append_file)
-- [ ] **`Task 23`**: Implement JSON parsing and generation functions
+- [ ] **`Task 24`**: Add file I/O operations (read_file, write_file, append_file)
+- [ ] **`Task 25`**: Implement JSON parsing and generation functions
 #### File & I/O Operations
 - [ ] **`Task 24`**: Add file I/O operations (read_file, write_file, append_file)
 - [ ] **`Task 25`**: Implement JSON parsing and generation functions

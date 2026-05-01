@@ -1,0 +1,93 @@
+$ Test list comprehensions - Basic functionality
+
+$ Test 1: Basic list comprehension (map operation)
+put [x * 2 for x in [1, 2, 3, 4, 5]] in result1;
+show "Test 1 - Double each number: " + result1;
+
+$ Test 2: List comprehension with filter
+put [x for x in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] where x > 5] in result2;
+show "Test 2 - Numbers > 5: " + result2;
+
+$ Test 3: Nested list comprehension (Cartesian product)
+put [x + y for x in [1, 2, 3] for y in [10, 20]] in result3;
+show "Test 3 - Cartesian product (x + y): " + result3;
+
+$ Test 4: Multiple where conditions (AND logic)
+put [x for x in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] where x > 3 where x < 8] in result4;
+show "Test 4 - Numbers 3 < x < 8: " + result4;
+
+$ Test 5: Empty list comprehension
+put [] in empty_list;
+put [x * 2 for x in empty_list] in result5;
+show "Test 5 - Comprehension on empty list: " + result5;
+
+$ Test 6: String operations in comprehension
+put ["a", "b", "c"] in letters;
+put [x + x for x in letters] in result6;
+show "Test 6 - Double each letter: " + result6;
+
+$ Test 7: Complex expression
+put [x * x + x for x in [1, 2, 3, 4, 5]] in result7;
+show "Test 7 - x^2 + x for x in [1..5]: " + result7;
+
+$ Test 8: Nested with filter
+put [x + y for x in [1, 2, 3] for y in [10, 20, 30] where x + y > 12] in result8;
+show "Test 8 - Nested with filter (x + y > 12): " + result8;
+
+$ Test 9: Triple nested comprehension
+put [x + y + z for x in [1, 2] for y in [10, 20] for z in [100, 200]] in result9;
+show "Test 9 - Triple nested: " + result9;
+
+$ Test 10: Comprehension with modulo
+put [x for x in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] where x % 2 == 0] in result10;
+show "Test 10 - Even numbers: " + result10;
+
+$ Test 11: Preserve list order
+put [5, 4, 3, 2, 1] in reversed_list;
+put [x * 10 for x in reversed_list] in result11;
+show "Test 11 - Multiply by 10 (preserve order): " + result11;
+
+$ Test 12: Comprehension with comparison filter
+put [x for x in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] where x == 3 or x == 5] in result12;
+show "Test 12 - Values equal to 3 or 5: " + result12;
+
+$ Test 13: Comprehension with arithmetic on two variables
+put [x - y for x in [10, 20, 30] for y in [1, 2, 3]] in result13;
+show "Test 13 - Difference (x - y): " + result13;
+
+$ Test 14: Single element comprehension
+put [42] in single_element;
+put [x * 2 for x in single_element] in result14;
+show "Test 14 - Single element: " + result14;
+
+$ Test 15: Comprehension preserves type correctness
+put [1 + 2, 2 + 3, 3 + 4] in sums;
+show "Test 15 - Sums list: " + sums;
+put [x * 2 for x in sums] in result15;
+show "Test 15 - Double the sums: " + result15;
+
+$ Test 16: Empty result from filter
+put [x for x in [1, 2, 3, 4, 5] where x > 10] in result16;
+show "Test 16 - Empty result (x > 10): " + result16;
+
+$ Test 17: Filter with logical AND
+put [x for x in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] where x > 2 where x < 8 where x % 2 == 0] in result17;
+show "Test 17 - 2 < x < 8 and even: " + result17;
+
+$ Test 18: Comprehension in function
+make function double_list(lst):
+    give [x * 2 for x in lst];
+end;
+
+put [1, 2, 3, 4, 5] in nums;
+show "Test 18 - Using comprehension in function: " + double_list(nums);
+
+$ Test 19: Nested comprehension with filter at each level
+put [x * y for x in [1, 2, 3] where x > 1 for y in [2, 4, 6] where y > 2] in result19;
+show "Test 19 - Nested with filters at both levels: " + result19;
+
+$ Test 20: Lambda with list comprehension
+put lambda lst => [x * 2 for x in lst] in lambda_comp;
+show "Test 20 - Lambda with comprehension: " + lambda_comp([1, 2, 3, 4, 5]);
+
+show "All tests completed!";

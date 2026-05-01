@@ -2,6 +2,7 @@ from errors.run_time_error import RTError
 from functions.function import Function
 from run_time_result import RTResult
 from symbol_table import SymbolTable
+from context import Context
 from tokens import TT_AMPERSAND, TT_CARET, TT_DIV, TT_EE, TT_GT, TT_GTE, TT_KEYWORD, TT_LT, TT_LTE, TT_MINUS, TT_MOD, TT_MUL, TT_NE, TT_PLUS
 from values.dict_value import Dict
 from values.error_value import ErrorValue
@@ -57,7 +58,93 @@ class Interpreter:
             List(elements).set_context(context).set_pos(node.pos_start, node.pos_end)
         )
 
+    def visit_ListComprehensionNode(self, node, context):
+        """
+        Execute a list comprehension.
+        
+        The structure is:
+        [expression for var in iterable where condition for var2 in iterable2 where condition2]
+        
+        We need to:
+        1. Create a new child context for the comprehension scope
+        2. Execute nested loops for each comprehension clause
+        3. Apply filter conditions
+        4. Evaluate the expression for each valid iteration
+        """
+        res = RTResult()
+        elements = []
+        
+        # Create a new child context for the comprehension to avoid polluting outer scope
+        comp_context = Context(context.display_name, context.parent, context.parent_entry_pos)
+        comp_context.symbol_table = SymbolTable(context.symbol_table)
+        
+        def process_comprehension_clauses(clause_idx):
+            """Recursively process comprehension clauses"""
+            if clause_idx >= len(node.comprehension_clauses):
+                # All loops done, evaluate expression
+                value = res.register(self.visit(node.expression_node, comp_context))
+                if res.should_return(): return
+                elements.append(value)
+                return
+            
+            # Process current clause
+            var_tok, iterable_node, conditions = node.comprehension_clauses[clause_idx]
+            var_name = var_tok.value
+            
+            # Evaluate the iterable
+            iterable = res.register(self.visit(iterable_node, comp_context))
+            if res.should_return(): return
+            
+            # Check if iterable is actually iterable
+            if isinstance(iterable, List):
+                items = iterable.elements
+            elif isinstance(iterable, Tuple):
+                items = iterable.elements
+            elif isinstance(iterable, Set):
+                items = iterable.elements
+            else:
+                res.failure(RTError(
+                    iterable_node.pos_start, iterable_node.pos_end,
+                    f"Cannot iterate over {type(iterable).__name__}",
+                    comp_context
+                ))
+                return
+            
+            # Iterate through items
+            for item in items:
+                # Set the loop variable
+                comp_context.symbol_table.set(var_name, item)
+                
+                # Check all conditions for this iteration
+                should_include = True
+                for condition_node in conditions:
+                    condition_value = res.register(self.visit(condition_node, comp_context))
+                    if res.should_return(): return
+                    
+                    # Check if condition is truthy
+                    if hasattr(condition_value, 'is_true'):
+                        if not condition_value.is_true():
+                            should_include = False
+                            break
+                    elif not condition_value:
+                        should_include = False
+                        break
+                
+                if should_include:
+                    # Recursively process next clause
+                    process_comprehension_clauses(clause_idx + 1)
+                    if res.should_return(): return
+        
+        # Start recursive processing
+        process_comprehension_clauses(0)
+        if res.should_return(): return res
+        
+        return res.success(
+            List(elements).set_context(context).set_pos(node.pos_start, node.pos_end)
+        )
+
     def visit_TupleNode(self, node, context):
+
         res = RTResult()
         elements = []
 

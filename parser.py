@@ -13,6 +13,7 @@ from nodes.if_node import IfNode
 from nodes.import_node import ImportNode
 from nodes.lambda_node import LambdaNode
 from nodes.list_access_node import ListAccessNode
+from nodes.list_comprehension_node import ListComprehensionNode
 from nodes.list_node import ListNode
 from nodes.number_node import NumberNode
 from nodes.regex_node import RegexNode
@@ -464,9 +465,118 @@ class Parser:
             res.register_advancement()
             self.advance()
         else:
-            element_nodes.append(res.register(self.logic_expr()))
+            # Parse the first element/expression
+            first_expr = res.register(self.logic_expr())
             if res.error: return res
 
+            # Check if this is a list comprehension
+            if self.current_tok.matches(TT_KEYWORD, 'for'):
+                # This is a list comprehension
+                comprehension_clauses = []
+                
+                # Parse first comprehension clause
+                res.register_advancement()  # consume 'for'
+                self.advance()
+                
+                # Get the variable name
+                if self.current_tok.type != TT_IDENTIFIER:
+                    return res.failure(InvalidSyntaxError(
+                        self.current_tok.pos_start, self.current_tok.pos_end,
+                        "Expected identifier"
+                    ))
+                
+                var_tok = self.current_tok
+                res.register_advancement()
+                self.advance()
+                
+                # Expect 'in'
+                if not self.current_tok.matches(TT_KEYWORD, 'in'):
+                    return res.failure(InvalidSyntaxError(
+                        self.current_tok.pos_start, self.current_tok.pos_end,
+                        "Expected 'in' in list comprehension"
+                    ))
+                
+                res.register_advancement()
+                self.advance()
+                
+                # Get the iterable
+                iterable_expr = res.register(self.logic_expr())
+                if res.error: return res
+                
+                # Parse optional 'where' conditions
+                conditions = []
+                while self.current_tok.matches(TT_KEYWORD, 'where'):
+                    res.register_advancement()
+                    self.advance()
+                    
+                    condition = res.register(self.logic_expr())
+                    if res.error: return res
+                    conditions.append(condition)
+                
+                comprehension_clauses.append((var_tok, iterable_expr, conditions))
+                
+                # Parse additional for clauses
+                while self.current_tok.matches(TT_KEYWORD, 'for'):
+                    res.register_advancement()
+                    self.advance()
+                    
+                    # Get the variable name
+                    if self.current_tok.type != TT_IDENTIFIER:
+                        return res.failure(InvalidSyntaxError(
+                            self.current_tok.pos_start, self.current_tok.pos_end,
+                            "Expected identifier"
+                        ))
+                    
+                    var_tok = self.current_tok
+                    res.register_advancement()
+                    self.advance()
+                    
+                    # Expect 'in'
+                    if not self.current_tok.matches(TT_KEYWORD, 'in'):
+                        return res.failure(InvalidSyntaxError(
+                            self.current_tok.pos_start, self.current_tok.pos_end,
+                            "Expected 'in' in list comprehension"
+                        ))
+                    
+                    res.register_advancement()
+                    self.advance()
+                    
+                    # Get the iterable
+                    iterable_expr = res.register(self.logic_expr())
+                    if res.error: return res
+                    
+                    # Parse optional 'where' conditions
+                    conditions = []
+                    while self.current_tok.matches(TT_KEYWORD, 'where'):
+                        res.register_advancement()
+                        self.advance()
+                        
+                        condition = res.register(self.logic_expr())
+                        if res.error: return res
+                        conditions.append(condition)
+                    
+                    comprehension_clauses.append((var_tok, iterable_expr, conditions))
+                
+                # Expect closing bracket
+                if self.current_tok.type != TT_RSQUARE:
+                    return res.failure(InvalidSyntaxError(
+                        self.current_tok.pos_start, self.current_tok.pos_end,
+                        "Expected ']' to close list comprehension"
+                    ))
+                
+                res.register_advancement()
+                self.advance()
+                
+                return res.success(ListComprehensionNode(
+                    first_expr,
+                    comprehension_clauses,
+                    pos_start,
+                    self.current_tok.pos_end.copy()
+                ))
+            
+            # Regular list (not a comprehension)
+            element_nodes.append(first_expr)
+            
             while self.current_tok.type == TT_COMMA:
                 res.register_advancement()
                 self.advance()

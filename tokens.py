@@ -69,6 +69,8 @@ KEYWORDS = [
     'check',
     'whether',
     'default',
+    'where',
+    'for',
 ]
 
 class Token:
